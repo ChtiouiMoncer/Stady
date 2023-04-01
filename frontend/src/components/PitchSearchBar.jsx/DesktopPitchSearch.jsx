@@ -19,7 +19,7 @@ const DesktopPitchSearch = () => {
     <>
       <Paper //paper is typically used as a background for other content
       component="form"
-      sx={{ display: 'flex',  width: 750, border: '2px solid #007B65', borderRadius: 2// add this line
+      sx={{ display: 'flex',  width: 751, border: '2px solid #007B65', borderRadius: 2// add this line
       }}
       >
         <InputBase  
