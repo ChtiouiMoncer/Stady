@@ -3,6 +3,8 @@ import CloseIcon from '@mui/icons-material/Close';
 import googleLogo from '../../assets/logoGoogle.png'
 import facebookLogo from '../../assets/logoFacebook.png'
 import { useTheme } from '@mui/material/styles';
+import FormControl from '@mui/material/FormControl';
+
 
 
 
@@ -86,7 +88,7 @@ const isMobile = useMediaQuery(theme.breakpoints.down('sm')); // checking if dev
             color: "text.primary",
             padding: 4,
             borderRadius: 2,
-            '& > *': { marginBottom:'12px' },
+            '& > *': { marginBottom:'14px' },
             }}
         > 
 
@@ -99,28 +101,19 @@ const isMobile = useMediaQuery(theme.breakpoints.down('sm')); // checking if dev
                 </IconButton>
             </Box>
             
-
+  
             <StyledTextField
             fullWidth
             id="outlined-username-input"
             label= {<Typography  variant="subtitle2" textAlign="left" sx={{ color: "grey.main"}}>
-            Username
+            Username or Email
             </Typography>}
             type="text"
             autoComplete="Email or phone number"    
             />
 
             <StyledTextField
-            fullWidth
-            id="outlined-username-input"
-            label= {<Typography  variant="subtitle2" textAlign="left" sx={{ color: "grey.main"}}>
-            Email
-            </Typography>}
-            type="text"
-            autoComplete="Email or phone number"    
-            />
-
-            <StyledTextField
+            sx={{ marginTop: "10px"}}
             fullWidth
             id="outlined-password-input"
             label= {<Typography  variant="subtitle2" textAlign="left" sx={{ color: "grey.main"}}>

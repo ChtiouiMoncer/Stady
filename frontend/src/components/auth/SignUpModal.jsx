@@ -1,8 +1,10 @@
-import {Box, Button, Checkbox, Chip, Divider, FormControlLabel, FormGroup, IconButton, Link, Modal, styled, TextField, Typography, useMediaQuery } from "@mui/material";
+import {Box, Button, Checkbox, Chip, Divider, FormControl, FormControlLabel, FormGroup, FormHelperText, IconButton, InputLabel, Link, MenuItem, Modal, Select, styled, TextField, Typography, useMediaQuery } from "@mui/material";
 import CloseIcon from '@mui/icons-material/Close';
 import googleLogo from '../../assets/logoGoogle.png'
 import facebookLogo from '../../assets/logoFacebook.png'
 import { useTheme } from '@mui/material/styles';
+import React from "react";
+
 
 
 
@@ -16,6 +18,7 @@ const StyledModal = styled(Modal) (({ theme }) => ({
   justifyContent: "center",
   margin: "auto",
   ".action-button": {
+      margin: '10px 0px',
       color: theme.palette.white.main,
       backgroundColor: theme.palette.green.main,
       textTransform: "none",
@@ -43,6 +46,7 @@ const StyledModal = styled(Modal) (({ theme }) => ({
 
 
 const StyledTextField = styled(TextField)({
+     marginBottom:'11px',
     '& .MuiOutlinedInput-root': {
         height: '40px', // replace with your desired height
         marginTop: '20px',
@@ -61,11 +65,38 @@ const StyledTextField = styled(TextField)({
         top: '12px', // replace with your desired vertical position
       },
   });
+
+  const StyledRoleSelect = styled(FormControl)({
+    '& .MuiOutlinedInput-root': {
+        height: '40px', // replace with your desired height
+        marginTop: '20px',
+    
+        '& fieldset': {
+          borderColor: 'green', // default border color
+        },
+        '&:hover fieldset': {
+          borderColor: 'green', // border color when hovering over input
+        },
+        '&.Mui-focused fieldset': {
+          borderColor: 'green', // border color when input is focused
+        },
+      },
+      '& .MuiInputLabel-outlined': {
+        top: '12px', // replace with your desired vertical position
+        color: 'green'
+      },
+  });
   
 const SignUpModal = (props) => {  
 const  { open, onClose }  = props; //defining the necessary props
 const theme = useTheme(); //using the the Material-UI theme object, which is provided by the useTheme hook from Material-UI.
 const isMobile = useMediaQuery(theme.breakpoints.down('sm')); // checking if device is mobile
+const [role, setRole] = React.useState('member');
+
+
+const handleRoleChange = (event) => {
+    setRole(event.target.value);
+  };
 
   return (
     <StyledModal
@@ -81,22 +112,20 @@ const isMobile = useMediaQuery(theme.breakpoints.down('sm')); // checking if dev
         <Box
             sx={{
             bgcolor: "background.default",
-            color: "text.primary",
             padding: 4,
             borderRadius: 2,
-            '& > *': { marginBottom:'12px' },
             }}
         > 
 
-            <Box sx={{ display: "flex",  justifyContent: "space-between" }}>
-                <Typography variant="h6" textAlign="left" sx={{ color: "green.main"}}>
+            <Box sx={{ display: "flex",  justifyContent: "space-between", marginBottom:'10px'}}>
+                <Typography variant="h6" textAlign="left" sx={{ color: "green.main" }}>
                 Sign up for Stady
                 </Typography>
                 <IconButton onClick={onClose} >
                     <CloseIcon sx={{ height:"20px", width:"20px", color: "grey.main", position: "absolute"}}  />
                 </IconButton>
             </Box>
-            <Typography variant="subtitle2" textAlign="left" sx={{ color: "grey.main"}}>
+            <Typography variant="subtitle2" textAlign="left" sx={{ color: "grey.main", marginBottom:'10px'}}>
                 Stady is totally free to use. Sign up using your email address or phone number below to get started.
             </Typography>
 
@@ -129,6 +158,22 @@ const isMobile = useMediaQuery(theme.breakpoints.down('sm')); // checking if dev
             type="password"
             autoComplete="Password"
             />
+
+            <StyledRoleSelect fullWidth>
+              <InputLabel id="role-select-label">Role</InputLabel>
+              <Select
+                labelId="role-select-label"
+                id="rolee-select"
+                value={role} // set default value to 10 for "Member"
+                label="Role"
+                onChange={handleRoleChange}
+
+              >
+                <MenuItem value={'member'}>Member</MenuItem>
+                <MenuItem value={'owner'}>Owner</MenuItem>
+              </Select>
+              <FormHelperText>If you are a Pitch Owner change the Role.  </FormHelperText>
+            </StyledRoleSelect>
 
             <Box mt={1}>
                 <FormGroup>
