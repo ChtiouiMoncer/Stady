@@ -1,8 +1,7 @@
 import {Box, Button, Checkbox, Chip, Divider, FormControlLabel, FormGroup, IconButton, Link, Modal, styled, TextField, Typography, useMediaQuery } from "@mui/material";
 import CloseIcon from '@mui/icons-material/Close';
-import googleLogo from '../assets/logoGoogle.png'
-import appleLogo from '../assets/logoApple.png'
-import facebookLogo from '../assets/logoFacebook.png'
+import googleLogo from '../../assets/logoGoogle.png'
+import facebookLogo from '../../assets/logoFacebook.png'
 import { useTheme } from '@mui/material/styles';
 
 
@@ -103,11 +102,21 @@ const isMobile = useMediaQuery(theme.breakpoints.down('sm')); // checking if dev
 
             <StyledTextField
             fullWidth
-            id="outlined-email-input"
+            id="outlined-username-input"
             label= {<Typography  variant="subtitle2" textAlign="left" sx={{ color: "grey.main"}}>
-            Email or phone number
+            Username
             </Typography>}
-            type="email"
+            type="text"
+            autoComplete="Email or phone number"    
+            />
+
+            <StyledTextField
+            fullWidth
+            id="outlined-username-input"
+            label= {<Typography  variant="subtitle2" textAlign="left" sx={{ color: "grey.main"}}>
+            Email
+            </Typography>}
+            type="text"
             autoComplete="Email or phone number"    
             />
 
@@ -163,7 +172,6 @@ const isMobile = useMediaQuery(theme.breakpoints.down('sm')); // checking if dev
 
             <Box sx={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
                 <Button startIcon={ <img src={googleLogo} alt="Google" width="20px" height="20px" />} fullWidth className="social-login" variant="outlined"> Continue with Google </Button>
-                <Button startIcon={<img src={appleLogo} alt="Google" width="20px" height="20px" />}  fullWidth className="social-login" variant="outlined"> Continue with Apple </Button>
                 <Button startIcon={<img src={facebookLogo} alt="Google" width="20px" height="20px" />}  fullWidth className="social-login" variant="outlined"> Continue with Facebook </Button> 
             </Box>       
         </Box>

@@ -53,6 +53,7 @@ export const theme = (mode) => createTheme({
       fontStyle: "normal",
     },
     body1: {
+      fontSize: 15,
       fontWeight: 400,
       fontStyle: "normal",
     },

@@ -4,6 +4,7 @@ import StadiumIcon from '@mui/icons-material/Stadium';
 import MenuIcon from '@mui/icons-material/Menu';
 import HomeIcon from '@mui/icons-material/Home';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
+import LoginTwoToneIcon from '@mui/icons-material/LoginTwoTone';
 import Drawer from '@mui/material/Drawer';
 import { AppBar,
          Box,
@@ -19,22 +20,30 @@ import { AppBar,
          Toolbar,
          Typography
        } from "@mui/material";
-import SignUpModal from "./SignUpModal";
+import SignUpModal from "./auth/SignUpModal";
+import LoginModal from "./auth/LoginModal";
+
 
 const drawerWidth = 200;
 
 const  Navbar = () => {
     const [mobileOpen, setMobileOpen] = React.useState(false);
     const [showModal, setShowModal] = useState(false);
+    const [showLoginModal, setShowLoginModal] = useState(false);
+
 
     // toggle refers to the act of switching the state of a boolean value from true to false or from false to true.
     const handleDrawerToggle = () => {
         setMobileOpen(!mobileOpen);
       };
 
-    const handleModalOpen = () => {
+    const handleSignInModalOpen = () => {
         setShowModal(true);
-    };  
+    }; 
+    
+    const handleLogInModalOpen = () => {
+        setShowLoginModal(true);
+    }; 
 
     
     const drawer = (
@@ -53,11 +62,22 @@ const  Navbar = () => {
                 <ListItem disablePadding>
                     <ListItemButton >
                     <ListItemIcon>
-                    <StadiumIcon /> 
+                        <StadiumIcon /> 
                     </ListItemIcon >
                     <ListItemText primary={<Typography variant="subtitle2" sx = {{}}>Pitches</Typography>} />
                     </ListItemButton>
                 </ListItem>
+
+                <ListItem disablePadding>
+                    <ListItemButton onClick={() => { handleLogInModalOpen(); handleDrawerToggle(); }} sx={{ backgroundColor: 'green.main'}} >
+                    <ListItemIcon>
+                        <LoginTwoToneIcon sx = {{color: 'white.light'}}/> 
+                    </ListItemIcon >
+                    <ListItemText primary={<Typography sx = {{color: 'white.light'}} variant="subtitle2" >Login</Typography>} />
+                    </ListItemButton>
+                </ListItem>
+
+
             </List>
 
             <Divider />
@@ -138,10 +158,12 @@ const  Navbar = () => {
                     <Button href="#text-buttons">
                         <Typography variant="subtitle2" className="greySubtitle">Pitches</Typography>
                     </Button>
-                    <Button href="#text-buttons">
+                    <Button href="#text-buttons" onClick={handleLogInModalOpen}>
                         <Typography variant="subtitle2" className="greySubtitle">Login</Typography>
                     </Button>
-                    <Button variant="contained" className="my-button" onClick={handleModalOpen} >Sign Up</Button>
+                    <LoginModal open={showLoginModal} onClose={() => setShowLoginModal(false)} />
+
+                    <Button variant="contained" className="my-button" onClick={handleSignInModalOpen} >Sign Up</Button>
                     <SignUpModal open={showModal} onClose={() => setShowModal(false)} />
                 </Links>
             </StyledToolbar>
@@ -159,7 +181,7 @@ const  Navbar = () => {
                 <Box>
                         <img src={logo} alt="Logo" width="80px" height="30px" />
                 </Box>
-                <Button variant="contained" className="my-button" onClick={handleModalOpen} >Sign Up</Button>
+                <Button variant="contained" className="my-button" onClick={handleSignInModalOpen} >Sign Up</Button>
                 <SignUpModal  open={showModal} onClose={() => setShowModal(false)} />
             </StyledMobileToolbar>
         </AppBar>
