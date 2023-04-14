@@ -3,3 +3,13 @@ controllers:
         path: ../src/Controller/
         namespace: App\Controller
     type: attribute
+
+authentication_token:
+    path: /authentication_token
+    methods: ['POST']
+
+api_refresh_token:
+    path: /authentication_token/refresh
+
+app_logout:
+    path: /logout
