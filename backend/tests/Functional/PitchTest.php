@@ -3,14 +3,18 @@
 namespace App\Tests\Functional;
 
 use App\Factory\PitchFactory;
+use App\Factory\UserFactory;
+use Lexik\Bundle\JWTAuthenticationBundle\Services\JWTTokenManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
+use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\Security\Core\User\UserInterface;
 use Zenstruck\Browser\Json;
 use Zenstruck\Browser\Test\HasBrowser;
 use Zenstruck\Foundry\Test\ResetDatabase;
 
 
 //KernelTestCase: a class from Symfony that extends TestCase (methods for making assertions about the behavior of the app)
-class PitchTest extends KernelTestCase
+class PitchTest extends ApiTestCase
 {
 
     use HasBrowser; //activate the browser library
@@ -45,10 +49,37 @@ class PitchTest extends KernelTestCase
               'createdAtAgo',
 
           ]);
+    }
 
+    public function getTokenUser(UserInterface $user, JWTTokenManagerInterface $JWTManager)
+    {
 
+        return new JsonResponse(['token' => $JWTManager->create($user)]);
+    }
 
+    public function testAuthenticationRoute(): void
+    {
+        $user = UserFactory::createOne(['password' => 'pass']);
 
+            $this->browser()
+             ->get('/api/users')
+            ->assertStatus(200)
+            ->post('/api/grounds', [
+                'json' => [
+                    'name' => 'A shiny thing 2',
+                    'description' => 'It sparkles when I wave it in the air.',
+                    'capacity'=> 100,
+                    'size'=> 'string',
+                    'phoneNumber'=> 'string',
+                    'isPending'=> true,
+                    'isApproved'=> true,
+                    'isRejected'=> true,
+                    'owner' => '/api/users/'.$user->getId(),
+                    ],
+                ])
+            ->assertStatus(201)
+             ->dump()
+            ;
 
     }
 

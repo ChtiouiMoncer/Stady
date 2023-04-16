@@ -74,9 +74,9 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[Groups(['user:write'])]
     private ?string $password = null;
 
-    #[Assert\NotBlank]
-    #[Groups(['user:write', 'user:update'])]
-    private string $plainPassword;
+    //#[Assert\NotBlank]
+    #[Groups(['user:write'])]
+    private ?string $plainPassword = null;
 
     #[ORM\Column(length: 255, unique: true)]
     #[Groups(['user:read', 'user:write','ground:item:get','ground:write'])]
