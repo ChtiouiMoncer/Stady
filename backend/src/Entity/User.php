@@ -4,6 +4,7 @@ namespace App\Entity;
 
 use ApiPlatform\Doctrine\Orm\Filter\SearchFilter;
 use ApiPlatform\Metadata\ApiFilter;
+use ApiPlatform\Metadata\ApiProperty;
 use ApiPlatform\Metadata\ApiResource;
 use ApiPlatform\Metadata\Delete;
 use ApiPlatform\Metadata\Get;
@@ -29,19 +30,31 @@ use Symfony\Component\Validator\Constraints as Assert;
 #[ORM\Entity(repositoryClass: UserRepository::class)]
 #[ORM\Table(name: '`user`')]
 #[ApiResource(
+
     operations: [
-        new Get(),
-        new GetCollection(),
-        new Post(processor: UserPasswordHasher::class),
-        new Put(processor: UserPasswordHasher::class),
-        new Patch(processor: UserPasswordHasher::class),
-        new Delete()
+        new Get(
+            security: 'is_granted("ROLE_USER_EDIT") and object == user',
+        ),
+        new GetCollection(
+            security: 'is_granted("ROLE_ADMIN")'
+        ),
+        new Post(
+            security: 'is_granted("PUBLIC_ACCESS")',
+            processor: UserPasswordHasher::class
+        ),
+        new Put(
+            security: 'is_granted("ROLE_USER_EDIT") and object == user',
+            processor: UserPasswordHasher::class),
+        new Patch(
+            security: 'is_granted("ROLE_USER_EDIT") and object == user',
+            processor: UserPasswordHasher::class),
+        new Delete(
+            security: 'is_granted("ROLE_ADMIN")'
+        )
     ],
     normalizationContext: ['groups' => ['user:read']],
     denormalizationContext: ['groups' => ['user:write']],
-    paginationItemsPerPage: 10,
-
-
+    paginationItemsPerPage: 100,
 )
 ]
 #[UniqueEntity(fields: ['email'],message: 'There is already an account with this email')]
@@ -71,7 +84,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
      * @var string The hashed password
      */
     #[ORM\Column]
-    #[Groups(['user:write'])]
+    //#[Groups(['user:write'])]
     private ?string $password = null;
 
     //#[Assert\NotBlank]
@@ -86,6 +99,9 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\OneToMany(mappedBy: 'owner', targetEntity: Pitch::class, cascade: ['persist'], orphanRemoval: true)]
     #[Groups(['user:read','user:write'])]
     #[Assert\Valid]
+    #[ApiProperty(
+        security: 'is_granted("ROLE_OWNER") or is_granted("ROLE_ADMIN")',
+    )]
     private Collection $pitches;
 
 
@@ -135,7 +151,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     {
         $roles = $this->roles;
         // guarantee every user at least has ROLE_USER
-        $roles[] = 'ROLE_USER';
+        //$roles[] = 'ROLE_USER';
 
         return array_unique($roles);
     }

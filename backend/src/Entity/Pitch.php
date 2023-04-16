@@ -38,10 +38,18 @@ use function Symfony\Component\String\u;
                 normalizationContext: ['groups' => ['ground:read','ground:item:get']]
         ),
         new GetCollection(),
-        new Post(),
-        new Put(),
-        new Patch(),
-        new Delete()
+        new Post(
+            security: 'is_granted("ROLE_PITCH_CREATE")',
+        ),
+        new Put(
+            security: 'is_granted("ROLE_PITCH_EDIT")',
+        ),
+        new Patch(
+            security: 'is_granted("ROLE_PITCH_EDIT")',
+        ),
+        new Delete(
+            security: 'is_granted("ROLE_ADMIN")',
+        )
     ],
     normalizationContext: [
         'groups' => ['ground:read'],
@@ -65,9 +73,11 @@ use function Symfony\Component\String\u;
     normalizationContext: [
         'groups' => ['ground:read'],
     ],
+    security: 'is_granted("ROLE_OWNER")',
     extraProperties: [
         'standard_put' => true,
     ],
+
 
 )]
 

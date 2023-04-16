@@ -54,7 +54,10 @@ class PitchTest extends KernelTestCase
 
     public function testAuthenticationRoute(): void
     {
-        $user = UserFactory::createOne(['password' => 'pass']);
+        $user = UserFactory::createOne([
+            'password' => 'pass',
+            'roles' => ['ROLE_OWNER']
+        ]);
 
             $this->browser()
              ->actingAs($user)

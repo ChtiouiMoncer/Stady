@@ -12,6 +12,13 @@ security:
             entity:
                 class: App\Entity\User
                 property: username
+
+    role_hierarchy:
+        ROLE_MEMBER: [ROLE_USER_EDIT]
+        ROLE_OWNER: [ROLE_USER_EDIT, ROLE_PITCH_CREATE, ROLE_PITCH_EDIT]
+        ROLE_ADMIN: [ROLE_OWNER, ROLE_MEMBER]
+
+
     firewalls:
         api:
             pattern: ^/api/
@@ -46,7 +53,7 @@ security:
         # - { path: ^/admin, roles: ROLE_ADMIN }
          - { path: ^/authentication_token, roles: PUBLIC_ACCESS }
          - { path: ^/api/token/refresh, roles: PUBLIC_ACCESS }
-         - { path: ^/api/users, roles: ROLE_USER }
+        # - { path: ^/api/users, roles: ROLE_USER }
 
 
 

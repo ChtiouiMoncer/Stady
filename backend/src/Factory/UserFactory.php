@@ -15,6 +15,10 @@ use Zenstruck\Foundry\RepositoryProxy;
  */
 final class UserFactory extends ModelFactory
 {
+    private const ROLES = [
+        'ROLE_MEMBER',
+        'ROLE_OWNER',
+    ];
     const USERNAMES = [
         'moncer_chtioui',
         'AoulenBenFoulen',
@@ -48,6 +52,8 @@ final class UserFactory extends ModelFactory
             'email' => self::faker()->email(),
             'password' => 'password',
             'username' => self::faker()->randomElement(self::USERNAMES) . self::faker()->randomNumber(3),
+            'roles' => [self::faker()->randomElement(self::ROLES)],
+
         ];
     }
 

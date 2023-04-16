@@ -56,7 +56,7 @@ final class PitchFactory extends ModelFactory
             'name' => self::faker()->randomElement(self::PITCHES_NAMES),
             'phoneNumber' => self::faker()->randomNumber(8),
             'size' => self::faker()->text(10),
-            'owner' => UserFactory::new(),
+            'owner' => UserFactory::createOne(['roles' => ['ROLE_OWNER'] ]),
         ];
     }
 

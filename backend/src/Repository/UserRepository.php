@@ -5,6 +5,7 @@ namespace App\Repository;
 use App\Entity\User;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
+use Symfony\Component\Finder\Exception\AccessDeniedException;
 use Symfony\Component\Security\Core\Exception\UnsupportedUserException;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\PasswordUpgraderInterface;
@@ -55,6 +56,26 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
 
         $this->save($user, true);
     }
+
+
+    public function findOneById(int $id): ?User
+    {
+        $user = $this->userRepository->find($id);
+
+        if (!$user) {
+            return null;
+        }
+
+        // Check that the authenticated user is the same as the requested user
+        $authenticatedUser = $this->security->getUser();
+        if ($authenticatedUser !== $user && !$this->security->isGranted('ROLE_ADMIN')) {
+            throw new AccessDeniedException('You are not allowed to access this user.');
+        }
+
+        return $user;
+    }
+
+
 
 //    /**
 //     * @return User[] Returns an array of User objects

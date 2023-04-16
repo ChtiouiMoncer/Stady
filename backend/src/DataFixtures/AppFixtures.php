@@ -12,11 +12,12 @@ class AppFixtures extends Fixture
     public function load(ObjectManager $manager): void
     {
         UserFactory::createMany(10);
-        PitchFactory::createMany(40,function (){
+        /*PitchFactory::createMany(40,function (){
             return [
                 'owner' => UserFactory::random()
             ];
-        });
+        });*/
+        PitchFactory::createMany(40);
 
     }
 }
