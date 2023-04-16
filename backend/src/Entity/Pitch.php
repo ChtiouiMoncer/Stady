@@ -21,6 +21,7 @@ use Carbon\Carbon;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use phpDocumentor\Reflection\DocBlock\Tags\Property;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Serializer\Annotation\Groups;
 use Symfony\Component\Serializer\Annotation\SerializedName;
 use Symfony\Component\Validator\Constraints as Assert;
@@ -49,6 +50,9 @@ use function Symfony\Component\String\u;
         'groups' => ['ground:write'],
     ],
     paginationItemsPerPage: 10,
+    extraProperties: [
+        'standard_put' => true,
+    ],
 
 )]
 #[ApiResource(
@@ -57,7 +61,14 @@ use function Symfony\Component\String\u;
     operations: [new GetCollection()], // Allowed operations for the resource
     uriVariables: [ // URI variables for the resource
         'user_id' => new Link(fromProperty: 'pitches', fromClass: User::class) // Link to the User resource using the "pitches" property as the source
-    ]
+    ],
+    normalizationContext: [
+        'groups' => ['ground:read'],
+    ],
+    extraProperties: [
+        'standard_put' => true,
+    ],
+
 )]
 
 
@@ -128,7 +139,7 @@ class Pitch
     private ?User $owner = null;
 
 
-    public function __construct(string $name)
+    public function __construct(string $name = null)
     {
         $this->name = $name;
         $this->createdAt = new \DateTimeImmutable();

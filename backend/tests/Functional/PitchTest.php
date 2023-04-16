@@ -14,7 +14,7 @@ use Zenstruck\Foundry\Test\ResetDatabase;
 
 
 //KernelTestCase: a class from Symfony that extends TestCase (methods for making assertions about the behavior of the app)
-class PitchTest extends ApiTestCase
+class PitchTest extends KernelTestCase
 {
 
     use HasBrowser; //activate the browser library
@@ -51,20 +51,18 @@ class PitchTest extends ApiTestCase
           ]);
     }
 
-    public function getTokenUser(UserInterface $user, JWTTokenManagerInterface $JWTManager)
-    {
-
-        return new JsonResponse(['token' => $JWTManager->create($user)]);
-    }
 
     public function testAuthenticationRoute(): void
     {
         $user = UserFactory::createOne(['password' => 'pass']);
 
             $this->browser()
-             ->get('/api/users')
-            ->assertStatus(200)
-            ->post('/api/grounds', [
+             ->actingAs($user)
+             ->post('/api/grounds', [
+                    'json' => [],
+                ])
+             ->assertStatus(422)
+             ->post('/api/grounds', [
                 'json' => [
                     'name' => 'A shiny thing 2',
                     'description' => 'It sparkles when I wave it in the air.',
@@ -78,7 +76,7 @@ class PitchTest extends ApiTestCase
                     ],
                 ])
             ->assertStatus(201)
-             ->dump()
+             //->dump()
             ;
 
     }
