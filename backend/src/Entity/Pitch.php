@@ -75,8 +75,8 @@ use function Symfony\Component\String\u;
     ],
     security: 'is_granted("ROLE_OWNER")',
     extraProperties: [
-        'standard_put' => true,
-    ],
+       'standard_put' => true,
+   ],
 
 
 )]
@@ -163,6 +163,14 @@ class Pitch
     public function getName(): ?string
     {
         return $this->name;
+    }
+
+    /**
+     * @param string|null $name
+     */
+    public function setName(?string $name): void
+    {
+        $this->name = $name;
     }
 
 

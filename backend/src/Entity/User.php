@@ -30,7 +30,6 @@ use Symfony\Component\Validator\Constraints as Assert;
 #[ORM\Entity(repositoryClass: UserRepository::class)]
 #[ORM\Table(name: '`user`')]
 #[ApiResource(
-
     operations: [
         new Get(
             security: 'is_granted("ROLE_USER_EDIT") and object == user',
