@@ -57,6 +57,11 @@ final class UserFactory extends ModelFactory
         ];
     }
 
+    public function withRoles(array $roles): self {
+
+
+    }
+
     /**
      * @see https://symfony.com/bundles/ZenstruckFoundryBundle/current/index.html#initialization
      */

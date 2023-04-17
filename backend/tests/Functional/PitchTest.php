@@ -2,6 +2,7 @@
 
 namespace App\Tests\Functional;
 
+use App\Entity\User;
 use App\Factory\PitchFactory;
 use App\Factory\UserFactory;
 use Zenstruck\Browser\HttpOptions;
@@ -24,6 +25,10 @@ class PitchTest extends ApiTestCase
             'roles' => ['ROLE_OWNER']
         ]);
         $pitch = PitchFactory::createOne(['owner' => $user]);
+        $user2 = UserFactory::createOne([
+            'password' => 'pass',
+            'roles' => ['ROLE_OWNER']
+        ]);
 
         $this->browser()
             ->actingAs($user)
@@ -35,16 +40,37 @@ class PitchTest extends ApiTestCase
             ->assertStatus(200)
             //->dump()
            ->assertJsonMatches('capacity', 100)
-           ->get('/api/grounds')
-            ->dump()
-
-
         ;
 
-/*
-,HttpOptions::json([
-        ->withHeader('Content-Type', 'application/merge-patch+json'))*/
 
+        $this->browser()
+            ->actingAs($user2)
+            ->patch('/api/grounds/'.$pitch->getId(), [
+                'json' => [
+                    'capacity' =>90,
+                ],
+            ])
+            ->assertStatus(403)
+            //->dump()
+            ->assertJsonMatches('capacity', 90)
+            ;
+
+        $this->browser()
+            ->actingAs($user)
+            ->patch('/api/grounds/'.$pitch->getId(), [
+                'json' => [
+                    'owner' =>'api/users/'.$user2->getId(),
+                ],
+            ])
+            ->assertStatus(403)
+            //->dump()
+            ->assertJsonMatches('capacity', 90)
+        ;
+    }
+
+
+    public function testAdminCanPatchToEditPitch(){
+        $admin = UserFactory::createOne(['roles' => 'ROLE_ADMIN']);
     }
 
 }
