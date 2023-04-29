@@ -6,12 +6,6 @@ import { useTheme } from '@mui/material/styles';
 import FormControl from '@mui/material/FormControl';
 
 
-
-
-
-
-
-
 const StyledModal = styled(Modal) (({ theme }) => ({
   display: "flex",
   alignItems: "center",
@@ -78,10 +72,11 @@ const isMobile = useMediaQuery(theme.breakpoints.down('sm')); // checking if dev
       aria-labelledby="modal-modal-title"
       aria-describedby="modal-modal-description"
       sx={{
+        overflowY: 'auto', // add this line to make the modal scrollable
         width: isMobile ? '90vw' : '400px', // use 90vw (90% of the width of the viewport) width for mobile devices, otherwise use 400px width
         height: isMobile ? '90vh' : '570px', // use 90vh (90% of the width of the viewport) height for mobile devices, otherwise use 570px height
       }}
-    >
+    > 
         <Box
             sx={{
             bgcolor: "background.default",
