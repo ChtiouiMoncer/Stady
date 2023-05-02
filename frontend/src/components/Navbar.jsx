@@ -145,6 +145,7 @@ const  Navbar = () => {
         position="sticky"
         sx={{
             bgcolor: 'white.main',
+            //height: '70px'
         }}
         > 
             <StyledToolbar>

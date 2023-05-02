@@ -1,4 +1,4 @@
-import {Box, Button, Checkbox, Chip, Alert, Divider, FormControl, FormControlLabel, FormGroup, FormHelperText, IconButton, InputLabel, Link, MenuItem, Modal, Select, styled, TextField, Tooltip, Typography, useMediaQuery, Stack } from "@mui/material";
+import {Box, Button, Checkbox, Chip, Alert, Divider, FormControl, FormControlLabel, CircularProgress, FormGroup, FormHelperText, IconButton, InputLabel, Link, MenuItem, Modal, Select, styled, TextField, Tooltip, Typography, useMediaQuery, Stack } from "@mui/material";
 import CloseIcon from '@mui/icons-material/Close';
 import googleLogo from '../../assets/logoGoogle.png'
 import facebookLogo from '../../assets/logoFacebook.png'
@@ -26,6 +26,10 @@ const StyledModal = styled(Modal) (({ theme }) => ({
       "&:hover": {
           backgroundColor: theme.palette.green.light,
         },
+      // when an element receives "focus," it means that the element is currently selected or "active" 
+      "&.MuiButton-focusVisible": {
+          boxShadow: "none" // remove the button's focus visible box-shadow (while the button is focused)
+      }
     },
  ".social-login": {
     borderColor: theme.palette.green.main, // Set the color of the border
@@ -101,6 +105,8 @@ const theme = useTheme(); //using the the Material-UI theme object, which is pro
 const isMobile = useMediaQuery(theme.breakpoints.down('sm')); // checking if device is mobile
 const [role, setRole] = React.useState('ROLE_MEMBER'); //set the dafault role as a 'member'
 const [showPassword, setShowPassword] = React.useState(false); //manage the state of 'showPassword'
+const [ isPending, setIsPending ] = useState(false);
+
 
 //for the ERRORS AND SUCCESS
 const [errMsg, setErrMsg] = useState('');
@@ -135,7 +141,7 @@ const validationRules = {
   email: {
     required: 'Email is required',
     pattern: {
-      value: /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/i,
+      value: /^[a-zA-Z0-9._%+-.]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/i, //i flag at the end of the pattern to make the match case-insensitive
       message: 'Invalid email address',
     },
   },
@@ -143,6 +149,10 @@ const validationRules = {
     required: 'Password is required',
     minLength: { value: 5, message: 'Password must be at least 5 characters long' },
     maxLength: { value: 20, message: 'Password must be at most 30 characters long' },
+    pattern: {
+      value: /^[^\s]+$/, //disallow spaces anywhere in the password.
+      message: 'Your password must not include spaces',
+    },
     /*validate: {
       hasUppercase: (value) =>
         /[A-Z]/.test(value) || 'Password must include at least one uppercase letter',
@@ -175,6 +185,7 @@ const validationRules = {
 
 //onSubmit arrow function
 const onSubmit =  async (data, e) => {
+  setIsPending(true);
   // Prevent the default form submission behavior from occurring (e is the event of submitting )
   e.preventDefault();
   const usernameValue = watch('username');
@@ -198,10 +209,14 @@ const onSubmit =  async (data, e) => {
   );
   console.log(response.data);
   console.log(JSON.stringify(response))
+  setErrMsg('');
   setSuccess(true);
-  reset();
+  handleReset();
+  setIsPending(false);
+
 } catch (err) {
   if (err.response && err.response.status === 422) {
+    setIsPending(false);
     const violations = err.response.data.violations;
     const emailError = violations.find(v => v.propertyPath === "email");
     const usernameError = violations.find(v => v.propertyPath === "username");
@@ -281,12 +296,26 @@ const handleRoleChange = (event) => {
             
             <Stack sx={{ width: '100%' }} spacing={2}>
               {success && (
-                <Alert sx={{ color: 'green.main', backgroundColor: 'green.dark' }} severity="success">
+                <Alert sx={{
+                  borderRadius: 5,
+                  backgroundColor: 'white.main',
+                  color: 'green.main',
+                  '& .MuiAlert-icon': {
+                      color: 'green.main', // set the color of the icon
+                    },
+                    }} severity="success">
                   User added successfully!
                 </Alert>
               )}
               {errMsg && (
-                <Alert sx={{  }} severity="error">
+                <Alert sx={{
+                    borderRadius: 5,
+                    backgroundColor: 'white.main',
+                    color: 'error.main',
+                      '& .MuiAlert-icon': {
+                        color: 'error.main', // set the color of the icon
+                      },  
+              }} severity="error">
                   {errMsg}
                 </Alert>
               )}
@@ -371,7 +400,7 @@ const handleRoleChange = (event) => {
                           onMouseDown={handleMouseDownPassword} //responsible for temporarily changing the input type to "text" 
                           edge="end"
                         >
-                        {showPassword ? <VisibilityOff /> : <Visibility />}{/* If showPassword is true, we render the VisibilityOff */} 
+                        {showPassword ? <Visibility /> : <VisibilityOff />}{/* If showPassword is true, we render the VisibilityOff */} 
                         </IconButton>
                       </InputAdornment>
                       ),
@@ -410,11 +439,7 @@ const handleRoleChange = (event) => {
                 />    
               </Grid>
             </Grid>    
-           
-
-
-             
-              
+          
               <Controller 
               name="roles"
               control = {control}
@@ -446,6 +471,7 @@ const handleRoleChange = (event) => {
                   <Controller 
                     name="terms"
                     control = {control}
+                    defaultValue={false} // set default value to false
                     rules={validationRules.terms}
                     render={ ({ field, fieldState }) => ( 
                       <FormControlLabel 
@@ -453,6 +479,7 @@ const handleRoleChange = (event) => {
                         control={
                           <Checkbox size="small" //defaultChecked
                           {...field} 
+                          checked={field.value} //checkbox will be reset to unchecked when the reset()
                             sx={{
                             '&.Mui-checked': {
                             color: "green.main",
@@ -495,12 +522,24 @@ const handleRoleChange = (event) => {
                  </FormControl>
               </FormGroup>
             </Box>
+            <Button
+              fullWidth
+              className="action-button"
+              type="submit"
+              variant="contained"
+              disabled={isPending} // disable the button when the form is being submitted
+              //prevent the button's elevation from changing with disableElevation
+              disableElevation //Elevation means determines how raised or lifted an element appears to be.
+            >
+              {isPending ? (
+                <CircularProgress color="white" size={24} /> // use MUI's Button component for the progress indicator
+              ) : (
+                "Create account"
+              )}
+            </Button>
 
-            <Button fullWidth className="action-button" type="submit" variant="contained" >Create account</Button>
 
             </form>
-
-
             <Divider sx={{ marginTop:"10px", marginBottom:"10px" }}>
                 <Chip label={
                     <Typography  variant="subtitle2" textAlign="left" sx={{ color: "grey.main"}}>
@@ -518,10 +557,5 @@ const handleRoleChange = (event) => {
 
   );
 };
-
-
-
-
-
 
 export default SignUpModal;
