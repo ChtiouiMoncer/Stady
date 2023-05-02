@@ -72,11 +72,11 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[Groups(['user:read', 'user:write'])]
     #[Assert\NotBlank]
     #[Assert\Email]
-
     private ?string $email = null;
 
     #[ORM\Column]
-    #[Groups(['user:read'])]
+    #[Assert\NotBlank]
+    #[Groups(['user:read', 'user:write'])]
     private array $roles = [];
 
     /**
