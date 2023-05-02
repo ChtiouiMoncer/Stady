@@ -1,15 +1,16 @@
-import {Box, Button, Checkbox, Chip, Container, Divider, FormControl, FormControlLabel, FormGroup, FormHelperText, IconButton, InputLabel, Link, MenuItem, Modal, Select, styled, TextField, Tooltip, Typography, useMediaQuery } from "@mui/material";
+import {Box, Button, Checkbox, Chip, Alert, Divider, FormControl, FormControlLabel, FormGroup, FormHelperText, IconButton, InputLabel, Link, MenuItem, Modal, Select, styled, TextField, Tooltip, Typography, useMediaQuery, Stack } from "@mui/material";
 import CloseIcon from '@mui/icons-material/Close';
 import googleLogo from '../../assets/logoGoogle.png'
 import facebookLogo from '../../assets/logoFacebook.png'
 import { useTheme } from '@mui/material/styles';
-import React from "react";
+import React, { useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import RestartAltIcon from '@mui/icons-material/RestartAlt';
 import Visibility from '@mui/icons-material/Visibility';
 import VisibilityOff from '@mui/icons-material/VisibilityOff';
 import InputAdornment from '@mui/material/InputAdornment';
 import Grid from "@mui/system/Unstable_Grid/Grid";
+import axios from '../../api/axios'
 
 
 const StyledModal = styled(Modal) (({ theme }) => ({
@@ -98,8 +99,15 @@ const SignUpModal = (props) => {
 const  { open, onClose }  = props; //defining the necessary props
 const theme = useTheme(); //using the the Material-UI theme object, which is provided by the useTheme hook from Material-UI.
 const isMobile = useMediaQuery(theme.breakpoints.down('sm')); // checking if device is mobile
-const [role, setRole] = React.useState('member'); //set the dafault role as a 'member'
+const [role, setRole] = React.useState('ROLE_MEMBER'); //set the dafault role as a 'member'
 const [showPassword, setShowPassword] = React.useState(false); //manage the state of 'showPassword'
+
+//for the ERRORS AND SUCCESS
+const [errMsg, setErrMsg] = useState('');
+const [success, setSuccess] = useState(false);
+
+//
+const REGISTER_URL = '/api/users'
 
   const handleClickShowPassword = () => setShowPassword((show) => !show); // updates the state of showPassword by passing the opposite boolean value of show.
 
@@ -110,8 +118,8 @@ const [showPassword, setShowPassword] = React.useState(false); //manage the stat
      
   };
 
-// This line calls the `useForm` hook, which returns an object with several properties and methods that we can use to manage our form state and behavior.
-const { handleSubmit,  reset, control, getValues, formState: { errors }, } = useForm();
+  // This line calls the `useForm` hook, which returns an object with several properties and methods that we can use to manage our form state and behavior.
+  const { handleSubmit,  reset, control, getValues, formState: { errors }, watch, } = useForm();
 
 //validation rules for form inputs.
 const validationRules = {
@@ -133,19 +141,19 @@ const validationRules = {
   },
   password: {
     required: 'Password is required',
-    minLength: { value: 5, message: 'Password must be at least 8 characters long' },
+    minLength: { value: 5, message: 'Password must be at least 5 characters long' },
     maxLength: { value: 20, message: 'Password must be at most 30 characters long' },
-    validate: {
+    /*validate: {
       hasUppercase: (value) =>
         /[A-Z]/.test(value) || 'Password must include at least one uppercase letter',
       hasLowercase: (value) =>
         /[a-z]/.test(value) || 'Password must include at least one lowercase letter',
       hasNumber: (value) => /\d/.test(value) || 'Password must include at least one number',
       hasSymbol: (value) => /[\W_]/.test(value) || 'Password must include at least one symbol',
-    },
+    },*/
   },  
   passwordMatch: {
-    required: 'Please confirm your password',
+    required: 'Confirm your password',
     validate: {
       matchesPassword: (value) => {
         const password = getValues().password; //get the password field value
@@ -166,8 +174,53 @@ const validationRules = {
 };
 
 //onSubmit arrow function
-const onSubmit = (data) => {
-  console.log(data);
+const onSubmit =  async (data, e) => {
+  // Prevent the default form submission behavior from occurring (e is the event of submitting )
+  e.preventDefault();
+  const usernameValue = watch('username');
+  const emailValue = watch('email');
+  const passwordValue = watch('password');
+  const rolesValue = watch('roles');
+  //console.log(rolesValue);
+
+  try {
+  const response = await  axios.post(REGISTER_URL,
+    JSON.stringify({
+      email: emailValue,
+      roles: [rolesValue],
+      plainPassword: passwordValue,
+      username : usernameValue
+      }),
+      {
+        headers: {'Content-Type' : 'application/ld+json'},
+        //withCredentials: true
+      }
+  );
+  console.log(response.data);
+  console.log(JSON.stringify(response))
+  setSuccess(true);
+  reset();
+} catch (err) {
+  if (err.response && err.response.status === 422) {
+    const violations = err.response.data.violations;
+    const emailError = violations.find(v => v.propertyPath === "email");
+    const usernameError = violations.find(v => v.propertyPath === "username");
+    
+    if (emailError && usernameError) {
+      setErrMsg('Email and username are already taken');
+    } else if (emailError) {
+      setErrMsg('Email is already taken');
+    } else if (usernameError) {
+      setErrMsg('Username is already taken');
+    } else {
+      setErrMsg('Registration failed');
+    }
+  } else {
+    setErrMsg('No server response');
+  }
+}
+
+
 };
 
 
@@ -189,7 +242,7 @@ const handleRoleChange = (event) => {
       aria-describedby="modal-modal-description"
       sx={{ 
         maxHeight: '90vh',
-        width: isMobile ? '90vw' : '400px', // use 90vw (90% of the width of the viewport) width for mobile devices, otherwise use 400px width
+        width: isMobile ? '90vw' : '410px', // use 90vw (90% of the width of the viewport) width for mobile devices, otherwise use 400px width
         height: isMobile ? 'auto' : 'auto', // use 90vw (90% of the width of the viewport) width for mobile devices, otherwise use 400px width
         //overflowY: 'auto',  // add this line to make the modal scrollable
         //display: 'block', //takes up the full width of its container and starts on a new line
@@ -225,7 +278,20 @@ const handleRoleChange = (event) => {
             {/*<Typography variant="subtitle2" textAlign="left" sx={{ color: "grey.main", marginBottom:'0px'}}>
                 Sign up using your email address to get started.
           </Typography>*/}
-
+            
+            <Stack sx={{ width: '100%' }} spacing={2}>
+              {success && (
+                <Alert sx={{ color: 'green.main', backgroundColor: 'green.dark' }} severity="success">
+                  User added successfully!
+                </Alert>
+              )}
+              {errMsg && (
+                <Alert sx={{  }} severity="error">
+                  {errMsg}
+                </Alert>
+              )}
+            </Stack>
+          
             <form onSubmit={handleSubmit(onSubmit)}>
 
               <Controller
@@ -280,7 +346,7 @@ const handleRoleChange = (event) => {
 
 
             <Grid container spacing={2}>
-              <Grid item xs={6}>
+              <Grid xs={6}>
                 <Controller 
                 name="password"
                 control = {control}
@@ -319,7 +385,7 @@ const handleRoleChange = (event) => {
                 />      
               </Grid> 
 
-              <Grid item xs={6}>
+              <Grid  xs={6}>
               
                 <Controller 
                 name="passwordMatch"
@@ -334,7 +400,7 @@ const handleRoleChange = (event) => {
                     <Typography  variant="subtitle2" textAlign="left" sx={{ color: "grey.main"}}>
                       Confirm Password
                     </Typography>}
-                    type='text'
+                    type='password'
                     autoComplete="password Match"
                     error={!!fieldState.error} 
                     helperText={fieldState.error?.message} 
@@ -366,8 +432,8 @@ const handleRoleChange = (event) => {
                     error={!!fieldState.error} 
                     {...field} 
                   >
-                    <MenuItem value={'member'}>Member</MenuItem>
-                    <MenuItem value={'owner'}>Owner</MenuItem>
+                    <MenuItem value={'ROLE_MEMBER'}>Member</MenuItem>
+                    <MenuItem value={'ROLE_OWNER'}>Owner</MenuItem>
                   </Select>
                   <FormHelperText>If you are a Pitch Owner change the Role.  </FormHelperText>
                 </StyledRoleSelect>
