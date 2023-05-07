@@ -153,13 +153,13 @@ const  Navbar = () => {
                     <img src={logo} alt="Logo" width="110px" height="40px" />
                 </Box>
                 <Links>
-                    <Button href="#text-buttons">
+                    <Button href="">
                         <Typography variant="subtitle2" className="greenSubtitle">Home</Typography>
                     </Button>
-                    <Button href="#text-buttons">
+                    <Button href="">
                         <Typography variant="subtitle2" className="greySubtitle">Pitches</Typography>
                     </Button>
-                    <Button href="#text-buttons" onClick={handleLogInModalOpen}>
+                    <Button href="" onClick={handleLogInModalOpen}>
                         <Typography variant="subtitle2" className="greySubtitle">Login</Typography>
                     </Button>
                     <LoginModal open={showLoginModal} onClose={() => setShowLoginModal(false)} />

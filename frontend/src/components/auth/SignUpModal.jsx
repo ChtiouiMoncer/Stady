@@ -13,6 +13,7 @@ import Grid from "@mui/system/Unstable_Grid/Grid";
 import axios from '../../api/axios'
 
 
+
 const StyledModal = styled(Modal) (({ theme }) => ({
   display: "flex",
   alignItems: "center",
@@ -28,7 +29,7 @@ const StyledModal = styled(Modal) (({ theme }) => ({
         },
       // when an element receives "focus," it means that the element is currently selected or "active" 
       "&.MuiButton-focusVisible": {
-          boxShadow: "none" // remove the button's focus visible box-shadow (while the button is focused)
+        boxShadow: "none !important"
       }
     },
  ".social-login": {
@@ -105,14 +106,14 @@ const theme = useTheme(); //using the the Material-UI theme object, which is pro
 const isMobile = useMediaQuery(theme.breakpoints.down('sm')); // checking if device is mobile
 const [role, setRole] = React.useState('ROLE_MEMBER'); //set the dafault role as a 'member'
 const [showPassword, setShowPassword] = React.useState(false); //manage the state of 'showPassword'
-const [ isPending, setIsPending ] = useState(false);
+const [ isPending, setIsPending ] = useState(false); //manage pending time from the server response
 
 
 //for the ERRORS AND SUCCESS
 const [errMsg, setErrMsg] = useState('');
 const [success, setSuccess] = useState(false);
 
-//
+//SIGN UP ENDPOINT
 const REGISTER_URL = '/api/users'
 
   const handleClickShowPassword = () => setShowPassword((show) => !show); // updates the state of showPassword by passing the opposite boolean value of show.
@@ -214,7 +215,7 @@ const onSubmit =  async (data, e) => {
   handleReset();
   setIsPending(false);
 
-} catch (err) {
+  } catch (err) {
   if (err.response && err.response.status === 422) {
     setIsPending(false);
     const violations = err.response.data.violations;
@@ -232,10 +233,10 @@ const onSubmit =  async (data, e) => {
     }
   } else {
     setErrMsg('No server response');
+    setIsPending(false);
+
   }
-}
-
-
+ }
 };
 
 
@@ -256,9 +257,7 @@ const handleRoleChange = (event) => {
       aria-labelledby="modal-modal-title"
       aria-describedby="modal-modal-description"
       sx={{ 
-        maxHeight: '90vh',
-        width: isMobile ? '90vw' : '410px', // use 90vw (90% of the width of the viewport) width for mobile devices, otherwise use 400px width
-        height: isMobile ? 'auto' : 'auto', // use 90vw (90% of the width of the viewport) width for mobile devices, otherwise use 400px width
+        
         //overflowY: 'auto',  // add this line to make the modal scrollable
         //display: 'block', //takes up the full width of its container and starts on a new line
         //margin: 'auto', // center the modal horizontally
@@ -269,6 +268,9 @@ const handleRoleChange = (event) => {
     >
         <Box
             sx={{
+            maxHeight: '80vh',
+            width: isMobile ? '75vw' : '350px', // use 90vw (90% of the width of the viewport) width for mobile devices, otherwise use 400px width
+            height: isMobile ? '50h' : 'auto', // use 90vw (90% of the width of the viewport) width for mobile devices, otherwise use 400px width
             bgcolor: "background.default",
             padding: 3,
             borderRadius: 2,
@@ -350,9 +352,9 @@ const handleRoleChange = (event) => {
                   {...field} // When you pass ...field, it is equivalent to passing value={field.value}, onBlur={field.onBlur}, and onChange={field.onChange}                 
                   />
               )}
-            />  
+              />  
             
-            <Controller
+              <Controller
               name="email" 
               control={control} 
               defaultValue="" 
@@ -374,7 +376,7 @@ const handleRoleChange = (event) => {
               />   
 
 
-            <Grid container spacing={2}>
+             <Grid container spacing={2}>
               <Grid xs={6}>
                 <Controller 
                 name="password"
@@ -438,7 +440,7 @@ const handleRoleChange = (event) => {
                 )}
                 />    
               </Grid>
-            </Grid>    
+             </Grid>    
           
               <Controller 
               name="roles"
@@ -465,7 +467,7 @@ const handleRoleChange = (event) => {
               )}
              /> 
 
-            <Box mb={1}>
+             <Box mb={1}>
               <FormGroup>
                 <FormControl >
                   <Controller 
@@ -521,23 +523,22 @@ const handleRoleChange = (event) => {
                       /> */ }
                  </FormControl>
               </FormGroup>
-            </Box>
-            <Button
+             </Box>
+             <Button
+              disableElevation={true} //Elevation means determines how raised or lifted an element appears to be.
               fullWidth
               className="action-button"
               type="submit"
               variant="contained"
               disabled={isPending} // disable the button when the form is being submitted
               //prevent the button's elevation from changing with disableElevation
-              disableElevation //Elevation means determines how raised or lifted an element appears to be.
-            >
+             >
               {isPending ? (
                 <CircularProgress color="white" size={24} /> // use MUI's Button component for the progress indicator
               ) : (
                 "Create account"
               )}
-            </Button>
-
+             </Button>
 
             </form>
             <Divider sx={{ marginTop:"10px", marginBottom:"10px" }}>

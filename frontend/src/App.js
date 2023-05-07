@@ -4,6 +4,8 @@ import Navbar from "./components/Navbar";
 import { useEffect, useState } from "react";
 import {theme} from "./theme"
 import Hero from './components/Hero';
+import { AuthProvider } from './context/AuthProvider';
+
 
 function App() {
   const [mode, setMode] = useState(() => {
@@ -18,12 +20,14 @@ function App() {
   return (
     <>
     <ThemeProvider theme={theme(mode)}>
-      <Box bgcolor={"background.default"} color={"text.primary"}> 
-        <Navbar />
-        <Stack display='flex' flexDirection='column'  > {/* comment above */} 
-          <Hero />
-        </Stack>
-      </Box>
+      <AuthProvider>
+        <Box bgcolor={"background.default"} color={"text.primary"}> 
+          <Navbar />
+          <Stack display='flex' flexDirection='column'  > {/* comment above */} 
+            <Hero />
+          </Stack>
+        </Box>
+      </AuthProvider>  
     </ThemeProvider>
     </>
   );
