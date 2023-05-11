@@ -270,7 +270,7 @@ const handleRoleChange = (event) => {
             sx={{
             maxHeight: '80vh',
             width: isMobile ? '75vw' : '350px', // use 90vw (90% of the width of the viewport) width for mobile devices, otherwise use 400px width
-            height: isMobile ? '50h' : 'auto', // use 90vw (90% of the width of the viewport) width for mobile devices, otherwise use 400px width
+            height: isMobile ? 'auto' : 'auto', // use 90vw (90% of the width of the viewport) width for mobile devices, otherwise use 400px width
             bgcolor: "background.default",
             padding: 3,
             borderRadius: 2,

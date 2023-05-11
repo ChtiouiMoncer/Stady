@@ -18,10 +18,12 @@ import { AppBar,
          ListItemIcon,
          styled,
          Toolbar,
-         Typography
+         Typography,
+         Link
        } from "@mui/material";
 import SignUpModal from "./auth/SignUpModal";
 import LoginModal from "./auth/LoginModal";
+import { Link as RouterLink} from "react-router-dom";
 
 
 const drawerWidth = 200;
@@ -51,11 +53,14 @@ const  Navbar = () => {
             <Divider />
             <List>
                 <ListItem disablePadding>
-                    <ListItemButton >
-                    <ListItemIcon>
-                        <HomeIcon sx = {{ color: "green.main" }} /> 
-                    </ListItemIcon >
-                    <ListItemText primary={<Typography variant="subtitle2" sx = {{ color: "green.main" }}>Home</Typography>} />
+                    <ListItemButton component={RouterLink} to="/" onClick={() => { handleDrawerToggle(); }}>
+
+                        <ListItemIcon>
+                            <HomeIcon sx = {{ color: "green.main" }} /> 
+                        </ListItemIcon  >
+                    
+                        <ListItemText primary={<Typography variant="subtitle2" sx = {{ color: "green.main" }}>Home</Typography>} />
+
                     </ListItemButton>
                 </ListItem>
 
@@ -69,7 +74,7 @@ const  Navbar = () => {
                 </ListItem>
 
                 <ListItem disablePadding>
-                    <ListItemButton onClick={() => { handleLogInModalOpen(); handleDrawerToggle(); }} sx={{ backgroundColor: 'green.main'}} >
+                    <ListItemButton  component={RouterLink} to="/login" onClick={() => { handleDrawerToggle(); }} sx={{ backgroundColor: 'green.main'}} >
                     <ListItemIcon>
                         <LoginTwoToneIcon sx = {{color: 'white.light'}}/> 
                     </ListItemIcon >
@@ -149,23 +154,47 @@ const  Navbar = () => {
         }}
         > 
             <StyledToolbar>
-                <Box  >
-                    <img src={logo} alt="Logo" width="110px" height="40px" />
-                </Box>
+                <Link  component={RouterLink} to="/">
+                    <Box>
+                        <img src={logo} alt="Logo" width="110px" height="40px" />
+                    </Box>
+                </Link> 
+
                 <Links>
-                    <Button href="">
+                    <Button  component={RouterLink} to="/"   > 
                         <Typography variant="subtitle2" className="greenSubtitle">Home</Typography>
                     </Button>
                     <Button href="">
                         <Typography variant="subtitle2" className="greySubtitle">Pitches</Typography>
                     </Button>
-                    <Button href="" onClick={handleLogInModalOpen}>
-                        <Typography variant="subtitle2" className="greySubtitle">Login</Typography>
-                    </Button>
-                    <LoginModal open={showLoginModal} onClose={() => setShowLoginModal(false)} />
 
-                    <Button variant="contained" className="my-button" onClick={handleSignInModalOpen} >Sign Up</Button>
-                    <SignUpModal open={showModal} onClose={() => setShowModal(false)} />
+                    {/*
+                        <Button  onClick={handleLogInModalOpen}>
+                            <Typography variant="subtitle2" className="greySubtitle">Log In</Typography>
+                        </Button>
+                        <LoginModal open={showLoginModal} onClose={() => setShowLoginModal(false)} />
+                        
+
+                        <Button variant="contained" className="my-button" onClick={handleSignInModalOpen}>
+                            <Typography variant="subtitle2" >
+                                Sign Up
+                            </Typography>
+                        </Button>
+                        <SignUpModal open={showModal} onClose={() => setShowModal(false)} /> 
+                    */}
+
+                      <Button  component={RouterLink} to="/login"   >
+                            <Typography variant="subtitle2" className="greySubtitle" >
+                                        {"Log In"}                        
+                            </Typography>
+                        </Button>    
+
+                        <Button  component={RouterLink} to="/signup"  variant="contained" className="my-button"    >
+                            <Typography variant="subtitle2"  >
+                                        {"Sign Up"}                        
+                            </Typography>
+                        </Button>  
+                      
                 </Links>
             </StyledToolbar>
 
@@ -180,10 +209,11 @@ const  Navbar = () => {
                     />
                 </IconButton>
                 <Box>
-                        <img src={logo} alt="Logo" width="80px" height="30px" />
+                    <Link  component={RouterLink} to="/">
+                            <img src={logo} alt="Logo" width="80px" height="30px" />
+                    </Link>        
                 </Box>
-                <Button variant="contained" className="my-button" onClick={handleSignInModalOpen} >Sign Up</Button>
-                <SignUpModal  open={showModal} onClose={() => setShowModal(false)} />
+                <Button  component={RouterLink} to="/signup"  variant="contained" className="my-button"  >Sign Up</Button>
             </StyledMobileToolbar>
         </AppBar>
 
