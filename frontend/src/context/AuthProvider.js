@@ -4,7 +4,6 @@ const AuthContext = createContext({}); //creates a new context called AuthContex
 
 export const AuthProvider = ({ children }) => { //Exports a co mponent called AuthProvider with a a prop called children, which represents the child components that will be wrapped by this provider.
     const [auth, setAuth] = useState({ }); //define a state variable called auth
-    
     //const [isLoggedIn, setIsLoggedIn] = useState(false); //define another state variable
 
     return ( 

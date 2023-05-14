@@ -215,8 +215,8 @@ const onSubmit =  async (data, e) => {
         //withCredentials: true
       }
   );
-  console.log(response.data);
-  console.log(JSON.stringify(response))
+  /*console.log(response.data);
+    console.log(JSON.stringify(response))*/
   setErrMsg('');
   setSuccess(true);
   handleReset();

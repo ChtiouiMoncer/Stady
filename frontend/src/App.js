@@ -13,6 +13,7 @@ import { Login } from '@mui/icons-material';
 import LoginPage from './components/auth/LoginPage';
 import SignUpPage from './components/auth/SignUpPage';
 import Unauthorized from './components/Unauthorized.js';
+import Users from './components/Users';
 
 
 function App() {
@@ -34,7 +35,7 @@ function App() {
     localStorage.setItem("mode", mode); // save mode to local storage
   }, [mode]);  
   return (
-    <>
+    <> 
     <Router>
       <ThemeProvider theme={theme(mode)}>
           <AuthProvider>
@@ -51,8 +52,13 @@ function App() {
 
 
                   { /* Protected Routes */}
-                  <Route element= { <RequireAuth  allowedRoles={[ROLES.Member]}/> }> { /* only when we have a user we can show the comp's inside the Required Auth*/ }
+                  <Route element= { <RequireAuth  allowedRoles={[ROLES.Member, ROLES.Admin ]}/> }> { /* only when we have a user we can show the comp's inside the Required Auth*/ }
                     <Route path="/pitches/add" element={<Test />}></Route>
+
+                  </Route>
+
+                  <Route element= { <RequireAuth  allowedRoles={[ROLES.Admin]}/> }> { /* only when we have a user we can show the comp's inside the Required Auth*/ }
+                    <Route path="/users" element={<Users />}></Route>
                   </Route>
 
                   {/* catch All */}

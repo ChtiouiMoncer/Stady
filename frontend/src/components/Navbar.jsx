@@ -164,8 +164,11 @@ const  Navbar = () => {
                     <Button  component={RouterLink} to="/"   > 
                         <Typography variant="subtitle2" className="greenSubtitle">Home</Typography>
                     </Button>
-                    <Button href="">
+                    <Button component={RouterLink} to="/">
                         <Typography variant="subtitle2" className="greySubtitle">Pitches</Typography>
+                    </Button>
+                    <Button component={RouterLink} to="/users">
+                        <Typography variant="subtitle2" className="greySubtitle">Users</Typography>
                     </Button>
 
                     {/*
