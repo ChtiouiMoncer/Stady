@@ -31,14 +31,16 @@ export const theme = (mode) => createTheme({
       fontStyle: "normal",
     },
     h5: {
-      fontWeight: "fontWeightBold",
-      fontStyle: "normal",
-    },
-    h6: {
       fontWeight:600,
       fontStyle: "normal",
-      fontSize:24,
+      fontSize:15,
       lineHeight: "33px"
+    },
+    h6: {
+     
+      fontWeight: "fontWeightBold",
+      fontStyle: "normal",
+      fontSize:25,
 
       //color: blue[500]
       //backgroundColor: green[200],

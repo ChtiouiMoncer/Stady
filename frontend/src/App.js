@@ -8,15 +8,16 @@ import HomePage from './components/homePage/HomePage';
 import NotFound from './components/NotFound';
 import RequireAuth from './components/RequireAuth';
 import Test from './components/Test';
-import LoginModal from './components/auth/LoginModal';
-import { Login } from '@mui/icons-material';
 import LoginPage from './components/auth/LoginPage';
 import SignUpPage from './components/auth/SignUpPage';
 import Unauthorized from './components/Unauthorized.js';
 import Users from './components/Users';
+import PersistLogin from './components/PersistLogin';
+import AuthGuard from './components/AuthGuard ';
 
 
 function App() {
+  const loggedIn = window.localStorage.getItem("isLoggedIn");
   const [mode, setMode] = useState(() => {
     // read mode value from local storage on initial render
     return localStorage.getItem("mode") || "light";
@@ -44,22 +45,25 @@ function App() {
               <Stack display='flex' flexDirection='column'>
                 <Routes>
                   {/* Public Routes */}
-                  <Route exact path="/" element={  <HomePage /> }></Route>
-                  <Route exact path="/login" element={  <LoginPage /> } />
-                  <Route exact path="/signup" element={  <SignUpPage /> } />
-                  <Route exact path="/unauthorized" element={  <Unauthorized /> } />
+                  <Route path="/" element={  <HomePage /> }></Route>
+                  <Route path="/unauthorized" element={  <Unauthorized /> } />
 
-
+                  <Route element= { <AuthGuard  /> }> { /*If we have a user logged in we redirect to '/'*/ }
+                    <Route path="/login" element={  <LoginPage /> } />
+                    <Route path="/signup" element={  <SignUpPage /> } />
+                  </Route>   
 
                   { /* Protected Routes */}
-                  <Route element= { <RequireAuth  allowedRoles={[ROLES.Member, ROLES.Admin ]}/> }> { /* only when we have a user we can show the comp's inside the Required Auth*/ }
-                    <Route path="/pitches/add" element={<Test />}></Route>
+                  <Route element={ <PersistLogin /> }>  { /* When a user refresh the page he remain authenticated */ } 
+                    <Route element= { <RequireAuth  allowedRoles={[ROLES.Member, ROLES.Admin ]}/> }> { /* Only when we have a user we can show the comp's inside the Required Auth*/ }
+                      <Route path="/pitches/add" element={<Test />}></Route>
 
-                  </Route>
+                    </Route>
 
-                  <Route element= { <RequireAuth  allowedRoles={[ROLES.Admin]}/> }> { /* only when we have a user we can show the comp's inside the Required Auth*/ }
-                    <Route path="/users" element={<Users />}></Route>
-                  </Route>
+                    <Route element= { <RequireAuth  allowedRoles={[ROLES.Admin]}/> }> { /* Only when we have a user we can show the comp's inside the Required Auth*/ }
+                      <Route path="/users" element={<Users />}></Route>
+                    </Route>
+                  </Route>   
 
                   {/* catch All */}
                   <Route path="*" element={<NotFound />}></Route>

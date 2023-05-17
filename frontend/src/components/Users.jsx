@@ -3,12 +3,15 @@ import axios from "../api/axios";
 import useAxiosPrivate from "../Hooks/useAxiosPrivate";
 import { Link as RouterLink, useNavigate, useLocation } from "react-router-dom";
 import { Button, Typography } from "@mui/material";
+import useAuth from "../Hooks/useAuth";
 
 
 const Users = () => {
 
     //users data state
     const [users, setUsers] = useState(); 
+
+    const { auth, setAuth } = useAuth();
 
 
     // axios private (with Token Bearer)

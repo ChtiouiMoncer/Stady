@@ -9,7 +9,7 @@ const Test = () => {
     //console.log(auth.refresh_token);
 
 
-    //const refresh = useRefreshToken();
+    const refresh = useRefreshToken();
 
 
 
@@ -17,8 +17,8 @@ const Test = () => {
     return ( 
         <div className="not-found">add Pitch Page
         <Link to="/">Home Page</Link>
-        {/* <button onClick={() => refresh() }>Refresh</button>
-        <br /> */ }
+        <button onClick={() => refresh() }>Refresh</button>
+        <br />  
         </div>
      );
 }

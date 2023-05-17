@@ -23,7 +23,9 @@ import { AppBar,
        } from "@mui/material";
 import SignUpModal from "./auth/SignUpModal";
 import LoginModal from "./auth/LoginModal";
-import { Link as RouterLink} from "react-router-dom";
+import { Link as RouterLink, useNavigate} from "react-router-dom";
+import useLogout from "../Hooks/useLogout";
+import useAuth from "../Hooks/useAuth";
 
 
 const drawerWidth = 200;
@@ -33,6 +35,27 @@ const  Navbar = () => {
     const [showModal, setShowModal] = useState(false);
     const [showLoginModal, setShowLoginModal] = useState(false);
 
+    //logout
+    const { auth, setAuth } = useAuth();
+    const logout = useLogout();
+    const navigate = useNavigate();
+
+
+    const signOut = async () => {
+        try {
+          await logout();  
+          setAuth({});
+          localStorage.removeItem('refresh_token');
+          navigate('/');
+        } catch (error) {
+          // Handle the error here (e.g., display an error message)
+          console.error('Logout failed:', error);
+          // Optionally, you can return the error or throw it again
+          // return error;
+          // throw error;
+        }
+      }
+      
 
     // toggle refers to the act of switching the state of a boolean value from true to false or from false to true.
     const handleDrawerToggle = () => {
@@ -169,6 +192,9 @@ const  Navbar = () => {
                     </Button>
                     <Button component={RouterLink} to="/users">
                         <Typography variant="subtitle2" className="greySubtitle">Users</Typography>
+                    </Button>
+                    <Button onClick={signOut}>
+                        <Typography variant="subtitle2" className="greySubtitle">Logout</Typography>
                     </Button>
 
                     {/*
