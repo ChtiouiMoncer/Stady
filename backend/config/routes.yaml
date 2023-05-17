@@ -10,6 +10,8 @@ authentication_token:
 
 api_refresh_token:
     path: /authentication_token/refresh
+    controller: App\Controller\RefreshTokenController::refreshAction
+    methods: POST
 
 app_logout:
     path: /logout
