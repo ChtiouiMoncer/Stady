@@ -18,6 +18,8 @@ use ApiPlatform\Serializer\Filter\PropertyFilter;
 use ApiPlatform\Metadata\Link;
 use App\Repository\PitchRepository;
 use Carbon\Carbon;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use phpDocumentor\Reflection\DocBlock\Tags\Property;
@@ -149,10 +151,24 @@ class Pitch
     private ?User $owner = null;
 
 
+    #[ORM\OneToOne(mappedBy: 'pitch', cascade: ['persist', 'remove'])]
+    private ?Address $address = null;
+
+    #[ORM\OneToOne(mappedBy: 'pitch', cascade: ['persist', 'remove'])]
+    private ?Amenties $amenties = null;
+
+    #[ORM\ManyToOne(inversedBy: 'pitch')]
+    private ?SportsType $sportsType = null;
+
+    #[ORM\OneToMany(mappedBy: 'pitch', targetEntity: OpeningTime::class)]
+    private Collection $openingTimes;
+
+
     public function __construct(string $name = null)
     {
         $this->name = $name;
         $this->createdAt = new \DateTimeImmutable();
+        $this->openingTimes = new ArrayCollection();
 
     }
     public function getId(): ?int
@@ -308,6 +324,82 @@ class Pitch
     public function setOwner(?User $owner): self
     {
         $this->owner = $owner;
+
+        return $this;
+    }
+
+    public function getAddress(): ?Address
+    {
+        return $this->address;
+    }
+
+    public function setAddress(Address $address): self
+    {
+        // set the owning side of the relation if necessary
+        if ($address->getPitch() !== $this) {
+            $address->setPitch($this);
+        }
+
+        $this->address = $address;
+
+        return $this;
+    }
+
+    public function getAmenties(): ?Amenties
+    {
+        return $this->amenties;
+    }
+
+    public function setAmenties(Amenties $amenties): self
+    {
+        // set the owning side of the relation if necessary
+        if ($amenties->getPitch() !== $this) {
+            $amenties->setPitch($this);
+        }
+
+        $this->amenties = $amenties;
+
+        return $this;
+    }
+
+    public function getSportsType(): ?SportsType
+    {
+        return $this->sportsType;
+    }
+
+    public function setSportsType(?SportsType $sportsType): self
+    {
+        $this->sportsType = $sportsType;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, OpeningTime>
+     */
+    public function getOpeningTimes(): Collection
+    {
+        return $this->openingTimes;
+    }
+
+    public function addOpeningTime(OpeningTime $openingTime): self
+    {
+        if (!$this->openingTimes->contains($openingTime)) {
+            $this->openingTimes->add($openingTime);
+            $openingTime->setPitch($this);
+        }
+
+        return $this;
+    }
+
+    public function removeOpeningTime(OpeningTime $openingTime): self
+    {
+        if ($this->openingTimes->removeElement($openingTime)) {
+            // set the owning side to null (unless already changed)
+            if ($openingTime->getPitch() === $this) {
+                $openingTime->setPitch(null);
+            }
+        }
 
         return $this;
     }

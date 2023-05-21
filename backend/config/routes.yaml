@@ -13,5 +13,7 @@ api_refresh_token:
     controller: App\Controller\RefreshTokenController::refreshAction
     methods: POST
 
-app_logout:
-    path: /logout
+#app_logout:
+#    path: /logout
+
+
