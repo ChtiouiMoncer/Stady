@@ -91,7 +91,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     private ?string $plainPassword = null;
 
     #[ORM\Column(length: 255, unique: true)]
-    #[Groups(['user:read', 'user:write','ground:item:get','ground:write'])]
+    #[Groups(['user:read', 'user:write','ground:item:get','ground:write', 'ground:read'])]
     #[Assert\NotBlank]
     private ?string $username = null;
 
@@ -99,7 +99,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[Groups(['user:read','user:write'])]
     #[Assert\Valid]
     #[ApiProperty(
-        security: 'is_granted("ROLE_OWNER") or is_granted("ROLE_ADMIN")',
+        security: 'is_granted("ROLE_OWNER") or is_granted("ROLE_ADMIN") and object == user',
     )]
     private Collection $pitches;
 

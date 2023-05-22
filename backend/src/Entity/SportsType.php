@@ -2,28 +2,76 @@
 
 namespace App\Entity;
 
+use ApiPlatform\Doctrine\Orm\Filter\SearchFilter;
+use ApiPlatform\Metadata\ApiFilter;
 use ApiPlatform\Metadata\ApiResource;
+use ApiPlatform\Metadata\Delete;
+use ApiPlatform\Metadata\Get;
+use ApiPlatform\Metadata\GetCollection;
+use ApiPlatform\Metadata\Patch;
+use ApiPlatform\Metadata\Post;
 use App\Repository\SportsTypeRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Annotation\Groups;
+use Symfony\Component\Validator\Constraints as Assert;
+use Symfony\Component\Validator\Constraints\NotBlank;
 
 #[ORM\Entity(repositoryClass: SportsTypeRepository::class)]
-#[ApiResource]
+#[ApiResource(
+    description: 'SportsType rest endpoint',
+    operations: [
+        new Get(
+            security: 'is_granted("ROLE_ADMIN")',
+        ),
+        new GetCollection(),
+        new Post(
+            security: 'is_granted("ROLE_ADMIN")',
+        ),
+        new Patch(
+            security: 'is_granted("ROLE_ADMIN")',
+        ),
+        new Delete(
+            security: 'is_granted("ROLE_ADMIN")',
+        )
+    ],
+
+
+    normalizationContext: [
+        'groups' => ['type:read'],
+    ],
+    denormalizationContext: [
+        'groups' => ['type:write'],
+    ],
+    paginationItemsPerPage: 10,
+    extraProperties: [
+        'standard_put' => true,
+    ],
+)]
 class SportsType
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
+    #[Groups(['type:read','ground:read','user:read'])]
     private ?int $id = null;
 
     #[ORM\Column(length: 20, nullable: true)]
+    #[Groups(['type:read','type:write','ground:read','user:read','user:write'])]
+    #[Assert\NotBlank]
+    #[Assert\Length(min:5, max: 20, maxMessage: 'Describe the Sports Type in 20 char max!')]
+    #[ApiFilter(SearchFilter::class, strategy: 'partial')]
     private ?string $SportsName = null;
 
     #[ORM\OneToMany(mappedBy: 'sportsType', targetEntity: Pitch::class)]
     private Collection $pitch;
 
     #[ORM\OneToMany(mappedBy: 'sportsType', targetEntity: FloorType::class)]
+    #[Groups(['type:read','type:write'])]
+    #[ApiFilter(\ApiPlatform\Doctrine\Orm\Filter\SearchFilter::class, strategy: 'partial')]
+    #[Assert\Valid]
+    #[Assert\NotBlank]
     private Collection $floorTypes;
 
     public function __construct()
@@ -57,27 +105,6 @@ class SportsType
         return $this->pitch;
     }
 
-    public function addPitch(Pitch $pitch): self
-    {
-        if (!$this->pitch->contains($pitch)) {
-            $this->pitch->add($pitch);
-            $pitch->setSportsType($this);
-        }
-
-        return $this;
-    }
-
-    public function removePitch(Pitch $pitch): self
-    {
-        if ($this->pitch->removeElement($pitch)) {
-            // set the owning side to null (unless already changed)
-            if ($pitch->getSportsType() === $this) {
-                $pitch->setSportsType(null);
-            }
-        }
-
-        return $this;
-    }
 
     /**
      * @return Collection<int, FloorType>

@@ -3,11 +3,47 @@
 namespace App\Entity;
 
 use ApiPlatform\Metadata\ApiResource;
+use ApiPlatform\Metadata\Delete;
+use ApiPlatform\Metadata\Get;
+use ApiPlatform\Metadata\GetCollection;
+use ApiPlatform\Metadata\Patch;
+use ApiPlatform\Metadata\Post;
 use App\Repository\AddressRepository;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 #[ORM\Entity(repositoryClass: AddressRepository::class)]
-#[ApiResource]
+#[ApiResource
+(
+    description: 'Address rest endpoint',
+    operations: [
+        new Get(
+            security: 'is_granted("ROLE_ADMIN")',
+        ),
+        new GetCollection(),
+        new Post(
+            security: 'is_granted("ROLE_ADMIN")',
+        ),
+        new Patch(
+            security: 'is_granted("ROLE_ADMIN")',
+        ),
+        new Delete(
+            security: 'is_granted("ROLE_ADMIN")',
+        )
+    ],
+
+
+    normalizationContext: [
+        'groups' => ['address:read'],
+    ],
+    denormalizationContext: [
+        'groups' => ['address:write'],
+    ],
+    paginationItemsPerPage: 100,
+    extraProperties: [
+        'standard_put' => true,
+    ],
+)]
 class Address
 {
     #[ORM\Id]
@@ -16,9 +52,11 @@ class Address
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
+    #[Groups(['address:read','address:write','ground:read','ground:write','user:read','user:write'])]
     private ?string $longitude = null;
 
     #[ORM\Column(length: 255)]
+    #[Groups(['address:read','address:write','ground:read','ground:write','user:read','user:write'])]
     private ?string $latitude = null;
 
     #[ORM\OneToOne(inversedBy: 'address', cascade: ['persist', 'remove'])]

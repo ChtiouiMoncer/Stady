@@ -3,42 +3,92 @@
 namespace App\Entity;
 
 use ApiPlatform\Metadata\ApiResource;
+use ApiPlatform\Metadata\Delete;
+use ApiPlatform\Metadata\Get;
+use ApiPlatform\Metadata\GetCollection;
+use ApiPlatform\Metadata\Patch;
+use ApiPlatform\Metadata\Post;
 use App\Repository\OpeningTimeRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Annotation\Context;
+use Symfony\Component\Serializer\Annotation\Groups;
+use Symfony\Component\Serializer\Normalizer\DateTimeNormalizer;
 
 #[ORM\Entity(repositoryClass: OpeningTimeRepository::class)]
-#[ApiResource]
+#[ApiResource
+(
+    description: 'OpeningTime rest endpoint',
+    operations: [
+        new Get(
+            security: 'is_granted("ROLE_ADMIN")',
+        ),
+        new GetCollection(),
+        new Post(
+            security: 'is_granted("ROLE_ADMIN")',
+        ),
+        new Patch(
+            security: 'is_granted("ROLE_ADMIN")',
+        ),
+        new Delete(
+            security: 'is_granted("ROLE_ADMIN")',
+        )
+    ],
+
+
+    normalizationContext: [
+        'groups' => ['opening_time:read'],
+    ],
+    denormalizationContext: [
+        'groups' => ['opening_time:write'],
+    ],
+    paginationItemsPerPage: 100,
+    extraProperties: [
+        'standard_put' => true,
+    ],
+)
+]
 class OpeningTime
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
+    #[Groups(['address:read','address:write','ground:read','ground:write','user:read','user:write'])]
     private ?int $id = null;
 
     #[ORM\Column(type: Types::STRING, length: 10)]
+    #[Groups(['address:read','address:write','ground:read','ground:write','user:read','user:write'])]
     private ?string $day = null;
     #[ORM\Column(type: Types::TIME_MUTABLE, nullable: true)]
+    #[Groups(['address:read','address:write','ground:read','ground:write','user:read','user:write'])]
+    #[Context([DateTimeNormalizer::FORMAT_KEY => 'H:i:s'])] //"Format: HH:MM:SS"
     private ?\DateTimeInterface $openTime = null;
 
     #[ORM\Column(type: Types::TIME_MUTABLE, nullable: true)]
+    #[Groups(['address:read','address:write','ground:read','ground:write','user:read','user:write'])]
+    #[Context([DateTimeNormalizer::FORMAT_KEY => 'H:i:s'])] //"Format: HH:MM:SS"
     private ?\DateTimeInterface $closeTime = null;
 
     #[ORM\Column(nullable: true)]
+    #[Groups(['address:read','address:write','ground:read','ground:write','user:read','user:write'])]
     private ?bool $isClosed = null;
 
     #[ORM\Column(nullable: true)]
+    #[Groups(['address:read','address:write','ground:read','ground:write','user:read','user:write'])]
     private ?int $interval = null;
 
     #[ORM\Column(nullable: true)]
+    #[Groups(['address:read','address:write','ground:read','ground:write','user:read','user:write'])]
     private ?float $price = null;
 
     #[ORM\ManyToOne(inversedBy: 'openingTimes')]
+    #[Groups(['address:read','address:write','ground:read','ground:write','user:read','user:write'])]
     private ?Pitch $pitch = null;
 
-    #[ORM\OneToMany(mappedBy: 'openingTime', targetEntity: TimeSlot::class)]
+    #[ORM\OneToMany(mappedBy: 'openingTime', targetEntity: TimeSlot::class, cascade: ['persist'], orphanRemoval: true)]
+    #[Groups(['address:read','address:write','ground:read','ground:write','user:read','user:write'])]
     private Collection $timeSlots;
 
     public function __construct()
@@ -169,4 +219,5 @@ class OpeningTime
 
         return $this;
     }
+
 }

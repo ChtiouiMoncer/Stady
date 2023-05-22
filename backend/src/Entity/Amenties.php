@@ -2,12 +2,53 @@
 
 namespace App\Entity;
 
+use ApiPlatform\Doctrine\Orm\Filter\BooleanFilter;
+use ApiPlatform\Doctrine\Orm\Filter\SearchFilter;
+use ApiPlatform\Metadata\ApiFilter;
 use ApiPlatform\Metadata\ApiResource;
+use ApiPlatform\Metadata\Delete;
+use ApiPlatform\Metadata\Get;
+use ApiPlatform\Metadata\GetCollection;
+use ApiPlatform\Metadata\Patch;
+use ApiPlatform\Metadata\Post;
 use App\Repository\AmentiesRepository;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Annotation\Groups;
+use Symfony\Component\Validator\Constraints as Assert;
+use Symfony\Component\Validator\Constraints\NotBlank;
 
 #[ORM\Entity(repositoryClass: AmentiesRepository::class)]
-#[ApiResource]
+#[ApiResource
+(
+    description: 'Amenities rest endpoint',
+    operations: [
+        new Get(
+            security: 'is_granted("ROLE_ADMIN")',
+        ),
+        new GetCollection(),
+        new Post(
+            security: 'is_granted("ROLE_ADMIN")',
+        ),
+        new Patch(
+            security: 'is_granted("ROLE_ADMIN")',
+        ),
+        new Delete(
+            security: 'is_granted("ROLE_ADMIN")',
+        )
+    ],
+
+
+    normalizationContext: [
+        'groups' => ['amenities:read'],
+    ],
+    denormalizationContext: [
+        'groups' => ['amenities:write'],
+    ],
+    paginationItemsPerPage: 100,
+    extraProperties: [
+        'standard_put' => true,
+    ],
+)]
 class Amenties
 {
     #[ORM\Id]
@@ -16,22 +57,36 @@ class Amenties
     private ?int $id = null;
 
     #[ORM\Column]
+    #[Groups(['amenities:read','amenities:write','ground:read','ground:write','user:read','user:write'])]
+    #[ApiFilter(BooleanFilter::class)]
     private ?bool $hasShower = null;
 
     #[ORM\Column]
+    #[Groups(['amenities:read','amenities:write','ground:read','ground:write','user:read','user:write'])]
+    #[Assert\NotBlank]
+    #[ApiFilter(BooleanFilter::class)]
     private ?bool $hasSecureStorage = null;
 
     #[ORM\Column]
+    #[Groups(['amenities:read','amenities:write','ground:read','ground:write','user:read','user:write'])]
+    #[Assert\NotBlank]
+    #[ApiFilter(BooleanFilter::class)]
     private ?bool $hasChangingRoom = null;
 
     #[ORM\Column]
+    #[Groups(['amenities:read','amenities:write','ground:read','ground:write','user:read','user:write'])]
+    #[ApiFilter(BooleanFilter::class)]
     private ?bool $hasRestaurent = null;
 
     #[ORM\Column]
+    #[Groups(['amenities:read','amenities:write','ground:read','ground:write','user:read','user:write'])]
+    #[Assert\NotBlank]
+    #[ApiFilter(BooleanFilter::class)]
     private ?bool $hasParking = null;
 
     #[ORM\OneToOne(inversedBy: 'amenties', cascade: ['persist', 'remove'])]
     #[ORM\JoinColumn(nullable: false)]
+    #[Groups(['amenities:read','amenities:write','ground:read','ground:write','user:read','user:write'])]
     private ?Pitch $pitch = null;
 
     public function getId(): ?int

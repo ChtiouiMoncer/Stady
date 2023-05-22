@@ -7,6 +7,7 @@ use ApiPlatform\Doctrine\Odm\Filter\SearchFilter;
 use ApiPlatform\Doctrine\Orm\Filter\BooleanFilter;
 use ApiPlatform\Doctrine\Orm\Filter\RangeFilter;
 use ApiPlatform\Metadata\ApiFilter;
+use ApiPlatform\Metadata\ApiProperty;
 use ApiPlatform\Metadata\ApiResource;
 use ApiPlatform\Metadata\Delete;
 use ApiPlatform\Metadata\Get;
@@ -17,6 +18,7 @@ use ApiPlatform\Metadata\Put;
 use ApiPlatform\Serializer\Filter\PropertyFilter;
 use ApiPlatform\Metadata\Link;
 use App\Repository\PitchRepository;
+use App\Validator\MatchingFloorType;
 use Carbon\Carbon;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -24,8 +26,10 @@ use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use phpDocumentor\Reflection\DocBlock\Tags\Property;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
+use Symfony\Component\Serializer\Annotation\Context;
 use Symfony\Component\Serializer\Annotation\Groups;
 use Symfony\Component\Serializer\Annotation\SerializedName;
+use Symfony\Component\Serializer\Normalizer\DateTimeNormalizer;
 use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Component\Validator\Constraints\NotBlank;
 use function Symfony\Component\String\u;
@@ -59,7 +63,7 @@ use function Symfony\Component\String\u;
     denormalizationContext: [
         'groups' => ['ground:write'],
     ],
-    paginationItemsPerPage: 10,
+    paginationItemsPerPage: 100,
     extraProperties: [
         'standard_put' => true,
     ],
@@ -82,12 +86,8 @@ use function Symfony\Component\String\u;
 
 
 )]
-
-
 #[ApiFilter(PropertyFilter::class)]
 #[ApiFilter(\ApiPlatform\Doctrine\Orm\Filter\SearchFilter::class, properties: ["owner.username" => 'partial'] )]
-
-
 class Pitch
 {
     #[ORM\Id]
@@ -100,11 +100,13 @@ class Pitch
     #[Groups(['ground:read','ground:write','user:read','user:write'])]
     #[ApiFilter(\ApiPlatform\Doctrine\Orm\Filter\SearchFilter::class, strategy: 'partial')]
     #[Assert\NotBlank]
-    #[Assert\Length(min:5, max: 50, maxMessage: 'Describe the Name of the Pitch in 50 char max!')]
+    #[Assert\Length(min:5, max: 50, maxMessage: 'Describe the Name of the Pitch in 50 word max!')]
     private ?string $name = null;
 
     #[ORM\Column(type: Types::TEXT)]
     #[Groups(['ground:read','ground:write','user:read','user:write'])]
+    #[Assert\NotBlank]
+    #[Assert\Length(min:5, max: 200, maxMessage: 'Describe the the Pitch in 200 word max!')]
     private ?string $description = null;
 
     #[ORM\Column]
@@ -120,48 +122,85 @@ class Pitch
      */
     #[ORM\Column(length: 255)]
     #[Groups(['ground:read','ground:write','user:read','user:write'])]
+    #[Assert\NotBlank]
     private ?string $size = null;
 
     #[ORM\Column(length: 255)]
     #[Groups(['ground:read','ground:write','user:read','user:write'])]
+    #[Assert\NotBlank]
     private ?string $phoneNumber = null;
 
-    #[ORM\Column]
-    #[Groups(['ground:read','ground:write','user:read'])]
+    #[ORM\Column(nullable: true)]
     #[ApiFilter(BooleanFilter::class)]
+    #[Groups(['ground:read','ground:write','user:read','user:write'])]
+    #[ApiProperty(
+        securityPostDenormalize: "is_granted('ROLE_ADMIN')",
+    )]
     private ?bool $isPending = null;
 
     #[ORM\Column(nullable: true)]
-    #[Groups(['ground:read','ground:write','user:read'])]
+    #[ApiFilter(BooleanFilter::class)]
+    #[Groups(['ground:read','ground:write','user:read','user:write'])]
+    #[ApiProperty(
+        securityPostDenormalize: "is_granted('ROLE_ADMIN')",
+    )]
     private ?bool $isApproved = null;
 
     #[ORM\Column(nullable: true)]
-    #[Groups(['ground:read','ground:write','user:read'])]
+    #[ApiFilter(BooleanFilter::class)]
+    #[Groups(['ground:read','ground:write','user:read','user:write'])]
+    #[ApiProperty(
+        securityPostDenormalize: "is_granted('ROLE_ADMIN')",
+    )]
     private ?bool $isRejected = null;
 
     #[ORM\Column]
     #[Groups(['ground:read','user:read'])]
+    #[Context([DateTimeNormalizer::FORMAT_KEY => 'Y-m-d H:i:s'])] //"Format: YYYY-MM-DD HH:MM:SS"
     private ?\DateTimeImmutable $createdAt;
 
     #[ORM\ManyToOne(inversedBy: 'pitches')]
     #[ORM\JoinColumn(nullable: false)]
     #[Groups(['ground:read','ground:write'])]
     #[ApiFilter(\ApiPlatform\Doctrine\Orm\Filter\SearchFilter::class, strategy: 'exact')]
+    #[ApiProperty(
+        security: 'is_granted("ROLE_OWNER") or is_granted("ROLE_ADMIN") and object == user',
+    )]
     #[Assert\Valid]
     private ?User $owner = null;
 
 
     #[ORM\OneToOne(mappedBy: 'pitch', cascade: ['persist', 'remove'])]
+    #[Groups(['ground:read','ground:write','user:read','user:write'])]
+    #[ApiFilter(\ApiPlatform\Doctrine\Orm\Filter\SearchFilter::class, strategy: 'exact')]
+    #[Assert\Valid]
     private ?Address $address = null;
 
     #[ORM\OneToOne(mappedBy: 'pitch', cascade: ['persist', 'remove'])]
+    #[Groups(['ground:read','ground:write','user:read','user:write'])]
+    #[ApiFilter(\ApiPlatform\Doctrine\Orm\Filter\SearchFilter::class, strategy: 'exact')]
+    #[Assert\Valid]
     private ?Amenties $amenties = null;
 
     #[ORM\ManyToOne(inversedBy: 'pitch')]
+    #[Groups(['ground:read','ground:write','user:read','user:write'])]
+    #[ApiFilter(\ApiPlatform\Doctrine\Orm\Filter\SearchFilter::class, strategy: 'exact')]
+    #[Assert\Valid]
+    #[Assert\NotBlank]
     private ?SportsType $sportsType = null;
 
-    #[ORM\OneToMany(mappedBy: 'pitch', targetEntity: OpeningTime::class)]
+    #[ORM\OneToMany(mappedBy: 'pitch', targetEntity: OpeningTime::class,cascade: ['persist'], orphanRemoval: true )]
+    #[Groups(['ground:read','ground:write','user:read','user:write'])]
+    #[ApiFilter(\ApiPlatform\Doctrine\Orm\Filter\SearchFilter::class, strategy: 'exact')]
+    #[Assert\Valid]
     private Collection $openingTimes;
+
+    #[ORM\ManyToOne]
+    #[Groups(['ground:read','ground:write','user:read','user:write'])]
+    #[ApiFilter(\ApiPlatform\Doctrine\Orm\Filter\SearchFilter::class, strategy: 'exact')]
+    #[Assert\Valid]
+    #[Assert\NotBlank]
+    private ?FloorType $floorType = null;
 
 
     public function __construct(string $name = null)
@@ -169,6 +208,11 @@ class Pitch
         $this->name = $name;
         $this->createdAt = new \DateTimeImmutable();
         $this->openingTimes = new ArrayCollection();
+        $this->isPending = true; // Set $isPending to true by default
+        $this->isApproved = false; // Set $isPending to true by default
+        $this->isRejected = false; // Set $isPending to true by default
+
+
 
     }
     public function getId(): ?int
@@ -402,6 +446,26 @@ class Pitch
         }
 
         return $this;
+    }
+
+    public function getFloorType(): ?FloorType
+    {
+        return $this->floorType;
+    }
+
+    public function setFloorType(?FloorType $floorType): self
+    {
+        $this->floorType = $floorType;
+
+        return $this;
+    }
+
+    /**
+     * @Assert\IsTrue(message="The chosen floor type is not valid for the sport type.")
+     */
+    public function isFloorTypeValidForSportsType(): bool
+    {
+        return $this->getFloorType()->getSportsType() === $this->getSportsType();
     }
 
 

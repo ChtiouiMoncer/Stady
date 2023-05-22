@@ -13,6 +13,7 @@ final class DayOfWeek
     const SATURDAY = 'Saturday';
     const SUNDAY = 'Sunday';
 
+    //check is dayOfWeek is one of our const's
     public static function isValid(string $dayOfWeek): bool
     {
         return in_array($dayOfWeek, [
