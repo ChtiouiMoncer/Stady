@@ -41,7 +41,7 @@ use function Symfony\Component\String\u;
     description: 'Pitch rest endpoint',
     operations: [
         new Get(
-                normalizationContext: ['groups' => ['ground:read','ground:item:get']]
+            normalizationContext: ['groups' => ['ground:read','ground:item:get']]
         ),
         new GetCollection(),
         new Post(
@@ -70,19 +70,23 @@ use function Symfony\Component\String\u;
 
 )]
 #[ApiResource(
+
     uriTemplate: '/users/{user_id}/grounds.{_format}', // URI template for the resource collection
     shortName: 'Ground', //short name for the class 'Pitch'
     operations: [new GetCollection()], // Allowed operations for the resource
+
     uriVariables: [ // URI variables for the resource
         'user_id' => new Link(fromProperty: 'pitches', fromClass: User::class) // Link to the User resource using the "pitches" property as the source
     ],
     normalizationContext: [
         'groups' => ['ground:read'],
     ],
-    security: 'is_granted("ROLE_OWNER")',
+    paginationItemsPerPage: 100,
+    security: 'is_granted("ROLE_OWNER") and user_id == user.getId()',
     extraProperties: [
        'standard_put' => true,
    ],
+
 
 
 )]
@@ -132,7 +136,7 @@ class Pitch
 
     #[ORM\Column(nullable: true)]
     #[ApiFilter(BooleanFilter::class)]
-    #[Groups(['ground:read','ground:write','user:read','user:write'])]
+    #[Groups(['ground:read','ground:write','user:read'])]
     #[ApiProperty(
         securityPostDenormalize: "is_granted('ROLE_ADMIN')",
     )]
@@ -140,7 +144,7 @@ class Pitch
 
     #[ORM\Column(nullable: true)]
     #[ApiFilter(BooleanFilter::class)]
-    #[Groups(['ground:read','ground:write','user:read','user:write'])]
+    #[Groups(['ground:read','ground:write','user:read'])]
     #[ApiProperty(
         securityPostDenormalize: "is_granted('ROLE_ADMIN')",
     )]
@@ -148,7 +152,7 @@ class Pitch
 
     #[ORM\Column(nullable: true)]
     #[ApiFilter(BooleanFilter::class)]
-    #[Groups(['ground:read','ground:write','user:read','user:write'])]
+    #[Groups(['ground:read','ground:write','user:read'])]
     #[ApiProperty(
         securityPostDenormalize: "is_granted('ROLE_ADMIN')",
     )]
@@ -161,8 +165,8 @@ class Pitch
 
     #[ORM\ManyToOne(inversedBy: 'pitches')]
     #[ORM\JoinColumn(nullable: false)]
-    #[Groups(['ground:read','ground:write'])]
-    #[ApiFilter(\ApiPlatform\Doctrine\Orm\Filter\SearchFilter::class, strategy: 'exact')]
+    #[Groups(['ground:read','ground:write','user:read'])]
+    #[ApiFilter(\ApiPlatform\Doctrine\Orm\Filter\SearchFilter::class, strategy: 'partial')]
     #[ApiProperty(
         security: 'is_granted("ROLE_OWNER") or is_granted("ROLE_ADMIN") and object == user',
     )]
@@ -172,35 +176,38 @@ class Pitch
 
     #[ORM\OneToOne(mappedBy: 'pitch', cascade: ['persist', 'remove'])]
     #[Groups(['ground:read','ground:write','user:read','user:write'])]
-    #[ApiFilter(\ApiPlatform\Doctrine\Orm\Filter\SearchFilter::class, strategy: 'exact')]
+    #[ApiFilter(\ApiPlatform\Doctrine\Orm\Filter\SearchFilter::class, strategy: 'partial')]
     #[Assert\Valid]
     private ?Address $address = null;
 
     #[ORM\OneToOne(mappedBy: 'pitch', cascade: ['persist', 'remove'])]
     #[Groups(['ground:read','ground:write','user:read','user:write'])]
-    #[ApiFilter(\ApiPlatform\Doctrine\Orm\Filter\SearchFilter::class, strategy: 'exact')]
+    #[ApiFilter(\ApiPlatform\Doctrine\Orm\Filter\SearchFilter::class, strategy: 'partial')]
     #[Assert\Valid]
     private ?Amenties $amenties = null;
 
     #[ORM\ManyToOne(inversedBy: 'pitch')]
     #[Groups(['ground:read','ground:write','user:read','user:write'])]
-    #[ApiFilter(\ApiPlatform\Doctrine\Orm\Filter\SearchFilter::class, strategy: 'exact')]
+    #[ApiFilter(\ApiPlatform\Doctrine\Orm\Filter\SearchFilter::class, strategy: 'partial')]
     #[Assert\Valid]
     #[Assert\NotBlank]
     private ?SportsType $sportsType = null;
 
     #[ORM\OneToMany(mappedBy: 'pitch', targetEntity: OpeningTime::class,cascade: ['persist'], orphanRemoval: true )]
     #[Groups(['ground:read','ground:write','user:read','user:write'])]
-    #[ApiFilter(\ApiPlatform\Doctrine\Orm\Filter\SearchFilter::class, strategy: 'exact')]
+    #[ApiFilter(\ApiPlatform\Doctrine\Orm\Filter\SearchFilter::class, strategy: 'partial')]
     #[Assert\Valid]
     private Collection $openingTimes;
 
     #[ORM\ManyToOne]
     #[Groups(['ground:read','ground:write','user:read','user:write'])]
-    #[ApiFilter(\ApiPlatform\Doctrine\Orm\Filter\SearchFilter::class, strategy: 'exact')]
+    #[ApiFilter(\ApiPlatform\Doctrine\Orm\Filter\SearchFilter::class, strategy: 'partial')]
     #[Assert\Valid]
     #[Assert\NotBlank]
     private ?FloorType $floorType = null;
+
+    #[ORM\ManyToMany(targetEntity: Reservation::class, mappedBy: 'pitch')]
+    private Collection $reservations;
 
 
     public function __construct(string $name = null)
@@ -209,8 +216,9 @@ class Pitch
         $this->createdAt = new \DateTimeImmutable();
         $this->openingTimes = new ArrayCollection();
         $this->isPending = true; // Set $isPending to true by default
-        $this->isApproved = false; // Set $isPending to true by default
-        $this->isRejected = false; // Set $isPending to true by default
+        $this->isApproved = false; // Set $isPending to false by default
+        $this->isRejected = false; // Set $isPending to false by default
+        $this->reservations = new ArrayCollection();
 
 
 
@@ -466,6 +474,33 @@ class Pitch
     public function isFloorTypeValidForSportsType(): bool
     {
         return $this->getFloorType()->getSportsType() === $this->getSportsType();
+    }
+
+    /**
+     * @return Collection<int, Reservation>
+     */
+    public function getReservations(): Collection
+    {
+        return $this->reservations;
+    }
+
+    public function addReservation(Reservation $reservation): self
+    {
+        if (!$this->reservations->contains($reservation)) {
+            $this->reservations->add($reservation);
+            $reservation->addPitch($this);
+        }
+
+        return $this;
+    }
+
+    public function removeReservation(Reservation $reservation): self
+    {
+        if ($this->reservations->removeElement($reservation)) {
+            $reservation->removePitch($this);
+        }
+
+        return $this;
     }
 
 

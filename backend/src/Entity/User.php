@@ -83,7 +83,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
      * @var string The hashed password
      */
     #[ORM\Column]
-    //#[Groups(['user:write'])]
+    #[Groups(['user:read'])]
     private ?string $password = null;
 
     //#[Assert\NotBlank]
@@ -95,7 +95,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[Assert\NotBlank]
     private ?string $username = null;
 
-    #[ORM\OneToMany(mappedBy: 'owner', targetEntity: Pitch::class, cascade: ['persist'], orphanRemoval: true)]
+    #[ORM\OneToMany(mappedBy: 'owner', targetEntity: Pitch::class, cascade: ['persist'],  orphanRemoval: true)]
     #[Groups(['user:read','user:write'])]
     #[Assert\Valid]
     #[ApiProperty(
@@ -103,11 +103,18 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     )]
     private Collection $pitches;
 
-    #[ORM\OneToMany(mappedBy: 'owner', targetEntity: Reservation::class, orphanRemoval: true)]
-    private Collection $reservations;
-
-    #[ORM\OneToMany(mappedBy: 'owner', targetEntity: Review::class)]
+    #[ORM\OneToMany(mappedBy: 'owner', targetEntity: Review::class, cascade: ['persist'],  orphanRemoval: true)]
+    #[Groups(['user:read','user:write'])]
+    #[Assert\Valid]
+    #[ApiProperty(
+        security: 'is_granted("ROLE_MEMBER") or is_granted("ROLE_ADMIN") and object == user',
+    )]
     private Collection $reviews;
+
+    #[ORM\OneToMany(mappedBy: 'owner', targetEntity: Reservation::class)]
+    #[Groups(['user:read','user:write'])]
+    #[Assert\Valid]
+    private Collection $reservations;
 
 
 
@@ -123,11 +130,11 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     {
         return $this->id;
     }
-   /* public function setId(int $id): self
-    {
-       $this->id = $id;
-       return $this;
-    }*/
+    /* public function setId(int $id): self
+     {
+        $this->id = $id;
+        return $this;
+     }*/
 
     public function getEmail(): ?string
     {
@@ -249,35 +256,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
-    /**
-     * @return Collection<int, Reservation>
-     */
-    public function getReservations(): Collection
-    {
-        return $this->reservations;
-    }
 
-    public function addReservation(Reservation $reservation): self
-    {
-        if (!$this->reservations->contains($reservation)) {
-            $this->reservations->add($reservation);
-            $reservation->setOwner($this);
-        }
-
-        return $this;
-    }
-
-    public function removeReservation(Reservation $reservation): self
-    {
-        if ($this->reservations->removeElement($reservation)) {
-            // set the owning side to null (unless already changed)
-            if ($reservation->getOwner() === $this) {
-                $reservation->setOwner(null);
-            }
-        }
-
-        return $this;
-    }
 
     /**
      * @return Collection<int, Review>
@@ -303,6 +282,36 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
             // set the owning side to null (unless already changed)
             if ($review->getOwner() === $this) {
                 $review->setOwner(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Reservation>
+     */
+    public function getReservations(): Collection
+    {
+        return $this->reservations;
+    }
+
+    public function addReservation(Reservation $reservation): self
+    {
+        if (!$this->reservations->contains($reservation)) {
+            $this->reservations->add($reservation);
+            $reservation->setOwner($this);
+        }
+
+        return $this;
+    }
+
+    public function removeReservation(Reservation $reservation): self
+    {
+        if ($this->reservations->removeElement($reservation)) {
+            // set the owning side to null (unless already changed)
+            if ($reservation->getOwner() === $this) {
+                $reservation->setOwner(null);
             }
         }
 

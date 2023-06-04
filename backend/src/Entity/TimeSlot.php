@@ -29,6 +29,7 @@ use Symfony\Component\Serializer\Normalizer\DateTimeNormalizer;
         ),
         new Patch(
             security: 'is_granted("ROLE_ADMIN")',
+
         ),
         new Delete(
             security: 'is_granted("ROLE_ADMIN")',
@@ -70,8 +71,8 @@ class TimeSlot
     #[Groups(['timeSlot:read','timeSlot:write','ground:read','ground:write','user:read','user:write'])]
     private ?float $price = null;
 
-    #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]
-    #[Context([DateTimeNormalizer::FORMAT_KEY => 'Y-m-d H:i:s'])] //"Format: YYYY-MM-DD HH:MM:SS"
+    #[ORM\Column(type: Types::DATE_MUTABLE, nullable: true)]
+    #[Context([DateTimeNormalizer::FORMAT_KEY => 'Y-m-d'])] //"Format: YYYY-MM-DD "
     #[Groups(['timeSlot:read','timeSlot:write','ground:read','ground:write','user:read','user:write'])]
     private ?\DateTimeInterface $date = null;
 
@@ -82,6 +83,15 @@ class TimeSlot
     #[ORM\ManyToOne(inversedBy: 'timeSlots')]
     #[Groups(['timeSlot:read','timeSlot:write','ground:read','ground:write','user:read','user:write'])]
     private ?OpeningTime $openingTime = null;
+
+    #[ORM\ManyToOne(inversedBy: 'timeSlots')]
+    private ?Reservation $reservation = null;
+
+    #[ORM\Column(nullable: true)]
+    #[Groups(['timeSlot:read','timeSlot:write','ground:read','ground:write','user:read','user:write'])]
+    private ?bool $isOutdated = null;
+
+
 
     public function getId(): ?int
     {
@@ -159,4 +169,30 @@ class TimeSlot
 
         return $this;
     }
+
+    public function getReservation(): ?Reservation
+    {
+        return $this->reservation;
+    }
+
+    public function setReservation(?Reservation $reservation): self
+    {
+        $this->reservation = $reservation;
+
+        return $this;
+    }
+
+    public function getIsOutdated(): ?bool
+    {
+        return $this->isOutdated;
+    }
+
+    public function setIsOutdated(?bool $isOutdated): self
+    {
+        $this->isOutdated = $isOutdated;
+
+        return $this;
+    }
+
+
 }

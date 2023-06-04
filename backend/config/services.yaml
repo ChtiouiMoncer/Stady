@@ -24,9 +24,9 @@ services:
         bind:
             $processor: '@api_platform.doctrine.orm.state.persist_processor'
 
-    App\EventSubscriber\OpeningTimeEventListener:
+    App\EventSubscriber\PitchEventListener:
         tags:
-            - { name: doctrine.event_listener, event: postPersist }
+            - { name: doctrine.event_listener, event: postUpdate  }
 
     # add more service definitions when explicit configuration is needed
     # please note that last definitions always *replace* previous ones
