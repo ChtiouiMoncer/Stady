@@ -193,7 +193,7 @@ class Pitch
     #[Assert\NotBlank]
     private ?SportsType $sportsType = null;
 
-    #[ORM\OneToMany(mappedBy: 'pitch', targetEntity: OpeningTime::class,cascade: ['persist'], orphanRemoval: true )]
+    #[ORM\OneToMany(mappedBy: 'pitch', targetEntity: OpeningTime::class, cascade: ['persist', 'remove'], orphanRemoval: true)]
     #[Groups(['ground:read','ground:write','user:read','user:write'])]
     #[ApiFilter(\ApiPlatform\Doctrine\Orm\Filter\SearchFilter::class, strategy: 'partial')]
     #[Assert\Valid]
@@ -206,7 +206,7 @@ class Pitch
     #[Assert\NotBlank]
     private ?FloorType $floorType = null;
 
-    #[ORM\ManyToMany(targetEntity: Reservation::class, mappedBy: 'pitch')]
+    #[ORM\ManyToMany(targetEntity: Reservation::class, mappedBy: 'pitch', cascade: ['persist', 'remove'])]
     private Collection $reservations;
 
 
