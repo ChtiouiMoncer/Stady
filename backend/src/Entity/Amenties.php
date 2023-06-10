@@ -57,36 +57,36 @@ class Amenties
     private ?int $id = null;
 
     #[ORM\Column]
-    #[Groups(['amenities:read','amenities:write','ground:read','ground:write','user:read','user:write'])]
+    #[Groups(['amenities:read','amenities:write','ground:read','ground:write'])]
     #[ApiFilter(BooleanFilter::class)]
     private ?bool $hasShower = null;
 
     #[ORM\Column]
-    #[Groups(['amenities:read','amenities:write','ground:read','ground:write','user:read','user:write'])]
+    #[Groups(['amenities:read','amenities:write','ground:read','ground:write'])]
     #[Assert\NotBlank]
     #[ApiFilter(BooleanFilter::class)]
     private ?bool $hasSecureStorage = null;
 
     #[ORM\Column]
-    #[Groups(['amenities:read','amenities:write','ground:read','ground:write','user:read','user:write'])]
+    #[Groups(['amenities:read','amenities:write','ground:read','ground:write'])]
     #[Assert\NotBlank]
     #[ApiFilter(BooleanFilter::class)]
     private ?bool $hasChangingRoom = null;
 
     #[ORM\Column]
-    #[Groups(['amenities:read','amenities:write','ground:read','ground:write','user:read','user:write'])]
+    #[Groups(['amenities:read','amenities:write','ground:read','ground:write'])]
     #[ApiFilter(BooleanFilter::class)]
     private ?bool $hasRestaurent = null;
 
     #[ORM\Column]
-    #[Groups(['amenities:read','amenities:write','ground:read','ground:write','user:read','user:write'])]
+    #[Groups(['amenities:read','amenities:write','ground:read','ground:write'])]
     #[Assert\NotBlank]
     #[ApiFilter(BooleanFilter::class)]
     private ?bool $hasParking = null;
 
-    #[ORM\OneToOne(inversedBy: 'amenties', cascade: ['persist', 'remove'])]
+    #[ORM\OneToOne(inversedBy: 'amenties')]
     #[ORM\JoinColumn(nullable: false)]
-    #[Groups(['amenities:read','amenities:write','ground:read','ground:write','user:read','user:write'])]
+    #[Groups(['amenities:read','amenities:write','ground:read','ground:write'])]
     private ?Pitch $pitch = null;
 
     public function getId(): ?int

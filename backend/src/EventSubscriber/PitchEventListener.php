@@ -104,6 +104,8 @@ class PitchEventListener
                     $timeSlot->setIsAvailable(true);
                     $timeSlot->setOpeningTime($openingTime);
                     $timeSlot->setIsOutdated(false);
+                    $timeSlot->setPitch($openingTime->getPitch());
+
                     // Make the EntityManager aware of this new entity to be inserted into the database
                     $em->persist($timeSlot);
 
@@ -196,6 +198,7 @@ class PitchEventListener
                     $timeSlot->setIsAvailable(true);
                     $timeSlot->setOpeningTime($openingTime);
                     $timeSlot->setIsOutdated(false);
+                    $timeSlot->setPitch($openingTime->getPitch());
 
 
                     // Make the EntityManager aware of this new entity to be inserted into the database

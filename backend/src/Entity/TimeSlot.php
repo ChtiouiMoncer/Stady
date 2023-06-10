@@ -2,6 +2,9 @@
 
 namespace App\Entity;
 
+use ApiPlatform\Doctrine\Odm\Filter\DateFilter;
+use ApiPlatform\Doctrine\Orm\Filter\BooleanFilter;
+use ApiPlatform\Metadata\ApiFilter;
 use ApiPlatform\Metadata\ApiResource;
 use ApiPlatform\Metadata\Delete;
 use ApiPlatform\Metadata\Get;
@@ -21,7 +24,8 @@ use Symfony\Component\Serializer\Normalizer\DateTimeNormalizer;
     description: 'TimeSlot rest endpoint',
     operations: [
         new Get(
-            security: 'is_granted("ROLE_ADMIN")',
+            normalizationContext: ['groups' => ['timeSlot:read','timeSlot:item:get']]
+
         ),
         new GetCollection(),
         new Post(
@@ -47,49 +51,59 @@ use Symfony\Component\Serializer\Normalizer\DateTimeNormalizer;
     extraProperties: [
         'standard_put' => true,
     ],
-)
-]
+)]
+#[ApiFilter(\ApiPlatform\Doctrine\Orm\Filter\SearchFilter::class, properties: ["pitch.name" => 'exact'] )]
+
 class TimeSlot
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    #[Groups(['timeSlot:read','timeSlot:write','ground:read','ground:write','user:read','user:write'])]
+    #[Groups(['timeSlot:read','opening_time:read'])]
     private ?int $id = null;
 
     #[ORM\Column(type: Types::TIME_MUTABLE, nullable: true)]
     #[Context([DateTimeNormalizer::FORMAT_KEY => 'H:i:s'])] //"Format: HH:MM:SS"
-    #[Groups(['timeSlot:read','timeSlot:write','ground:read','ground:write','user:read','user:write'])]
-        private ?\DateTimeInterface $startTime = null;
+    #[Groups(['timeSlot:read','timeSlot:write','opening_time:read','reservation:read'])]
+    private ?\DateTimeInterface $startTime = null;
 
     #[ORM\Column(type: Types::TIME_MUTABLE, nullable: true)]
     #[Context([DateTimeNormalizer::FORMAT_KEY => 'H:i:s'])] //"Format: HH:MM:SS"
-    #[Groups(['timeSlot:read','timeSlot:write','ground:read','ground:write','user:read','user:write'])]
+    #[Groups(['timeSlot:read','timeSlot:write','opening_time:read','reservation:read'])]
     private ?\DateTimeInterface $endTime = null;
 
     #[ORM\Column(nullable: true)]
-    #[Groups(['timeSlot:read','timeSlot:write','ground:read','ground:write','user:read','user:write'])]
+    #[Groups(['timeSlot:read','timeSlot:write','reservation:read'])]
     private ?float $price = null;
 
     #[ORM\Column(type: Types::DATE_MUTABLE, nullable: true)]
     #[Context([DateTimeNormalizer::FORMAT_KEY => 'Y-m-d'])] //"Format: YYYY-MM-DD "
-    #[Groups(['timeSlot:read','timeSlot:write','ground:read','ground:write','user:read','user:write'])]
+    #[Groups(['timeSlot:read','timeSlot:write','opening_time:read','reservation:read'])]
+    #[ApiFilter(\ApiPlatform\Doctrine\Orm\Filter\SearchFilter::class, strategy: 'exact')]
     private ?\DateTimeInterface $date = null;
 
     #[ORM\Column(nullable: true)]
-    #[Groups(['timeSlot:read','timeSlot:write','ground:read','ground:write','user:read','user:write'])]
+    #[Groups(['timeSlot:read','timeSlot:write','opening_time:read'])]
+    #[ApiFilter(BooleanFilter::class)]
     private ?bool $isAvailable = null;
 
     #[ORM\ManyToOne(inversedBy: 'timeSlots')]
-    #[Groups(['timeSlot:read','timeSlot:write','ground:read','ground:write','user:read','user:write'])]
+    #[Groups(['timeSlot:read','timeSlot:write','opening_time:read'])]
     private ?OpeningTime $openingTime = null;
 
     #[ORM\ManyToOne(inversedBy: 'timeSlots')]
+    #[Groups(['timeSlot:read','timeSlot:write','opening_time:read'])]
     private ?Reservation $reservation = null;
 
     #[ORM\Column(nullable: true)]
-    #[Groups(['timeSlot:read','timeSlot:write','ground:read','ground:write','user:read','user:write'])]
+    #[Groups(['timeSlot:read','timeSlot:write','opening_time:read'])]
+    #[ApiFilter(BooleanFilter::class)]
     private ?bool $isOutdated = null;
+
+    #[ORM\ManyToOne(inversedBy: 'timeSlots')]
+    #[Groups(['timeSlot:read','timeSlot:write','opening_time:read'])]
+    #[ApiFilter(\ApiPlatform\Doctrine\Orm\Filter\SearchFilter::class, strategy: 'exact')]
+    private ?Pitch $pitch = null;
 
 
 
@@ -190,6 +204,18 @@ class TimeSlot
     public function setIsOutdated(?bool $isOutdated): self
     {
         $this->isOutdated = $isOutdated;
+
+        return $this;
+    }
+
+    public function getPitch(): ?Pitch
+    {
+        return $this->pitch;
+    }
+
+    public function setPitch(?Pitch $pitch): self
+    {
+        $this->pitch = $pitch;
 
         return $this;
     }

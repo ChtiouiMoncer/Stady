@@ -28,6 +28,12 @@ services:
         tags:
             - { name: doctrine.event_listener, event: postUpdate  }
 
+    App\EventSubscriber\ReservationSubscriber:
+        tags:
+            - { name: doctrine.event_listener, event: postUpdate }
+
+
+
     # add more service definitions when explicit configuration is needed
     # please note that last definitions always *replace* previous ones
     acme_api.event.jwt_created_listener:

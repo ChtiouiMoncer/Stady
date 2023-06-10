@@ -49,17 +49,19 @@ class Address
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
+    #[Groups(['address:read','address:write','ground:read'])]
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups(['address:read','address:write','ground:read','ground:write','user:read','user:write'])]
+    #[Groups(['address:read','address:write','ground:read','ground:write'])]
     private ?string $longitude = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups(['address:read','address:write','ground:read','ground:write','user:read','user:write'])]
+    #[Groups(['address:read','address:write','ground:read','ground:write'])]
     private ?string $latitude = null;
 
-    #[ORM\OneToOne(inversedBy: 'address', cascade: ['persist', 'remove'])]
+    #[ORM\OneToOne(inversedBy: 'address')]
+    #[Groups(['address:read','address:write','ground:read','ground:write'])]
     #[ORM\JoinColumn(nullable: false)]
     private ?Pitch $pitch = null;
 

@@ -54,22 +54,22 @@ class SportsType
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    #[Groups(['type:read','ground:read','user:read'])]
+    #[Groups(['type:read','ground:read'])]
     private ?int $id = null;
 
     #[ORM\Column(length: 20, nullable: true)]
-    #[Groups(['type:read','type:write','ground:read','user:read','user:write'])]
+    #[Groups(['type:read','type:write','ground:item:get','ground:read'])]
     #[Assert\NotBlank]
     #[Assert\Length(min:5, max: 20, maxMessage: 'Describe the Sports Type in 20 char max!')]
     #[ApiFilter(SearchFilter::class, strategy: 'partial')]
     private ?string $SportsName = null;
 
     #[ORM\OneToMany(mappedBy: 'sportsType', targetEntity: Pitch::class)]
+    #[Groups(['type:read','type:write'])]
     private Collection $pitch;
 
     #[ORM\OneToMany(mappedBy: 'sportsType', targetEntity: FloorType::class)]
     #[Groups(['type:read','type:write'])]
-    #[ApiFilter(\ApiPlatform\Doctrine\Orm\Filter\SearchFilter::class, strategy: 'partial')]
     #[Assert\Valid]
     #[Assert\NotBlank]
     private Collection $floorTypes;

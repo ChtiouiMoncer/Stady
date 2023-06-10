@@ -2,6 +2,7 @@
 
 namespace App\Entity;
 
+use ApiPlatform\Metadata\ApiFilter;
 use ApiPlatform\Metadata\ApiResource;
 use ApiPlatform\Metadata\Delete;
 use ApiPlatform\Metadata\Get;
@@ -23,7 +24,8 @@ use Symfony\Component\Serializer\Normalizer\DateTimeNormalizer;
     description: 'OpeningTime rest endpoint',
     operations: [
         new Get(
-            security: 'is_granted("ROLE_ADMIN")',
+            normalizationContext: ['groups' => ['opening_time:read','opening_time:item:get']]
+
         ),
         new GetCollection(),
         new Post(
@@ -48,47 +50,49 @@ use Symfony\Component\Serializer\Normalizer\DateTimeNormalizer;
     extraProperties: [
         'standard_put' => true,
     ],
-)
-]
+)]
+#[ApiFilter(\ApiPlatform\Doctrine\Orm\Filter\SearchFilter::class, properties: ["pitch.name" => 'partial'] )]
+
 class OpeningTime
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    #[Groups(['address:read','address:write','ground:read','ground:write','user:read','user:write'])]
+    #[Groups(['opening_time:read','ground:read','ground:write'])]
     private ?int $id = null;
 
     #[ORM\Column(type: Types::STRING, length: 10)]
-    #[Groups(['address:read','address:write','ground:read','ground:write','user:read','user:write'])]
+    #[Groups(['opening_time:read','opening_time:write','ground:read','ground:write'])]
     private ?string $day = null;
     #[ORM\Column(type: Types::TIME_MUTABLE, nullable: true)]
-    #[Groups(['address:read','address:write','ground:read','ground:write','user:read','user:write'])]
+    #[Groups(['opening_time:read','opening_time:write','ground:read','ground:write'])]
     #[Context([DateTimeNormalizer::FORMAT_KEY => 'H:i:s'])] //"Format: HH:MM:SS"
     private ?\DateTimeInterface $openTime = null;
 
     #[ORM\Column(type: Types::TIME_MUTABLE, nullable: true)]
-    #[Groups(['address:read','address:write','ground:read','ground:write','user:read','user:write'])]
+    #[Groups(['opening_time:read','opening_time:write','ground:read','ground:write'])]
     #[Context([DateTimeNormalizer::FORMAT_KEY => 'H:i:s'])] //"Format: HH:MM:SS"
     private ?\DateTimeInterface $closeTime = null;
 
     #[ORM\Column(nullable: true)]
-    #[Groups(['address:read','address:write','ground:read','ground:write','user:read','user:write'])]
+    #[Groups(['opening_time:read','opening_time:write','ground:read','ground:write'])]
     private ?bool $isClosed = null;
 
     #[ORM\Column(nullable: true)]
-    #[Groups(['address:read','address:write','ground:read','ground:write','user:read','user:write'])]
+    #[Groups(['opening_time:read','opening_time:write','ground:read','ground:write'])]
     private ?int $interval = null;
 
     #[ORM\Column(nullable: true)]
-    #[Groups(['address:read','address:write','ground:read','ground:write','user:read','user:write'])]
+    #[Groups(['opening_time:read','opening_time:write','ground:read','ground:write'])]
     private ?float $price = null;
 
     #[ORM\ManyToOne(inversedBy: 'openingTimes')]
-    #[Groups(['address:read','address:write','ground:read','ground:write','user:read','user:write'])]
+    #[ApiFilter(\ApiPlatform\Doctrine\Orm\Filter\SearchFilter::class, strategy: 'partial')]
+    #[Groups(['opening_time:read','opening_time:write','ground:read','ground:write'])]
     private ?Pitch $pitch = null;
 
-    #[ORM\OneToMany(mappedBy: 'openingTime', targetEntity: TimeSlot::class, cascade: ['persist'], orphanRemoval: true)]
-    #[Groups(['address:read','address:write','ground:read','ground:write','user:read','user:write'])]
+    #[ORM\OneToMany(mappedBy: 'openingTime', targetEntity: TimeSlot::class, cascade: ['persist', 'remove'], orphanRemoval: true)]
+    #[Groups(['opening_time:read','opening_time:write','ground:write'])]
     private Collection $timeSlots;
 
     public function __construct()

@@ -11,6 +11,8 @@ use ApiPlatform\Metadata\GetCollection;
 use ApiPlatform\Metadata\Patch;
 use ApiPlatform\Metadata\Post;
 use App\Repository\FloorTypeRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation\Groups;
 use Symfony\Component\Validator\Constraints as Assert;
@@ -51,18 +53,20 @@ class FloorType
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
+    #[Groups(['floor_type:read','ground:read'])]
     private ?int $id = null;
 
     #[ORM\Column(length: 20, nullable: true)]
-    #[Groups(['floor_type:read','floor_type:write','ground:read','user:read','user:write'])]
+    #[Groups(['floor_type:read','floor_type:write','ground:read'])]
     #[Assert\NotBlank]
     #[Assert\Length(min:5, max: 20, maxMessage: 'Describe the Sports Floor Type in 20 char max!')]
     #[ApiFilter(SearchFilter::class, strategy: 'partial')]
     private ?string $floorName = null;
 
     #[ORM\ManyToOne(inversedBy: 'floorTypes')]
-    #[Groups(['floor_type:read','floor_type:write','ground:read','user:read','user:write'])]
+    #[Groups(['floor_type:read','floor_type:write'])]
     private ?SportsType $sportsType = null;
+
 
     public function getId(): ?int
     {
@@ -92,4 +96,6 @@ class FloorType
 
         return $this;
     }
+
+
 }
