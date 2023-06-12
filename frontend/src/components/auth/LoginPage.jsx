@@ -89,10 +89,11 @@ const { auth, setAuth } = useAuth(); // Access the setAuth function and auth var
 const navigate = useNavigate(); //hook from 'react-router' to redirect to a path for example
 const location = useLocation(); //get the current user's path details
 
-const from = location.state?.from?.pathname || "/"; // get the last path that the user attempted to access if it exists we redirect to it it else the user will be redirected to  '/'
+const from = location.state?.from?.pathname ; // get the last path that the user attempted to access if it exists we redirect to it it else the user will be redirected to  '/'
 
 //for the ERRORS 
 const [errMsg, setErrMsg] = useState('');
+
 
 
 //SIGN UP ENDPOINT
@@ -110,6 +111,15 @@ const validationRules = {
     required: 'Enter your password',
   },
 }
+
+  // define roles
+  const ROLES = {
+    'Member': 'ROLE_MEMBER',
+    'Owner': 'ROLE_OWNER',
+    'Admin': 'ROLE_ADMIN',
+    'SUPER_ADMIN': 'ROLE_SUPER_ADMIN',
+}
+
 
 const handleReset = () => {
   reset(); // This will clear all of the input fields and their errors
@@ -154,8 +164,24 @@ const onSubmit =  async (data, e) => {
     const iat = decoded_token.iat; //(issued at) represents the timestamp when the token was issued/generated
     const exp = decoded_token.exp; //(expiration time) represents the timestamp when the token is set to expire
     setAuth({ access_token, username, roles, iat, exp }) //pass user informations to the AuthContext
-    //console.log(auth.username);  
-    navigate(from, {replace: true})  
+    //console.log(auth.username); 
+
+    // Determine the default redirect path based on the user's roles
+    let defaultRedirectPath = '/';
+    if (roles.find(role => role === ROLES.Member)) {
+      defaultRedirectPath = '/';
+    } else if (roles.find(role => role === ROLES.Owner)) {
+      defaultRedirectPath = '/owner/dashboard';
+    } else if (roles.find(role => role === ROLES.Admin)) {
+      defaultRedirectPath = '/admin/dashboard';
+    } else if (roles.find(role => role === ROLES.SUPER_ADMIN)) {
+      defaultRedirectPath = '/superadmin/dashboard';
+    }
+
+    // If the user came from a protected route 
+    // redirect them back there. Otherwise, redirect them based on their role.
+    const redirectPath = from || defaultRedirectPath;
+    navigate(redirectPath, {replace: true});
   
     } catch (err) {
     if (!err?.response) {
