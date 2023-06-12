@@ -10,11 +10,7 @@ import jwt_decode from 'jwt-decode';
 import useAuth from "../../Hooks/useAuth";
 import { Link as RouterLink, useNavigate, useLocation } from "react-router-dom";
 import loginbg from '../../assets/herobg.png'
-
-
-
-
-
+import Navbar from "../Navbar";
 
 
 const StyledModal = styled(Box) (({ theme }) => ({
@@ -178,6 +174,8 @@ const onSubmit =  async (data, e) => {
 };
 
   return (
+    <>
+    <Navbar />            
     <StyledModal
       aria-labelledby="modal-modal-title"
       aria-describedby="modal-modal-description"
@@ -313,7 +311,7 @@ const onSubmit =  async (data, e) => {
             </Box>  
         </Box>
     </StyledModal>
-  
+    </>
 
   );
 };

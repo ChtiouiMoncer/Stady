@@ -13,6 +13,7 @@ import Grid from "@mui/system/Unstable_Grid/Grid";
 import axios from '../../api/axios'
 import loginbg from '../../assets/herobg.png'
 import {Link as RouterLink} from 'react-router-dom';
+import Navbar from "../Navbar";
 
 
 
@@ -258,6 +259,8 @@ const handleRoleChange = (event) => {
   };
 
   return (
+    <>
+    <Navbar />            
     <StyledModal
       aria-labelledby="modal-modal-title"
       aria-describedby="modal-modal-description"
@@ -568,6 +571,8 @@ const handleRoleChange = (event) => {
             </Box>       
         </Box>
     </StyledModal>
+    </>
+
 
   );
 };

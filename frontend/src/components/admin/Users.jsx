@@ -1,9 +1,10 @@
 import { useState, useEffect } from "react";
-import axios from "../api/axios";
-import useAxiosPrivate from "../Hooks/useAxiosPrivate";
+import axios from "../../api/axios";
+import useAxiosPrivate from "../../Hooks/useAxiosPrivate";
 import { Link as RouterLink, useNavigate, useLocation } from "react-router-dom";
 import { Button, Typography } from "@mui/material";
-import useAuth from "../Hooks/useAuth";
+import useAuth from "../../Hooks/useAuth";
+import Navbar from "../Navbar";
 
 
 const Users = () => {
@@ -66,6 +67,8 @@ const Users = () => {
     }, [])
 
     return (
+        <>
+        <Navbar />
         <article>
             <Button component={RouterLink} to="/">
                         <Typography variant="subtitle2" className="greySubtitle">Home</Typography>
@@ -80,6 +83,7 @@ const Users = () => {
             }
            
         </article>
+        </>
     );
 };
 

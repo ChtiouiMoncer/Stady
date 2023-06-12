@@ -14,9 +14,6 @@ const RequireAuth = ({ allowedRoles }) => {
             : <Navigate to="/login" state={{ from: location }} replace /> //This effectively replaces the current route with the new one. (and store the path of the protected route in from)
         */
 
-
-
-
        auth?.roles?.find(role => allowedRoles?.includes(role)) //check if allowedRoles includes auth.roles 
             ? <Outlet />
             : auth?.username

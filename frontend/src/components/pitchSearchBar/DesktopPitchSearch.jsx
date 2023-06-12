@@ -10,6 +10,7 @@ import InputBase from '@mui/material/InputBase';
 import IconButton from '@mui/material/IconButton';
 import Divider from '@mui/material/Divider';
 import './pitchSearchBar.css';
+import Navbar from '../Navbar';
 
 
 const DesktopPitchSearch = () => {
@@ -17,6 +18,7 @@ const DesktopPitchSearch = () => {
 
   return (
     <>
+
       <Paper //paper is typically used as a background for other content
       component="form"
       sx={{ display: 'flex',  width: 751, border: '2px solid #007B65', borderRadius: 2// add this line

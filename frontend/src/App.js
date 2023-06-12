@@ -7,13 +7,28 @@ import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import HomePage from './components/homePage/HomePage';
 import NotFound from './components/NotFound';
 import RequireAuth from './components/RequireAuth';
-import Test from './components/Test';
 import LoginPage from './components/auth/LoginPage';
 import SignUpPage from './components/auth/SignUpPage';
 import Unauthorized from './components/Unauthorized.js';
-import Users from './components/Users';
 import PersistLogin from './components/PersistLogin';
 import AuthGuard from './components/AuthGuard ';
+import PitchesList from './components/pitches/PitchesList';
+import PitchInfo from './components/pitches/pitchCards/PitchInfo';
+import PitchCard from './components/pitches/pitchCards/PitchCards';
+import AdminDashboard from './components/admin/AdminDashboard';
+import PitchesManagement from './components/admin/PitchesManagement';
+import AllReservations from './components/admin/AllReservations';
+import Users from './components/admin/Users';
+import Addpitch from './components/owner/Addpitch';
+import OwnerDashboard from './components/owner/OwnerDashboard';
+import OwnerPitches from './components/owner/OwnerPitches';
+import Reservations from './components/member/Reservations';
+import MakeReservation from './components/member/MakeReservation';
+
+
+
+
+
 
 
 function App() {
@@ -41,33 +56,49 @@ function App() {
       <ThemeProvider theme={theme(mode)}>
           <AuthProvider>
             <Box bgcolor={"background.default"} color={"text.primary"}> 
-              <Navbar />
               <Stack display='flex' flexDirection='column'>
                 <Routes>
                   {/* Public Routes */}
-                  <Route path="/" element={  <HomePage /> }></Route>
-                  <Route path="/unauthorized" element={  <Unauthorized /> } />
+                  <Route element={ <PersistLogin /> }>  { /* When a user refresh the page he remain authenticated */ }
+                      
+                      <Route path="/" element={  <HomePage /> }></Route>
+                      <Route path="/pitches" element={  <PitchesList /> }></Route>
+                      <Route path="/pitche/info" element={  <PitchInfo /> }></Route>
+                      <Route path="/unauthorized" element={  <Unauthorized /> } />
 
-                  <Route element= { <AuthGuard  /> }> { /*If we have a user logged in we redirect to '/'*/ }
-                    <Route path="/login" element={  <LoginPage /> } />
-                    <Route path="/signup" element={  <SignUpPage /> } />
-                  </Route>   
 
-                  { /* Protected Routes */}
-                  <Route element={ <PersistLogin /> }>  { /* When a user refresh the page he remain authenticated */ } 
-                    <Route element= { <RequireAuth  allowedRoles={[ROLES.Member, ROLES.Admin ]}/> }> { /* Only when we have a user we can show the comp's inside the Required Auth*/ }
-                      <Route path="/pitches/add" element={<Test />}></Route>
+                    <Route element= { <AuthGuard  /> }> { /*If we have a user logged in we redirect to '/'*/ }
+                      <Route path="/login" element={  <LoginPage /> } />
+                      <Route path="/signup" element={  <SignUpPage /> } />
+                    </Route>  
+ 
 
-                    </Route>
+                    { /* Protected Routes */}
 
-                    <Route element= { <RequireAuth  allowedRoles={[ROLES.Admin]}/> }> { /* Only when we have a user we can show the comp's inside the Required Auth*/ }
-                      <Route path="/users" element={<Users />}></Route>
-                    </Route>
-                  </Route>   
+                      { /* Admin Protected Routes */}
+                      <Route element= { <RequireAuth  allowedRoles={[ ROLES.Admin ]}/> }> { /* Only when we have a user we can show the comp's inside the Required Auth*/ }
+                        <Route path="/admin/dashboard" element={<AdminDashboard/>}></Route>
+                        <Route path="/admin/manage/users" element={<Users />}></Route>.
+                        <Route path="/admin/manage/reservations" element={<AllReservations />}></Route>
+                        <Route path="/admin/manage/pitches" element={<PitchesManagement />}></Route>
+                      </Route>
 
-                  {/* catch All */}
-                  <Route path="*" element={<NotFound />}></Route>
+                       { /* Owner Protected Routes */}
+                      <Route element= { <RequireAuth  allowedRoles={[ ROLES.Owner ]}/> }> { /* Only when we have a user we can show the comp's inside the Required Auth*/ }
+                        <Route path="/owner/dashboard" element={<OwnerDashboard/>}></Route>
+                        <Route path="/owner/pitches" element={<OwnerPitches />}></Route>.
+                        <Route path="/owner/add/pitch" element={<Addpitch />}></Route>
+                      </Route>   
 
+                      { /* Member Protected Routes */}
+                      <Route element= { <RequireAuth  allowedRoles={[ ROLES.Member ]}/> }> { /* Only when we have a user we can show the comp's inside the Required Auth*/ }
+                        <Route path="/member/reservations" element={<Reservations/>}></Route>
+                        <Route path="/member/reservation" element={<MakeReservation/>}></Route>
+                      </Route>   
+
+                    {/* catch All */}
+                    <Route path="*" element={<NotFound />}></Route>
+                  </Route>
                 </Routes>  
               </Stack>
             </Box>

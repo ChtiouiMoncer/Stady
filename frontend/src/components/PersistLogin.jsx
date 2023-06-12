@@ -3,6 +3,8 @@ import { useState, useEffect, useRef } from "react";
 import useRefreshToken from "../Hooks/useRefreshToken";
 import useAuth from "../Hooks/useAuth";
 import jwt_decode from 'jwt-decode';
+import { Box, CircularProgress } from "@mui/material";
+import { green, grey } from "@mui/material/colors";
 
 
 const PersistLogin = () => {
@@ -43,7 +45,23 @@ const PersistLogin = () => {
     return (
         <>
         {isLoading
-            ? <p>Loading...</p>
+            ?
+                <Box
+                sx={{
+                height: '90vh',
+                display: 'flex',
+                flexDirection:"column",
+                alignItems: 'center',
+                justifyContent: 'center',
+                backgroundColor: grey[250], // Use the green color value here
+            }}
+
+                >
+
+                    <CircularProgress sx={{color:"green.main"}} />
+
+                </Box>
+
             : <Outlet />
         }   
         </>
