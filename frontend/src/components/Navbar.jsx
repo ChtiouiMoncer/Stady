@@ -296,7 +296,7 @@ import { AccountCircle, AddCircle, AddIcCallOutlined } from "@mui/icons-material
                                 variant="contained"
                                 className="my-button"
                                 startIcon={<AddCircle />}
-
+                                size="small"
                                 >
                                     <Typography variant="subtitle2">
                                         Add Pitch
@@ -362,8 +362,9 @@ import { AccountCircle, AddCircle, AddIcCallOutlined } from "@mui/icons-material
                             aria-haspopup="true"
                             onClick={handleMenu}
                             color="inherit"
-                        >
-                            <AccountCircle />
+                            // Adjust the size by modifying the fontSize value
+                            >
+                            <AccountCircle  sx={{ fontSize: '33px', color: 'green.light' }} />
                         </IconButton>
                         <Menu 
                             id="menu-appbar"
@@ -379,7 +380,7 @@ import { AccountCircle, AddCircle, AddIcCallOutlined } from "@mui/icons-material
                             open={Boolean(anchorEl)}
                             onClose={handleClose}
                             sx={{
-                                mt: 5, // Top margin
+                                mt: 6, // Top margin
                                 ml: -5, // Negative right margin
                             }}
 

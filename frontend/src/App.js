@@ -24,10 +24,7 @@ import OwnerDashboard from './components/owner/OwnerDashboard';
 import OwnerPitches from './components/owner/OwnerPitches';
 import Reservations from './components/member/Reservations';
 import MakeReservation from './components/member/MakeReservation';
-
-
-
-
+import HorizontalLinearStepper from './components/chat';
 
 
 
@@ -61,6 +58,8 @@ function App() {
                   {/* Public Routes */}
                   <Route element={ <PersistLogin /> }>  { /* When a user refresh the page he remain authenticated */ }
                       
+                  <Route path="/test" element={  <HorizontalLinearStepper />}></Route>
+
                       <Route path="/" element={  <HomePage /> }></Route>
                       <Route path="/pitches" element={  <PitchesList /> }></Route>
                       <Route path="/pitche/info" element={  <PitchInfo /> }></Route>
