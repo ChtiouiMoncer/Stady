@@ -12,7 +12,7 @@ import InputAdornment from '@mui/material/InputAdornment';
 import Grid from "@mui/system/Unstable_Grid/Grid";
 import axios from '../../api/axios'
 import loginbg from '../../assets/herobg.png'
-import {Link as RouterLink} from 'react-router-dom';
+import {Link as RouterLink, useNavigate} from 'react-router-dom';
 import Navbar from "../Navbar";
 
 
@@ -191,6 +191,7 @@ const validationRules = {
   },   
   // Add more input validation rules here...
 };
+const navigate = useNavigate(); //hook from 'react-router' to redirect to a path for example
 
 //onSubmit arrow function
 const onSubmit =  async (data, e) => {
@@ -218,6 +219,7 @@ const onSubmit =  async (data, e) => {
   );
   /*console.log(response.data);
     console.log(JSON.stringify(response))*/
+  navigate('/login', {replace: true});
   setErrMsg('');
   setSuccess(true);
   handleReset();

@@ -79,7 +79,7 @@ export const theme = (mode) => createTheme({
   palette: {
     mode: mode,
     primary: {
-      main: mode === "light" ? blue[300] : grey[50], // blue or black
+      main: mode === "light" ? "#007B65"  : grey[50], // blue or black
       light: mode === "light" ? blue[500] : "#000000", // blue or black
       dark: mode === "light" ? blue[800] : grey[300], // dark blue or new dark color
   
@@ -90,7 +90,7 @@ export const theme = (mode) => createTheme({
       dark: mode === "light" ? orange[800] : yellow[600], // dark orange or new dark color
     },
     success: {
-      main: mode === "light" ? green[300] : grey[50], // green or black
+      main: mode === "light" ? "#007B65" : grey[50], // green or black
       light: mode === "light" ? green[500] : grey[50], // light green
       dark: mode === "light" ? green[800] : grey[50], // dark green or new dark color
     },
@@ -131,8 +131,8 @@ export const theme = (mode) => createTheme({
 
     },
     background: {
-      paper: mode === "light" ? grey[50] : "#000000", // white or dark gray
-      default: mode === "light" ? grey[50] : "#000000", // light gray or black
+      paper: mode === "light" ? grey[50] : "#007B65", // white or dark gray
+      default: mode === "light" ? grey[50] : "#007B65", // light gray or black
     },
     text: {
       primary: mode === "light" ? "#000000" : "#ffffff", // black or white

@@ -20,11 +20,15 @@ import PitchesManagement from './components/admin/PitchesManagement';
 import AllReservations from './components/admin/AllReservations';
 import Users from './components/admin/Users';
 import Addpitch from './components/owner/Addpitch';
-import OwnerDashboard from './components/owner/OwnerDashboard';
+import OwnerDashboard from './components/owner/OwnerDashboardStats';
 import OwnerPitches from './components/owner/OwnerPitches';
 import Reservations from './components/member/Reservations';
 import MakeReservation from './components/member/MakeReservation';
 import HorizontalLinearStepper from './components/chat';
+import OwnerDashboardStats from './components/owner/OwnerDashboardStats';
+import SidebarOwner from './components/owner/SidebarOwner';
+import SidebarAdmin from './components/admin/SidebarAdmin';
+
 
 
 
@@ -76,7 +80,7 @@ function App() {
 
                       { /* Admin Protected Routes */}
                       <Route element= { <RequireAuth  allowedRoles={[ ROLES.Admin ]}/> }> { /* Only when we have a user we can show the comp's inside the Required Auth*/ }
-                        <Route path="/admin/dashboard" element={<AdminDashboard/>}></Route>
+                        <Route path="/admin/dashboard" element={<SidebarAdmin/>}></Route>
                         <Route path="/admin/manage/users" element={<Users />}></Route>.
                         <Route path="/admin/manage/reservations" element={<AllReservations />}></Route>
                         <Route path="/admin/manage/pitches" element={<PitchesManagement />}></Route>
@@ -84,7 +88,7 @@ function App() {
 
                        { /* Owner Protected Routes */}
                       <Route element= { <RequireAuth  allowedRoles={[ ROLES.Owner ]}/> }> { /* Only when we have a user we can show the comp's inside the Required Auth*/ }
-                        <Route path="/owner/dashboard" element={<OwnerDashboard/>}></Route>
+                        <Route path="/owner/dashboard" element={<OwnerDashboardStats/>}></Route>
                         <Route path="/owner/pitches" element={<OwnerPitches />}></Route>.
                         <Route path="/owner/add/pitch" element={<Addpitch />}></Route>
                       </Route>   

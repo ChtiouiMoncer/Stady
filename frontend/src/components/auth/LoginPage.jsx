@@ -163,7 +163,8 @@ const onSubmit =  async (data, e) => {
     const roles = decoded_token.roles; //get the roles from payload data of the access token
     const iat = decoded_token.iat; //(issued at) represents the timestamp when the token was issued/generated
     const exp = decoded_token.exp; //(expiration time) represents the timestamp when the token is set to expire
-    setAuth({ access_token, username, roles, iat, exp }) //pass user informations to the AuthContext
+    const userId = decoded_token.userId; //(expiration time) represents the timestamp when the token is set to expire
+    setAuth({ access_token, username, roles, userId, iat, exp }) //pass user informations to the AuthContext
     //console.log(auth.username); 
 
     // Determine the default redirect path based on the user's roles

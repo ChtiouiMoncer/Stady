@@ -1,32 +1,46 @@
-import {Box, Button, Checkbox, Chip, Alert, Divider, FormControl, FormControlLabel, CircularProgress, FormGroup, FormHelperText, IconButton, InputLabel, Link, MenuItem, Modal, Select, styled, TextField, Tooltip, Typography, useMediaQuery, Stack, Container } from "@mui/material";
-import CloseIcon from '@mui/icons-material/Close';
+import {Box, Button, Checkbox, Chip, Alert, Divider, FormControl, FormControlLabel, CircularProgress, FormGroup, FormHelperText, IconButton, InputLabel, Link, MenuItem, Modal, Select, styled, TextField, Tooltip, Typography, useMediaQuery, Stack, Container, FormLabel, List, ListItem, ListItemAvatar, Avatar, ListItemText, ListItemSecondaryAction, Switch } from "@mui/material";
 import Stepper from '@mui/material/Stepper';
 import Step from '@mui/material/Step';
 import StepLabel from '@mui/material/StepLabel';
-import googleLogo from '../../assets/logoGoogle.png'
-import facebookLogo from '../../assets/logoFacebook.png'
 import { useTheme } from '@mui/material/styles';
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import RestartAltIcon from '@mui/icons-material/RestartAlt';
-import Visibility from '@mui/icons-material/Visibility';
-import VisibilityOff from '@mui/icons-material/VisibilityOff';
 import InputAdornment from '@mui/material/InputAdornment';
 import Grid from "@mui/system/Unstable_Grid/Grid";
 import axios from '../../api/axios'
 import loginbg from '../../assets/herobg.png'
-import {Link as RouterLink} from 'react-router-dom';
 import Navbar from "../Navbar";
-import { green } from "@mui/material/colors";
+import MuiPhoneNumber from 'mui-phone-number';
+import GroupsIcon from '@mui/icons-material/Groups';
+import WidthFullIcon from '@mui/icons-material/WidthFull';
+import { Checkroom, SpaceDashboard } from "@mui/icons-material";
+import LocalParkingIcon from '@mui/icons-material/LocalParking';
+import RestaurantIcon from '@mui/icons-material/Restaurant';
+import ShowerIcon from '@mui/icons-material/Shower';
+import { GoogleMap, Marker, useJsApiLoader } from '@react-google-maps/api';
+import { useRef } from 'react';
+import AddIcon from '@mui/icons-material/Add';
+import ImageIcon from '@mui/icons-material/Image';
+import DeleteIcon from '@mui/icons-material/Delete';
+import useAuth from "../../Hooks/useAuth";
+import useAxiosPrivate from "../../Hooks/useAxiosPrivate";
+import Snackbar from '@mui/material/Snackbar';
+import CloseIcon from '@mui/icons-material/Close';
+import { useNavigate } from "react-router-dom";
 
 
+const containerStyle = {
+  width: '400px',
+  height: '400px'
+};
 
-
-// Steps of the form
-const steps = ['Add Informations', 'Add Assets', 'Add Opening Times'];
+const center = {
+  lat: 35.8254,
+  lng: 10.6084
+};
 
 const StyledModal = styled(Box) (({ theme }) => ({
-    //backgroundColor: theme.palette.green.main,
     backgroundImage: `url(${loginbg})`,
     height: '90vh',
     backgroundSize: 'cover',
@@ -43,19 +57,18 @@ const StyledModal = styled(Box) (({ theme }) => ({
       "&:hover": {
           backgroundColor: theme.palette.green.light,
         },
-      // when an element receives "focus," it means that the element is currently selected or "active" 
       "&.MuiButton-focusVisible": {
         boxShadow: "none !important"
       }
     },
  ".social-login": {
-    borderColor: theme.palette.green.main, // Set the color of the border
+    borderColor: theme.palette.green.main, 
     color: theme.palette.green.main,
         backgroundColor: theme.palette.white.main,
         textTransform: "none",
         "&:hover": {
             backgroundColor: theme.palette.green.light,
-            color: theme.palette.white.main, // Set the color of the border
+            color: theme.palette.white.main, 
 
           },
         '& .MuiButton-startIcon': {
@@ -88,6 +101,27 @@ const StyledTextField = styled(TextField)({
       },
   });
 
+  const StyledTextFieldDesc = styled(TextField)({
+    marginBottom:'5px',
+   '& .MuiOutlinedInput-root': {
+       height: '100px', // replace with your desired height
+       marginTop: '20px',
+   
+       '& fieldset': {
+         borderColor: 'grey', // default border color
+       },
+       '&:hover fieldset': {
+         borderColor: 'green', // border color when hovering over input
+       },
+       '&.Mui-focused fieldset': {
+         borderColor: 'green', // border color when input is focused
+       },
+     },
+     '& .MuiInputLabel-outlined': {
+       top: '12px', // replace with your desired vertical position
+     },
+ });
+
   const StyledRoleSelect = styled(FormControl)({
     '& .MuiOutlinedInput-root': {
         height: '40px', // replace with your desired height
@@ -116,19 +150,21 @@ const StyledTextField = styled(TextField)({
 
   });
   
+// Steps of the form
+const steps = ['Add Informations', 'Add Assets', 'Add Opening Times'];
+
 const Addpitch = (props) => {  
 
-//multi step form declaration 
+  //auth context
+  const { auth } = useAuth(); //get the auth object from useAuth
+  
+  // This line calls the `useForm` hook, which returns an object with several properties and methods that we can use to manage our form state and behavior.
+  const { handleSubmit, reset, control, getValues, formState: { errors, isDirty, isSubmitting, touchedFields, submitCount, touched, isValid, register, setValue }, watch, validate, setError } = useForm();
 
   // The active step index
   const [activeStep, setActiveStep] = React.useState(0);
   // The set of skipped steps
   const [skipped, setSkipped] = React.useState(new Set());
-
-  // This function determines whether a step is optional or not
-  const isStepOptional = (step) => {
-    return step === 1;
-  };
 
   // This function determines whether a step is skipped or not
   const isStepSkipped = (step) => {
@@ -137,12 +173,15 @@ const Addpitch = (props) => {
 
   // This function handles the "Next" button click
   const handleNext = () => {
+    if (activeStep === 0) {
+    }
+  
     let newSkipped = skipped;
     if (isStepSkipped(activeStep)) {
       newSkipped = new Set(newSkipped.values());
       newSkipped.delete(activeStep);
     }
-
+  
     setActiveStep((prevActiveStep) => prevActiveStep + 1);
     setSkipped(newSkipped);
   };
@@ -152,191 +191,382 @@ const Addpitch = (props) => {
     setActiveStep((prevActiveStep) => prevActiveStep - 1);
   };
 
-  // This function handles the "Skip" button click
-  const handleSkip = () => {
-    if (!isStepOptional(activeStep)) {
-      throw new Error("You can't skip a step that isn't optional.");
-    }
-
-    setActiveStep((prevActiveStep) => prevActiveStep + 1);
-    setSkipped((prevSkipped) => {
-      const newSkipped = new Set(prevSkipped.values());
-      newSkipped.add(activeStep);
-      return newSkipped;
-    });
-  };
-
   // This function handles the "Reset" button click
   const handleReset = () => {
     setActiveStep(0);
   };
 
+  //for the ERRORS AND SUCCESS
+  const [errMsg, setErrMsg] = useState('');
+  const [success, setSuccess] = useState(false);
+
+  //sportsType data state
+  const [sportsTypes, setSportsTypes] = useState();  
+  const [states, setStates] = useState();  
+
+
+ //sportsType ENDPOINT
+ const SPORTS_TYPES_URL = '/api/sports_types'
+ const STATES_URL = '/api/states'
+
+
+  useEffect(() => {
+    let isMounted = true;
+    const controller = new AbortController(); //cancel the request when the comp unmounts
+
+    const getSportsType = async () => {
+        try {
+            const response = await axios.get(SPORTS_TYPES_URL, {
+                    signal: controller.signal, //cancel the request if we need to    
+                    headers: {'accept': 'application/json'} // include the accept header
+                },    
+            );    
+            console.log(response.data);
+            isMounted && setSportsTypes(response.data);
+        } catch (err) {
+          console.log(err)
+        }
+    }
+    const getStates = async () => {
+      try {
+          const response = await axios.get(STATES_URL, {
+                  signal: controller.signal, //cancel the request if we need to    
+                  headers: {'accept': 'application/json'} // include the accept header
+              },    
+          );    
+          console.log(response.data);
+          isMounted && setStates(response.data);
+      } catch (err) {
+        console.log(err)
+      }
+  }
+    getSportsType();
+    getStates();
+     return () => {
+        isMounted = false; 
+        controller.abort(); 
+    }
+}, [])
 
 const theme = useTheme(); //using the the Material-UI theme object, which is provided by the useTheme hook from Material-UI.
 const isMobile = useMediaQuery(theme.breakpoints.down('sm')); // checking if device is mobile
-const [role, setRole] = React.useState('ROLE_MEMBER'); //set the dafault role as a 'member'
-const [showPassword, setShowPassword] = React.useState(false); //manage the state of 'showPassword'
 const [ isPending, setIsPending ] = useState(false); //manage pending time from the server response
 
-const activeIconStyle = {
-    color: theme.palette.primary.main, // Change this to your preferred color
-  };
-
-//for the ERRORS AND SUCCESS
-const [errMsg, setErrMsg] = useState('');
-const [success, setSuccess] = useState(false);
-
-//SIGN UP ENDPOINT
-const REGISTER_URL = '/api/users'
-
-  const handleClickShowPassword = () => setShowPassword((show) => !show); // updates the state of showPassword by passing the opposite boolean value of show.
-
-  // when a user clicks on a button, the button is highlighted and focused.
-  // By calling event.preventDefault(), this behavior is prevented and the button remains unfocused and unhighlighted when clicked.
-  const handleMouseDownPassword = (event) => {
-    event.preventDefault(); // used to prevent(turn off) the default behavior of a mousedown event on the icon button.
-     
-  };
-
-  // This line calls the `useForm` hook, which returns an object with several properties and methods that we can use to manage our form state and behavior.
-  const { handleSubmit,  reset, control, getValues, formState: { errors }, watch, } = useForm();
+const navigate = useNavigate(); //hook from 'react-router' to redirect to a path for example
 
 //validation rules for form inputs.
 const validationRules = {
-  username: {
-    required: 'Username is required',
-    minLength: { value: 5, message: 'Username must be at least 5 characters long' },
-    maxLength: { value: 20, message: 'Username must be at most 20 characters long' },
+  name: {
+    required: 'Name is required',
+    minLength: { value: 5, message: 'Pitch Name must be at least 5 characters long' },
+    maxLength: { value: 50, message: 'Pitch Name must be at most 50 characters long' },
     pattern: {
-      value: /^[a-zA-Z0-9-_.]+$/,
-      message: 'Username can only contain letters, numbers, and some special characters',
+      value: /^[a-zA-Z0-9-_. ]+$/,
+      message: 'Name can only contain letters, numbers, and some special characters',
     },
   },
-  email: {
-    required: 'Email is required',
-    pattern: {
-      value: /^[a-zA-Z0-9._%+-.]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/i, //i flag at the end of the pattern to make the match case-insensitive
-      message: 'Invalid email address',
-    },
+  description: {
+    required: 'Description is required',
+    minLength: { value: 5, message: 'Describe  the Pitch at least with 5 characters long' },
+    maxLength: { value: 200, message: 'Describe  the Pitch at max with 200 characters long' },
+    
   },
-  password: {
-    required: 'Password is required',
-    minLength: { value: 5, message: 'Password must be at least 5 characters long' },
-    maxLength: { value: 20, message: 'Password must be at most 30 characters long' },
-    pattern: {
-      value: /^[^\s]+$/, //disallow spaces anywhere in the password.
-      message: 'Your password must not include spaces',
-    },
+  phone: {
+    required: 'Phone is required',
   },  
-  passwordMatch: {
-    required: 'Confirm your password',
-    validate: {
-      matchesPassword: (value) => {
-        const password = getValues().password; //get the password field value
-        return password === value || 'Passwords do not match'; //If password is equal to value,the function returns true, which means the validation passes.
-      },
-    },
+  capacity: {
+    required: 'Write your Pitch Capacity',
+    minLength: { value: 2, message: 'Min Capacity is 2' },
+    maxLength: { value: 100, message: 'Max Capacity is 100' },
+   
   }, 
-  roles: {
-    required: 'Please Select a Role ',
+  size: {
+    required: 'Write your Pitch Size',
+    pattern: {
+      value: /^[0-9]+X[0-9]+$/i,
+      message: 'Size format (widthXlength)',
+    },
   },
+  sportsType: {
+    required: 'Please Select a Sports Type ',
+  },
+  floorType: {
+    required: 'Please Select a Floor Type ',
+  },  
+  town:{
+    required: 'Please Select a State',
+  }, 
   terms:{
     required: 'Please Accept our Terms & Conditions',
   },  
-  conditions:{
-    required: 'Please Accept our Conditions',
-  },   
+    
 };
 
-//onSubmit arrow function
-const onSubmit =  async (data, e) => {
-  setIsPending(true);
-  // Prevent the default form submission behavior from occurring (e is the event of submitting )
-  e.preventDefault();
-  const usernameValue = watch('username');
-  const emailValue = watch('email');
-  const passwordValue = watch('password');
-  const rolesValue = watch('roles');
-  //console.log(rolesValue);
+//FORM VALUES
+const nameValue = watch('name');
+const descriptionValue = watch('description');
+const phoneValue = watch('phoneNumber');
+const capacityValue = parseInt(watch('capacity'), 10);
+const sizeValue = watch('size');
+const sportsTypeValue = watch('sportsType');
+const floorTypeValue = watch('floorType');
+const stateValue = watch('town');
+const hasShowerValue = watch('Shower');
+const hasSecureStorageValue = watch('Storage');
+const hasChangingRoomValue = watch('Locker_Room');
+const hasRestaurantValue = watch('Restaurant');
+const hasParkingValue = watch('Parking');
 
+
+//SPORTS TYPE
+// Watch the sportsType field
+const selectedSportsType = watch('sportsType');
+
+// Get the floorTypes for the selected sportsType
+let selectedFloorTypes = [];
+if (selectedSportsType) {
+  const selectedSport = sportsTypes.find(sport => sport.id === selectedSportsType);
+  if (selectedSport) {
+    selectedFloorTypes = selectedSport.floorTypes;
+  }
+}
+
+//USER ID
+let userId = auth.userId;
+//URL
+const sportsTypeUrl = `/api/sports_types/${sportsTypeValue}`;
+const floorTypeUrl = `/api/floor_types/${floorTypeValue}`;
+const stateUrl = `/api/states/${stateValue}`;
+const ownerUrl = `/api/users/${userId}`;
+
+
+//AMENTIES
+const amenitiesList = [
+  {name: 'Shower', icon: <ShowerIcon />},
+  {name: 'Storage', icon: <SpaceDashboard />},
+  {name: 'Locker_Room', icon: <Checkroom />},
+  {name: 'Restaurant', icon: <RestaurantIcon />},
+  {name: 'Parking', icon: <LocalParkingIcon />},
+];
+
+
+
+//OPENING_TIMES
+const daysOfWeek = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+
+const [openingTimes, setOpeningTimes] = useState(
+  daysOfWeek.map(day => ({
+    day,
+    openTime: "09:00:00",
+    closeTime: "22:00:00",
+    isClosed: false,
+    interval: 90,
+    price: 50.00,
+  }))
+);
+
+const handleInputChange = (index, field) => event => {
+  const newOpeningTimes = [...openingTimes];
+  newOpeningTimes[index][field] = event.target.value;
+  setOpeningTimes(newOpeningTimes);
+};
+
+const handleSwitchChange = index => event => {
+  const newOpeningTimes = [...openingTimes];
+  newOpeningTimes[index].isClosed = event.target.checked;
+  setOpeningTimes(newOpeningTimes);
+};
+
+//GOOGLE MAPS
+const { isLoaded } = useJsApiLoader({
+  id: 'google-map-script',
+  googleMapsApiKey: "AIzaSyC1aTRiewjhy6DnOvFZwTxEDcxdrVh83xA"
+})
+const [location, setLocation] = useState(null);
+// get long and lat
+useEffect(() => {
+  if (location) {
+    console.log(location.lng, location.lat); // or do something else with the updated location
+  }
+}, [location]); 
+
+
+//UPLOAD IMAGES
+const MAX_FILES = 10;
+const MAX_FILE_SIZE = 2 * 1024 * 1024; // 2 MB in bytes
+const ALLOWED_TYPES = ["image/jpeg", "image/png"];
+
+const inputRef = useRef();
+const [files, setFiles] = useState([]);
+
+const handleUploadClick = () => {
+  inputRef.current.click();
+};
+
+const handleFileChange = (event) => {
+  const selectedFiles = Array.from(event.target.files);
+  
+  // Check total files
+  if (selectedFiles.length > MAX_FILES) {
+    alert(`You can only select up to ${MAX_FILES} files.`);
+    return;
+  }
+
+  // Check file sizes and types
+  for (let i = 0; i < selectedFiles.length; i++) {
+    if (selectedFiles[i].size > MAX_FILE_SIZE) {
+      alert(`File "${selectedFiles[i].name}" is too large. Maximum file size is ${MAX_FILE_SIZE / 1024 / 1024} MB.`);
+      return;
+    }
+    if (!ALLOWED_TYPES.includes(selectedFiles[i].type)) {
+      alert(`File "${selectedFiles[i].name}" is not a valid image. Only JPEG and PNG images are allowed.`);
+      return;
+    }
+  }
+
+  setFiles(selectedFiles);
+  // TODO: Upload files to server
+};
+
+const handleFileDelete = (indexToDelete) => {
+  setFiles(files.filter((file, index) => index !== indexToDelete));
+};
+
+const axiosPrivate = useAxiosPrivate();
+
+//REGISTER PITCH ENDPOINT
+const REGISTER_PITCH_URL = '/api/grounds'
+
+const amentiesData = {
+  hasShower: hasShowerValue,
+  hasSecureStorage: hasSecureStorageValue,
+  hasChangingRoom: hasChangingRoomValue,
+  hasRestaurent: hasRestaurantValue,
+  hasParking: hasParkingValue
+};
+
+//SNACKBAR:
+const [snackbarOpen, setSnackbarOpen] = useState(false);
+
+const handleClose = (event, reason) => {
+  if (reason === 'clickaway') {
+    return;
+  }
+
+  setSnackbarOpen(false);
+};
+//SUBMIT FORM
+const onSubmit = async (data, e) => {
+  console.log(ownerUrl);  
+
+  e.preventDefault();
+  setIsPending(true);
   try {
-  const response = await  axios.post(REGISTER_URL,
-    JSON.stringify({
-      email: emailValue,
-      roles: [rolesValue],
-      plainPassword: passwordValue,
-      username : usernameValue
+    const response = await axiosPrivate.post( REGISTER_PITCH_URL,
+      JSON.stringify({
+        name: nameValue,
+        description: descriptionValue,
+        capacity: capacityValue,
+        size: sizeValue,
+        phoneNumber: phoneValue,
+        sportsType: sportsTypeUrl,
+        floorType: floorTypeUrl,
+        state: stateUrl,
+        address: {
+          longitude: location.lng,
+          latitude: location.lat,
+        },
+        amenties: {
+          hasShower: hasShowerValue,
+          hasSecureStorage: hasSecureStorageValue,
+          hasChangingRoom: hasChangingRoomValue,
+          hasRestaurent: hasRestaurantValue,
+          hasParking: hasParkingValue,
+        },
+        openingTimes: openingTimes, 
+        owner: ownerUrl
       }),
       {
-        headers: {'Content-Type' : 'application/ld+json'},
-        //withCredentials: true
+        headers: { 'Content-Type': 'application/ld+json' },
       }
-  );
-  /*console.log(response.data);
-    console.log(JSON.stringify(response))*/
-  setErrMsg('');
-  setSuccess(true);
-  handleReset();
-  setIsPending(false);
+    );
+    const pitchId = response.data.id;
+    // Upload images
+    const uploadPromises = files.map((file) => {
+      const formData = new FormData();
+      formData.append("title", file.name);
+      formData.append("imageFile", file);
+      formData.append("pitch", `/api/pitches/${pitchId}`);
+      
+      return axiosPrivate.post("/api/images", formData, {
+        headers: { "Content-Type": "multipart/form-data" },
+      });
+    });
+    await Promise.all(uploadPromises);
+    //Success
+    setErrMsg('');
+    setSuccess(true);
+    setSnackbarOpen(true); 
+    setIsPending(false);
+    handleReset();
+    setTimeout(() => {
+      navigate('/owner/dashboard', {replace: true});
+    }, 3000); 
 
   } catch (err) {
-  if (err.response && err.response.status === 422) {
     setIsPending(false);
-    const violations = err.response.data.violations;
-    const emailError = violations.find(v => v.propertyPath === "email");
-    const usernameError = violations.find(v => v.propertyPath === "username");
-    
-    if (emailError && usernameError) {
-      setErrMsg('Email and username are already taken');
-    } else if (emailError) {
-      setErrMsg('Email is already taken');
-    } else if (usernameError) {
-      setErrMsg('Username is already taken');
+    console.log(err);
+    if (err.response && err.response.status === 422) {
+      setSuccess(false);
+      setIsPending(false);
+      const violations = err.response.data.violations;
+      const nameError = violations.find(v => v.propertyPath === 'name');
+
+      if ( nameError ) {
+        setErrMsg('Pitch name already taken');
+      } 
+
     } else {
-      setErrMsg('Registration failed');
+      setSuccess(false);
+      setIsPending(false);
+      setErrMsg('Registration failed, Try Again!');
     }
-  } else {
-    setErrMsg('No server response');
-    setIsPending(false);
-
+ 
   }
- }
 };
-
 
 const handleFormReset = () => {
   reset(); // This will clear all of the input fields and their errors
 };
 
-//handle the role change select
-const handleRoleChange = (event) => {
-    setRole(event.target.value);
-  };
+
 
   return (
-    <>
+  <>
     <Navbar />            
     <StyledModal
       aria-labelledby="modal-modal-title"
       aria-describedby="modal-modal-description"
       sx={{  
-        //overflowY: 'auto',  // add this line to make the modal scrollable
-        //display: 'block', //takes up the full width of its container and starts on a new line
+      
         //margin: 'auto', // center the modal horizontally
         top: '-40px'
       }}  
     >
-        <Box
+      <Box
             sx={{
-            border: `1px solid ${theme.palette.green.main}`, // Add border property    
-            maxHeight: '80vh',
-            width: isMobile ? '75vw' : '800px', // use 90vw (90% of the width of the viewport) width for mobile devices, otherwise use 400px width
+            maxHeight: '75vh',  
+            overflow: 'auto',  // add this line to make the modal scrollable
+            display: 'block', //takes up the full width of its container and starts on a new line
+            margin: 'auto', // center the modal horizontally
+            border: `2px solid ${theme.palette.green.main}`, // Add border property    
+            width: isMobile ? '75vw' : '900px', // use 90vw (90% of the width of the viewport) width for mobile devices, otherwise use 400px width
             height: isMobile ? 'auto' : 'auto', // use 90vw (90% of the width of the viewport) width for mobile devices, otherwise use 400px width
             bgcolor: "background.default",
             padding: 3,
             borderRadius: 2,
             }}
-        > 
+      > 
             <Box sx={{ display: "flex",  justifyContent: "space-between", marginBottom:'10px'}}>
                 <Typography variant="h6" textAlign="left" sx={{ color: "green.main" }}>
                 Add a Pitch 
@@ -348,7 +578,27 @@ const handleRoleChange = (event) => {
                 </Tooltip>
                
             </Box>
-            
+            <Snackbar
+              open={snackbarOpen}
+              autoHideDuration={6000}
+              onClose={handleClose}
+              action={
+                <React.Fragment>
+                  <IconButton
+                    size="small"
+                    aria-label="close"
+                    color="inherit"
+                    onClick={() => setSnackbarOpen(false)}
+                  >
+                    <CloseIcon fontSize="small" />
+                  </IconButton>
+                </React.Fragment>
+              }
+            >
+              <Alert onClose={handleClose} severity="success" sx={{ width: '100%' }}>
+                Pitch added successfully!
+                </Alert>
+            </Snackbar>
             <Stack sx={{ width: '100%' }} spacing={2}>
               {success && (
                 <Alert sx={{
@@ -375,37 +625,30 @@ const handleRoleChange = (event) => {
                 </Alert>
               )}
             </Stack>
-          
-            <Stepper activeStep={activeStep} >
-                {steps.map((label, index) => {
-                const stepProps = {};
-                const labelProps = {};
-                if (isStepSkipped(index)) {
-                    stepProps.completed = false;
-                }
-                return (
-                    <Step key={label} {...stepProps}>
-                        <StepLabel
-                        {...labelProps}
-                        sx={{
-                        '.css-1pj4fnu-MuiSvgIcon-root-MuiStepIcon-root.Mui-active': { // default step styles
-                            color: 'green.main', // change non-active step color here
-                        },
-                        '.css-86lzs0-MuiStepIcon-text' : {
-                            fill: 'white'
-                        },
-                        '.css-1pj4fnu-MuiSvgIcon-root-MuiStepIcon-root.Mui-completed' : {
-                            color: 'green.main', // change non-active step color here
-                        }
-                        }}
-                    >
-                        {label}
-                    </StepLabel>
-                    </Step>
-                );
-                })}
-            </Stepper>
-            {activeStep === steps.length ? (
+              <Stepper activeStep={activeStep} >
+                  {steps.map((label, index) => {
+                  const stepProps = {};
+                  const labelProps = {};
+                  if (isStepSkipped(index)) {
+                      stepProps.completed = false;
+                  }
+                  return (
+                      <Step key={label} {...stepProps}>
+                          <StepLabel
+                          {...labelProps}
+                          sx={{ 
+                          '.css-86lzs0-MuiStepIcon-text' : {
+                              fill: 'white'
+                          },  
+                          }}
+                      >
+                          {label}
+                      </StepLabel>
+                      </Step>
+                  );
+                  })}
+              </Stepper>
+              {activeStep === steps.length ? (
                 <React.Fragment>
                 <Typography sx={{ mt: 2, mb: 1 }}>
                     All steps completed - you&apos;re finished
@@ -415,252 +658,485 @@ const handleRoleChange = (event) => {
                     <Button onClick={handleReset}>Reset</Button>
                 </Box>
                 </React.Fragment>
-            ) : ( 
+              ) : ( 
                 <React.Fragment>
-                <Typography sx={{ mt: 2, mb: 1 }}>Step {activeStep + 1}</Typography>   
-                {/** Here we add TextFields for each step **/}
-          {activeStep === 0 && (    
-            <form onSubmit={handleSubmit(onSubmit)}>
-
-              <Controller
-              // Specify the name of the form field that this input represents
-              name="username" //if u want that user write at two input fields at the same time give them the same username
-              // Pass The control prop that will  connects the Controller component with the input field
-              control={control} 
-              // Set the default value of the input field
-              defaultValue="" 
-              // Specify the validation rules for this input field
-              rules={validationRules.username} 
-              // Use the 'render' prop to customize the rendering of the input field
-              render={({ field, fieldState }) => ( //
-                  <StyledTextField 
-                  fullWidth
-                  id="outlined-username-input"
-                  label= {<Typography  variant="subtitle2" textAlign="left" sx={{ color: "grey.main"}}>
-                  Username
-                  </Typography>}
-                  type="text"
-                  autoComplete="Right Down your Username!"
-                  // Set the 'error' prop to a boolean that indicates whether the input field has a validation error
-                  error={!!fieldState.error} 
-                  // Set the 'helperText' prop to an error message that describes the validation error, if there is one
-                  helperText={fieldState.error?.message} 
-                  // Spread the 'field' prop to pass all of the necessary props (e.g. onChange, onBlur) to the TextField component
-                  {...field} // When you pass ...field, it is equivalent to passing value={field.value}, onBlur={field.onBlur}, and onChange={field.onChange}                 
-                  />
-              )}
-              />  
-            
-              <Controller
-              name="email" 
-              control={control} 
-              defaultValue="" 
-              rules={validationRules.email} 
-              render={({ field, fieldState }) => ( 
-                <StyledTextField
-                fullWidth
-                id="outlined-email-input"
-                label= {<Typography  variant="subtitle2" textAlign="left" sx={{ color: "grey.main"}}>
-                Email
-                </Typography>}
-                type="text"
-                autoComplete="Email or phone number"    
-                error={!!fieldState.error} 
-                helperText={fieldState.error?.message} 
-                {...field} 
-                />
-              )}
-              />   
-
-
-             <Grid container spacing={2}>
-              <Grid xs={6}>
-                <Controller 
-                name="password"
-                control = {control}
-                defaultValue=""
-                rules={validationRules.password}
-                render={ ({ field, fieldState }) => (
-                  <StyledTextField
-                    fullWidth
-                    id="outlined-password-input"
-                    label= {
-                    <Typography  variant="subtitle2" textAlign="left" sx={{ color: "grey.main"}}>
-                      Password
-                    </Typography>}
-                    type={showPassword ? 'text' : 'password'}
-                    InputProps={{  //pass additional props to the Input    
-                      endAdornment: ( // prop that specifies the element that should appear at the end of the input field
-                      //position the icon button at the end of the input field.
-                      <InputAdornment position="end"> 
-                        <IconButton
-                          aria-label="toggle password visibility"
-                          onClick={handleClickShowPassword} //responsible for toggling the visibility of the password
-                          onMouseDown={handleMouseDownPassword} //responsible for temporarily changing the input type to "text" 
-                          edge="end"
-                        >
-                        {showPassword ? <Visibility /> : <VisibilityOff />}{/* If showPassword is true, we render the VisibilityOff */} 
-                        </IconButton>
-                      </InputAdornment>
-                      ),
-                    }}
-                    autoComplete="Password"
-                    error={!!fieldState.error} 
-                    helperText={fieldState.error?.message} 
-                    {...field} 
-                  />
-                )}
-                />      
-              </Grid> 
-
-              <Grid  xs={6}>
-              
-                <Controller 
-                name="passwordMatch"
-                control = {control}
-                defaultValue=""
-                rules={validationRules.passwordMatch}
-                render={ ({ field, fieldState }) => (
-                  <StyledTextField
-                    fullWidth
-                    id="outlined-passwordMatch-input"
-                    label= {
-                    <Typography  variant="subtitle2" textAlign="left" sx={{ color: "grey.main"}}>
-                      Confirm Password
-                    </Typography>}
-                    type='password'
-                    autoComplete="password Match"
-                    error={!!fieldState.error} 
-                    helperText={fieldState.error?.message} 
-                    {...field} 
-                  />
-                )}
-                />    
-              </Grid>
-             </Grid>    
-          
-              <Controller 
-              name="roles"
-              control = {control}
-              defaultValue={role}
-              rules={validationRules.roles}
-              render={ ({ field, fieldState }) => (          
-                <StyledRoleSelect fullWidth>
-                  <InputLabel id="role-select-label">Role</InputLabel>
-                  <Select
-                    labelId="role-select-label"
-                    id="rolee-select"
-                    value={role} // set default value to 10 for "Member"
-                    label="Role"
-                    onChange={handleRoleChange}
-                    error={!!fieldState.error} 
-                    {...field} 
-                  >
-                    <MenuItem value={'ROLE_MEMBER'}>Member</MenuItem>
-                    <MenuItem value={'ROLE_OWNER'}>Owner</MenuItem>
-                  </Select>
-                  <FormHelperText>If you are a Pitch Owner change the Role.  </FormHelperText>
-                </StyledRoleSelect>
-              )}
-             /> 
-
-             <Box mb={1}>
-              <FormGroup>
-                <FormControl >
-                  <Controller 
-                    name="terms"
-                    control = {control}
-                    defaultValue={false} // set default value to false
-                    rules={validationRules.terms}
-                    render={ ({ field, fieldState }) => ( 
-                      <FormControlLabel 
-                        sx={{ marginBottom: "-7px" }} 
-                        control={
-                          <Checkbox size="small" //defaultChecked
-                          {...field} 
-                          checked={field.value} //checkbox will be reset to unchecked when the reset()
-                            sx={{
-                            '&.Mui-checked': {
-                            color: "green.main",
-                            },
-                            }} 
+                  <Typography sx={{ mt: 2, mb: 1 }}>Step {activeStep + 1}</Typography>   
+                  {/** Here we add TextFields for each step **/}
+                  
+                  {activeStep === 0 && ( 
+                    <>  
+                      {/* First step */}
+                      <Controller
+                      name="name" 
+                      control={control} 
+                      defaultValue="" 
+                      rules={validationRules.name} 
+                      render={({ field, fieldState }) => ( //
+                          <StyledTextField 
+                          fullWidth
+                          id="outlined-username-input"
+                          label= {<Typography  variant="subtitle2" textAlign="left" sx={{ color: "grey.main"}}>
+                          Name
+                          </Typography>}
+                          type="text"
+                          autoComplete="Right Down The Pitch Name!"
+                          error={!!fieldState.error} 
+                          helperText={fieldState.error?.message} 
+                          {...field}   
+                          />
+                      )}
+                      
+                      />                        
+                      <Controller
+                      name="description" 
+                      control={control} 
+                      defaultValue="" 
+                      rules={validationRules.description} 
+                      render={({ field, fieldState }) => ( 
+                        <StyledTextFieldDesc
+                        multiline
+                        rows={4}
+                        fullWidth
+                        id="outlined-email-input"
+                        label= {<Typography  variant="subtitle2" textAlign="left" sx={{ color: "grey.main"}}>
+                        Description
+                        </Typography>}
+                        type="text"
+                        autoComplete="Write a description"    
+                        error={!!fieldState.error} 
+                        helperText={fieldState.error?.message} 
+                        {...field} 
+                        />
+                      )}
+                      />   
+                      <Grid container spacing={2}>
+                        <Grid  xs={4}>
+                          <Controller 
+                          name="phoneNumber"
+                          control = {control}
+                          defaultValue=""
+                          rules={validationRules.phone}
+                          render={ ({ field, fieldState }) => (
+                            <MuiPhoneNumber
+                            sx={{ marginTop: '15px', marginLeft: '5px' }}
+                              defaultCountry={'tn'}
+                              fullWidth
+                              id="outlined-phoneNumber-input"
+                              label= {
+                              <Typography  variant="subtitle2" textAlign="left" sx={{ color: "grey.main"}}>
+                                The Facility Phone Number
+                              </Typography>}
+                              type='text'
+                              autoComplete="Write the pitch phone number"
+                              error={!!fieldState.error} 
+                              helperText={fieldState.error?.message} 
+                              {...field} 
+                            />
+                          )}
+                          />    
+                        </Grid>
+                        <Grid xs={4}>
+                          <Controller 
+                          name="capacity"
+                          control = {control}
+                          defaultValue=""
+                          rules={validationRules.capacity}
+                          render={ ({ field, fieldState }) => (
+                            <StyledTextField
+                              fullWidth
+                              id="outlined-capacity-input"
+                              label= {
+                              <Typography  variant="subtitle2" textAlign="left" sx={{ color: "grey.main"}}>
+                                Pitch Capacity 
+                              </Typography>}
+                              type={ 'number'}
+                              InputProps={{  //pass additional props to the Input    
+                                endAdornment: ( // prop that specifies the element that should appear at the end of the input field
+                                //position the icon button at the end of the input field.
+                                <InputAdornment position="end"> 
+                                  <IconButton>
+                                    <GroupsIcon />
+                                  </IconButton>
+                                </InputAdornment>
+                                ),
+                              }}
+                              autoComplete="Capacity"
+                              error={!!fieldState.error} 
+                              helperText={fieldState.error?.message} 
+                              {...field} 
+                            />
+                          )}
+                          />      
+                        </Grid> 
+                        <Grid  xs={4}>
+                          <Controller 
+                          name="size"
+                          control = {control}
+                          defaultValue=""
+                          rules={validationRules.size}
+                          render={ ({ field, fieldState }) => (
+                            <StyledTextField
+                              fullWidth
+                              id="outlined-size-input"
+                              label= {
+                              <Typography  variant="subtitle2" textAlign="left" sx={{ color: "grey.main"}}>
+                                Pitch Size
+                              </Typography>}
+                              InputProps={{  //pass additional props to the Input    
+                                endAdornment: ( // prop that specifies the element that should appear at the end of the input field
+                                //position the icon button at the end of the input field.
+                                <InputAdornment position="end"> 
+                                  <IconButton>
+                                    <WidthFullIcon />
+                                  </IconButton>
+                                </InputAdornment>
+                                ),
+                              }}
+                              type='text'
+                              autoComplete="Size"
+                              error={!!fieldState.error} 
+                              helperText={fieldState.error?.message} 
+                              {...field} 
+                            />
+                          )}
+                          />    
+                        </Grid>
+                      </Grid>                   
+                      <Grid container spacing={2}>
+                        <Grid  xs={6}>      
+                          <Controller 
+                            name="sportsType"
+                            control = {control}
+                            rules={validationRules.sportsType}
+                            render={ ({ field, fieldState }) => (          
+                              <StyledRoleSelect fullWidth>
+                                <InputLabel id="role-sportsType-label">Sports Type</InputLabel>
+                                <Select
+                                  labelId="role-sportsType-label"
+                                  id="sportsType-select"
+                                  label="sportsType"
+                                  error={!!fieldState.error} 
+                                  {...field} 
+                                >
+                                  {
+                                    sportsTypes && sportsTypes.map((sportType) => (
+                                      <MenuItem key={sportType.id} value={sportType.id}>
+                                        {sportType.SportsName}
+                                      </MenuItem>
+                                    ))
+                                  }
+                                </Select>
+                                <FormHelperText>Choose a Sports Type for your facility</FormHelperText>
+                              </StyledRoleSelect>
+                            )}
                           /> 
-                        } 
-                        label={
-                          <Typography variant="subtitle2" textAlign="left" sx={{ color: "grey.main" }}>
-                            I agree to the
-                            <Link href="#" underline="none" sx={{ color: "green.main" }}>
-                              {" terms and conditions"}
-                            </Link>
-                          </Typography>
-                        }
-                      />
-                   )}
-                  />
-                  {errors.terms && (
-                    <FormHelperText error color="error" variant="caption">
-                      {errors.terms.message}
-                    </FormHelperText>
-                   )} 
-                 
-                 </FormControl>
-              </FormGroup>
-             </Box>
-             <Button
-              disableElevation={true} //Elevation means determines how raised or lifted an element appears to be.
-              fullWidth
-              className="action-button"
-              type="submit"
-              variant="contained"
-              disabled={isPending} // disable the button when the form is being submitted
-              //prevent the button's elevation from changing with disableElevation
-             >
-              {isPending ? (
-                <CircularProgress color="white" size={24} /> // use MUI's Button component for the progress indicator
-              ) : (
-                "Create account"
-              )}
-             </Button>
-            </form>
-            )}
-             {activeStep === 1 && (
-            <TextField label="Assets" variant="outlined" sx={{ mt: 2, mb: 2 }} fullWidth />
-            )}
-            {activeStep === 2 && (
-                <TextField label="Opening Times" variant="outlined" sx={{ mt: 2, mb: 2 }} fullWidth />
-            )}
-            <Box sx={{ display: 'flex', flexDirection: 'row', pt: 2 }}>
-                <Button
-                color="inherit"
-                disabled={activeStep === 0}
-                onClick={handleBack}
-                sx={{ mr: 1 }}
-                >
-                <Typography sx={{ color: "grey.main" }} >Back</Typography> 
-                </Button>
-                <Box sx={{ flex: '1 1 auto' }} />
-                {isStepOptional(activeStep) && (
-                <Button color="inherit" onClick={handleSkip} sx={{ mr: 1 }}>
-                <Typography sx={{ color: "grey.main" }} >Skip</Typography> 
-                </Button>
-                )}
+                        </Grid>
+                        <Grid  xs={6}>      
+                          <Controller 
+                            name="floorType"
+                            control = {control}
+                            defaultValue=""
+                            rules={validationRules.floorType}
+                            render={ ({ field, fieldState }) => (          
+                              <StyledRoleSelect fullWidth>
+                                <InputLabel id="role-floorType-label">Floor Type</InputLabel>
+                                <Select
+                                  labelId="role-floorType-label"
+                                  id="floorType-select"
+                                  {...field}
+                                  error={!!fieldState.error}
+                                >
+                                  {selectedFloorTypes.map((floorType, index) => (
+                                    <MenuItem key={index} value={floorType.id}>
+                                      {floorType.floorName}
+                                    </MenuItem>
+                                  ))}
+                                </Select>
+                                <FormHelperText>Choose a Floor Type for your facility</FormHelperText>
+                              </StyledRoleSelect>
+                            )}
+                          /> 
+                        </Grid>
+                    </Grid>   
+                    </>
+                    )}
+                    {activeStep === 1 && (
+                     <>
+                     {/* Second step */}
+                      <Box mb={1} >
+                        <Typography variant="h5" textAlign="left" sx={{ color: "green.main" }}>Pitch Amenities:</Typography>
+                        <Grid container spacing={20}>
+                          <FormControl component="fieldset">
+                            <FormGroup row>
+                              {amenitiesList.map((amenity) => (
+                                <Grid item xs={2} key={amenity.name}>
+                                  <Controller 
+                                    name={amenity.name}
+                                    control = {control}
+                                    defaultValue={false}
+                                    render={ ({ field }) => ( 
+                                      <FormControlLabel 
+                                        control={
+                                          <Checkbox size="small"
+                                            {...field} 
+                                            checked={field.value}
+                                            color="primary"
+                                            icon={amenity.icon}
+                                          /> 
+                                        } 
+                                        label={amenity.name}
+                                      />
+                                    )}
+                                  />
+                                </Grid> 
+                              ))}
+                            </FormGroup>
+                          </FormControl>
+                        </Grid>
+                      </Box>
+                      <Box mb={1} >
+                        <Typography variant="h5" textAlign="left" sx={{ color: "green.main" }}>Pitch Location & Photos:</Typography>
+                        <Grid container spacing={1}>      
+                          <Grid item xs={6} >    
+                            <GoogleMap
+                              mapContainerStyle={containerStyle}
+                              center={center}
+                              zoom={10}
+                              onClick={e => setLocation({ lat: e.latLng.lat(), lng: e.latLng.lng() })}
+                              
+                            >
+                              {location && <Marker position={location} />}
+                            </GoogleMap> 
+                          </Grid> 
+                          <Grid item xs={6} >    
+                            <Typography variant="h5" textAlign="left" sx={{ color: "green.main" }}>Pitch Longitude & Latitude</Typography>
+                            <Controller 
+                            name="town"
+                            control = {control}
+                            rules={validationRules.town}
+                            render={ ({ field, fieldState }) => (          
+                              <StyledRoleSelect fullWidth>
+                                <InputLabel id="role-states-label">States</InputLabel>
+                                <Select
+                                  labelId="role-states-label"
+                                  id="states-select"
+                                  label="states"
+                                  error={!!fieldState.error} 
+                                  {...field} 
+                                >
+                                  {
+                                    states && states.map((state) => (
+                                      <MenuItem key={state.id} value={state.id}>
+                                        {state.name}
+                                      </MenuItem>
+                                    ))
+                                  }
+                                </Select>
+                                <FormHelperText>Choose a State</FormHelperText>
+                              </StyledRoleSelect>
+                            )}
+                          /> 
 
-                <Button onClick={handleNext}>
-                {activeStep === steps.length - 1 ?
-                <Typography sx={{ color: "green.main" }} >Finish</Typography> 
-                :
-                <Typography sx={{ color: "green.main" }}>Next</Typography> 
-                }
-                </Button>
-            </Box>
-        </React.Fragment>
-      )}
-            
-        </Box>
+                              <StyledTextField
+                                label="Longitude"
+                                value={location ? location.lng : ''}
+                                variant="outlined"
+                                fullWidth
+                                disabled
+                                required
+                              />
+                              <StyledTextField
+                                  label="Latitude"
+                                  value={location ? location.lat : ''}
+                                  variant="outlined"
+                                  fullWidth
+                                  disabled
+                                  required
+                              />   
+
+                              <Typography variant="h5" textAlign="left" sx={{ color: "green.main" }}>Pitch Photos</Typography>
+                              <>
+                                <input
+                                  type="file"
+                                  ref={inputRef}
+                                  hidden
+                                  multiple
+                                  onChange={handleFileChange}
+                                  required
+                                />
+                                <Button className="action-button" startIcon={<AddIcon />} variant="contained" onClick={handleUploadClick}>
+                                  Upload Images
+                                </Button>
+                                {/* Display selected file names */}
+                                <List >
+                                    {files.map((file, index) => (
+                                      <ListItem key={index}>
+                                        <ListItemAvatar>
+                                          <Avatar>
+                                            <ImageIcon />
+                                          </Avatar>
+                                        </ListItemAvatar>
+                                        <ListItemText
+                                          primary={file.name}
+                                        />
+                                        <ListItemSecondaryAction>
+                                          <IconButton edge="end" aria-label="delete" onClick={() => handleFileDelete(index)}>
+                                            <DeleteIcon />
+                                          </IconButton>
+                                        </ListItemSecondaryAction>
+                                      </ListItem>
+                                    ))}
+                                  </List>
+                              </>                            
+                          </Grid> 
+                        </Grid>
+                      </Box>
+                    </>            
+                    )}
+                    {activeStep === 2 && (
+                    <>                
+                      <Box mb={1}>
+                        <Typography variant="h5" textAlign="left" sx={{ color: "green.main" }}>Pitch Opening Times:</Typography>
+                        <Grid container spacing={2}>
+                          {openingTimes.map((time, index) => (
+                            <Grid item xs={4} key={index}>
+                              <Box sx={{ '& > :not(style)': { m: 1 }, width: '40ch' }}>
+                              <Typography variant="h5" textAlign="left" sx={{ color: "grey.main" }}>{time.day}</Typography>
+                                <TextField
+                                  label="Open Time"
+                                  type="time"
+                                  value={time.openTime}
+                                  onChange={handleInputChange(index, 'openTime')}
+                                  disabled={time.isClosed}
+                                  InputLabelProps={{
+                                    shrink: true,
+                                  }}
+                                />
+                                <TextField
+                                  label="Close Time"
+                                  type="time"
+                                  value={time.closeTime}
+                                  onChange={handleInputChange(index, 'closeTime')}
+                                  disabled={time.isClosed}
+                                  InputLabelProps={{
+                                    shrink: true,
+                                  }}
+                                />
+                                <TextField
+                                  label="Interval"
+                                  type="number"
+                                  value={time.interval}
+                                  onChange={handleInputChange(index, 'interval')}
+                                  disabled={time.isClosed}
+                                />
+                                <TextField
+                                  label="Price"
+                                  type="number"
+                                  value={time.price}
+                                  onChange={handleInputChange(index, 'price')}
+                                  disabled={time.isClosed}
+                                />
+                                <FormControlLabel
+                                  control={
+                                    <Switch
+                                      checked={time.isClosed}
+                                      onChange={handleSwitchChange(index)}
+                                      color="primary"
+                                    />
+                                  }
+                                  label="Closed"
+                                />
+                              </Box>
+                            </Grid>
+                          ))}
+                        </Grid>
+                          <FormGroup>
+                            <FormControl >
+                              <Controller 
+                                name="terms"
+                                control = {control}
+                                defaultValue={false} // set default value to false
+                                rules={validationRules.terms}
+                                render={ ({ field, fieldState }) => ( 
+                                  <FormControlLabel 
+                                    sx={{ marginBottom: "-7px" }} 
+                                    control={
+                                      <Checkbox size="small" //defaultChecked
+                                      {...field} 
+                                      checked={field.value} //checkbox will be reset to unchecked when the reset()
+                                        sx={{
+                                        '&.Mui-checked': {
+                                        color: "green.main",
+                                        },
+                                        }} 
+                                    /> 
+                                    } 
+                                    label={
+                                      <Typography variant="subtitle2" textAlign="left" sx={{ color: "grey.main" }}>
+                                        I agree to the
+                                        <Link  underline="none" sx={{ color: "green.main" }}>
+                                          {" terms and conditions"}
+                                        </Link>
+                                      </Typography>
+                                    }
+                                  />
+                                )}
+                              />
+                              {errors.terms && (
+                                <FormHelperText error color="error" variant="caption">
+                                  {errors.terms.message}
+                                </FormHelperText>
+                                )} 
+                            </FormControl>
+                          </FormGroup>
+                      </Box>
+                     
+                    </>
+                    )}          
+                    {/* Navigation buttons */}
+                      <Box sx={{ display: 'flex', flexDirection: 'row', pt: 2 }}>
+                        <Button
+                          color="inherit"
+                          disabled={activeStep === 0}
+                          onClick={handleBack}
+                          sx={{ mr: 1 }}
+                        >
+                          Back
+                        </Button>
+                                  
+                        <Box sx={{ flex: '1 1 auto' }} />
+                        
+                         {/* Conditional rendering: Display "Next" or "Finish" based on the active step */}
+                          {activeStep === steps.length - 1 ? (
+                            <Button
+                              disableElevation={true}
+                              className="action-button"
+                              type="submit"
+                              variant="contained"
+                              disabled={isPending}
+                              onClick={handleSubmit(onSubmit)}
+                            >
+                              {isPending ? (
+                                <CircularProgress color="white" size={24} />
+                              ) : (
+                                "Finish"
+                              )}
+                            </Button>
+                          ) : (
+                            <Button
+                              onClick={handleNext}
+                              disabled={isSubmitting || (touched && !isValid)}
+                            >
+                              Next
+                            </Button>
+                          )}
+                      </Box>
+                </React.Fragment>
+            )}
+      </Box>
+      
     </StyledModal>
-    </>
-
-
+  </>
   );
 };
 
