@@ -53,11 +53,11 @@ class FloorType
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    #[Groups(['floor_type:read','ground:read'])]
+    #[Groups(['floor_type:read','ground:read','type:read'])]
     private ?int $id = null;
 
     #[ORM\Column(length: 20, nullable: true)]
-    #[Groups(['floor_type:read','floor_type:write','ground:read'])]
+    #[Groups(['floor_type:read','floor_type:write','ground:read','type:read'])]
     #[Assert\NotBlank]
     #[Assert\Length(min:5, max: 20, maxMessage: 'Describe the Sports Floor Type in 20 char max!')]
     #[ApiFilter(SearchFilter::class, strategy: 'partial')]

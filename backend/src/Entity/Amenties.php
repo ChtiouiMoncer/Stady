@@ -63,13 +63,11 @@ class Amenties
 
     #[ORM\Column]
     #[Groups(['amenities:read','amenities:write','ground:read','ground:write'])]
-    #[Assert\NotBlank]
     #[ApiFilter(BooleanFilter::class)]
     private ?bool $hasSecureStorage = null;
 
     #[ORM\Column]
     #[Groups(['amenities:read','amenities:write','ground:read','ground:write'])]
-    #[Assert\NotBlank]
     #[ApiFilter(BooleanFilter::class)]
     private ?bool $hasChangingRoom = null;
 
@@ -80,7 +78,6 @@ class Amenties
 
     #[ORM\Column]
     #[Groups(['amenities:read','amenities:write','ground:read','ground:write'])]
-    #[Assert\NotBlank]
     #[ApiFilter(BooleanFilter::class)]
     private ?bool $hasParking = null;
 

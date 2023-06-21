@@ -4,6 +4,7 @@ api_platform:
       html: [ 'text/html' ]
       json: [ 'application/json' ]
       jsonhal: [ 'application/hal+json' ]
+      multipart: ['multipart/form-data']
     swagger:
       api_keys:
           JWT:
@@ -11,6 +12,8 @@ api_platform:
               type: header
     eager_loading:
       max_joins: 500 # Set a higher limit
+
+
 
 
 

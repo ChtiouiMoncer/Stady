@@ -17,9 +17,7 @@ use Symfony\Component\Serializer\Annotation\Groups;
 (
     description: 'Address rest endpoint',
     operations: [
-        new Get(
-            security: 'is_granted("ROLE_ADMIN")',
-        ),
+        new Get(),
         new GetCollection(),
         new Post(
             security: 'is_granted("ROLE_ADMIN")',
@@ -52,46 +50,23 @@ class Address
     #[Groups(['address:read','address:write','ground:read'])]
     private ?int $id = null;
 
-    #[ORM\Column(length: 255)]
-    #[Groups(['address:read','address:write','ground:read','ground:write'])]
-    private ?string $longitude = null;
-
-    #[ORM\Column(length: 255)]
-    #[Groups(['address:read','address:write','ground:read','ground:write'])]
-    private ?string $latitude = null;
 
     #[ORM\OneToOne(inversedBy: 'address')]
     #[Groups(['address:read','address:write','ground:read','ground:write'])]
     #[ORM\JoinColumn(nullable: false)]
     private ?Pitch $pitch = null;
 
+    #[ORM\Column]
+    #[Groups(['address:read','address:write','ground:read','ground:write'])]
+    private ?float $longitude = null;
+
+    #[ORM\Column]
+    #[Groups(['address:read','address:write','ground:read','ground:write'])]
+    private ?float $latitude = null;
+
     public function getId(): ?int
     {
         return $this->id;
-    }
-
-    public function getLongitude(): ?string
-    {
-        return $this->longitude;
-    }
-
-    public function setLongitude(string $longitude): self
-    {
-        $this->longitude = $longitude;
-
-        return $this;
-    }
-
-    public function getLatitude(): ?string
-    {
-        return $this->latitude;
-    }
-
-    public function setLatitude(string $latitude): self
-    {
-        $this->latitude = $latitude;
-
-        return $this;
     }
 
     public function getPitch(): ?Pitch
@@ -102,6 +77,30 @@ class Address
     public function setPitch(Pitch $pitch): self
     {
         $this->pitch = $pitch;
+
+        return $this;
+    }
+
+    public function getLongitude(): ?float
+    {
+        return $this->longitude;
+    }
+
+    public function setLongitude(float $longitude): self
+    {
+        $this->longitude = $longitude;
+
+        return $this;
+    }
+
+    public function getLatitude(): ?float
+    {
+        return $this->latitude;
+    }
+
+    public function setLatitude(float $latitude): self
+    {
+        $this->latitude = $latitude;
 
         return $this;
     }

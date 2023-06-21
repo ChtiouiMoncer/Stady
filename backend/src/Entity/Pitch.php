@@ -104,7 +104,7 @@ class Pitch
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups(['ground:read','ground:write','timeSlot:read','opening_time:read','timeSlot:item:get,opening_time:item:get','review:read','review:item:get','reservation:read','reservation:item:get'])]
+    #[Groups(['ground:read','ground:write','timeSlot:read','opening_time:read','timeSlot:item:get,opening_time:item:get','review:read','review:item:get','reservation:read','reservation:item:get','state:read','state:item:get'])]
     #[ApiFilter(\ApiPlatform\Doctrine\Orm\Filter\SearchFilter::class, strategy: 'partial')]
     #[Assert\NotBlank]
     #[Assert\Length(min:5, max: 50, maxMessage: 'Describe the Name of the Pitch in 50 word max!')]
@@ -218,6 +218,11 @@ class Pitch
     #[ORM\OneToMany(mappedBy: 'pitch', targetEntity: TimeSlot::class, cascade: ['persist', 'remove'])]
     #[Groups(['ground:write'])]
     private Collection $timeSlots;
+
+    #[ORM\ManyToOne(inversedBy: 'pitches')]
+    #[Groups(['ground:read','ground:write'])]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?State $state = null;
 
 
     public function __construct(string $name = null)
@@ -602,6 +607,18 @@ class Pitch
                 $timeSlot->setPitch(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getState(): ?State
+    {
+        return $this->state;
+    }
+
+    public function setState(?State $state): self
+    {
+        $this->state = $state;
 
         return $this;
     }

@@ -2,104 +2,159 @@
 
 namespace App\Entity;
 
+use ApiPlatform\Metadata\ApiProperty;
 use ApiPlatform\Metadata\ApiResource;
-use ApiPlatform\Metadata\Delete;
 use ApiPlatform\Metadata\Get;
 use ApiPlatform\Metadata\GetCollection;
 use ApiPlatform\Metadata\Post;
-use App\Repository\ImageRepository;
+use ApiPlatform\OpenApi\Model;
+use App\Controller\ImageUploadController;
 use Doctrine\ORM\Mapping as ORM;
+use App\Repository\ImageRepository;
+use Symfony\Component\HttpFoundation\File\File;
 use Symfony\Component\Serializer\Annotation\Groups;
+use Symfony\Component\Validator\Constraints as Assert;
+use Vich\UploaderBundle\Mapping\Annotation as Vich;
 
+
+
+#[Vich\Uploadable]
 #[ORM\Entity(repositoryClass: ImageRepository::class)]
 #[ApiResource(
-    description: 'Image rest endpoint',
+    types: ['https://schema.org/Image'],
     operations: [
-        new Get(
-            normalizationContext: ['groups' => ['image:read','image:item:get']]
-        ),
+        new Get(),
         new GetCollection(),
         new Post(
-            security: 'is_granted("ROLE_MEMBER")',
-        ),
-        new Delete(
-            security: 'is_granted("ROLE_MEMBER")',
+            controller: ImageUploadController::class,
+            openapi: new Model\Operation(
+                requestBody: new Model\RequestBody(
+                    content: new \ArrayObject([
+                        'multipart/form-data' => [
+                            'schema' => [
+                                'type' => 'object',
+                                'properties' => [
+                                    'imageFile' => [
+                                        'type' => 'string',
+                                        'format' => 'binary'
+                                    ]
+                                ]
+                            ]
+                        ]
+                    ])
+                )
+            ),
+            security: 'is_granted("ROLE_ADMIN") or is_granted("ROLE_OWNER") ',
+            validationContext: ['groups' => ['Default', 'image_create']],
+            deserialize: false
         )
     ],
-    normalizationContext: [
-        'groups' => ['image:read'],
-    ],
-    denormalizationContext: [
-        'groups' => ['image:write'],
-    ],
-    paginationItemsPerPage: 100,
-    extraProperties: [
-        'standard_put' => true,
-    ],
-
+    normalizationContext: ['groups' => ['image:read']]
 )]
+
+
 class Image
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    #[Groups(['image:read','image:write','ground:read'])]
-
+    #[Groups(['ground:read','image:read'])]
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups(['image:read','image:write','ground:read','ground:write'])]
-    private ?string $imagePath = null;
+    #[Groups(['ground:read','image:read'])]
+    private ?string $title = null;
 
-    #[ORM\Column]
-    #[Groups(['image:read','image:write','ground:read','ground:write'])]
-    private ?int $width = null;
+    #[ApiProperty(types: ['https://schema.org/contentUrl'])]
+    #[Groups(['ground:read','image:read'])]
+    public ?string $contentUrl = null;
 
-    #[ORM\Column]
-    #[Groups(['image:read','image:write','ground:read','ground:write'])]
-    private ?int $height = null;
+    #[ORM\Column(length: 255)]
+    #[Groups(['ground:read','image:read'])]
+    private ?string $imageName = null;
+
+    // NOTE: This is not a mapped field of entity metadata, just a simple property.
+    #[Vich\UploadableField(mapping: 'images_upload', fileNameProperty: 'imageName')]
+    private ?\Symfony\Component\HttpFoundation\File\File  $imageFile = null;
+    #[ORM\Column(nullable: true)]
+    #[Groups(['ground:read','image:read'])]
+    private ?\DateTimeImmutable $updatedAt = null;
 
     #[ORM\ManyToOne(inversedBy: 'images')]
-    #[Groups(['image:read','image:write','ground:read','ground:write'])]
+    #[Groups(['ground:read','image:read'])]
     private ?Pitch $pitch = null;
+
 
     public function getId(): ?int
     {
         return $this->id;
     }
 
-    public function getImagePath(): ?string
+    public function getTitle(): ?string
     {
-        return $this->imagePath;
+        return $this->title;
     }
 
-    public function setImagePath(string $imagePath): self
+    public function setTitle(string $title): self
     {
-        $this->imagePath = $imagePath;
+        $this->title = $title;
 
         return $this;
     }
 
-    public function getWidth(): ?int
+    /**
+     * @return string|null
+     */
+    public function getImageName(): ?string
     {
-        return $this->width;
+        return $this->imageName;
     }
 
-    public function setWidth(int $width): self
+    /**
+     * @param string|null $imageName
+     */
+    public function setImageName(?string $imageName): void
     {
-        $this->width = $width;
-
-        return $this;
+        $this->imageName = $imageName;
     }
 
-    public function getHeight(): ?int
+    /**
+     * @return \Symfony\Component\HttpFoundation\File\File
+     */
+    public function getImageFile(): \Symfony\Component\HttpFoundation\File\File
     {
-        return $this->height;
+        return $this->imageFile;
     }
 
-    public function setHeight(int $height): self
+    /**
+     * @param File|null $imageFile
+     */
+    public function setImageFile(?File $imageFile): void
     {
-        $this->height = $height;
+        $this->imageFile = $imageFile;
+        if (null !== $imageFile){
+            $this->updatedAt = new \DateTimeImmutable();
+        }
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getContentUrl(): ?string
+    {
+        return '/uploads/images/' . $this->imageName;
+    }
+
+
+
+    public function getUpdatedAt(): ?\DateTimeImmutable
+    {
+        return $this->updatedAt;
+    }
+
+    public function setUpdatedAt(?\DateTimeImmutable $updatedAt): self
+    {
+        $this->updatedAt = $updatedAt;
 
         return $this;
     }
@@ -112,7 +167,8 @@ class Image
     public function setPitch(?Pitch $pitch): self
     {
         $this->pitch = $pitch;
-
         return $this;
     }
+
+
 }
