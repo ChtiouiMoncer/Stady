@@ -39,6 +39,18 @@ class PitchRepository extends ServiceEntityRepository
         }
     }
 
+    public function hasReservations(Pitch $pitch): bool
+    {
+        $qb = $this->createQueryBuilder('p');
+        $qb->select('count(r.id)')
+            ->innerJoin('p.reservations', 'r')
+            ->where('p.id = :pitchId')
+            ->setParameter('pitchId', $pitch->getId());
+
+        $count = $qb->getQuery()->getSingleScalarResult();
+
+        return $count > 0;
+    }
 //    /**
 //     * @return Pitch[] Returns an array of Pitch objects
 //     */

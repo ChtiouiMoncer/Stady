@@ -17,6 +17,7 @@ use ApiPlatform\Metadata\Post;
 use ApiPlatform\Metadata\Put;
 use ApiPlatform\Serializer\Filter\PropertyFilter;
 use ApiPlatform\Metadata\Link;
+use App\Controller\PitchDeleteController;
 use App\Repository\PitchRepository;
 use App\Validator\MatchingFloorType;
 use Carbon\Carbon;
@@ -55,6 +56,7 @@ use function Symfony\Component\String\u;
         ),
         new Delete(
             security: 'is_granted("ROLE_ADMIN")',
+
         )
     ],
     normalizationContext: [
@@ -204,7 +206,7 @@ class Pitch
     private Collection $openingTimes;
 
     #[ORM\OneToMany(mappedBy: 'pitch', targetEntity: Reservation::class, orphanRemoval: true)]
-    #[Groups(['ground:write'])]
+    #[Groups(['ground:write','ground:read'])]
     private Collection $reservations;
 
     #[ORM\OneToMany(mappedBy: 'pitch', targetEntity: Image::class, cascade: ['persist', 'remove'])]
