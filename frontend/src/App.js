@@ -11,8 +11,6 @@ import SignUpPage from './components/auth/SignUpPage';
 import Unauthorized from './components/Unauthorized.js';
 import PersistLogin from './components/PersistLogin';
 import AuthGuard from './components/AuthGuard ';
-import PitchesList from './components/pitches/PitchesList';
-import PitchInfo from './components/pitches/pitchCards/PitchInfo';
 import AdminDashboard from './components/admin/AdminDashboard';
 import AllReservations from './components/admin/AllReservations';
 import Users from './components/admin/Users';
@@ -25,6 +23,7 @@ import OwnerDashboardStats from './components/owner/OwnerDashboardStats';
 import PendingPitches from './components/admin/managePitches/pendingPitches/PendingPitches';
 import ApprovedPitches from './components/admin/managePitches/approvedPitches/ApprovedPitches';
 import RejectedPitches from './components/admin/managePitches/rejectedPitches/RejectedPitches';
+import PitchCards from './components/pitches/PitchCards';
 
 
 
@@ -61,8 +60,7 @@ function App() {
                       
 
                       <Route path="/" element={  <HomePage /> }></Route>
-                      <Route path="/pitches" element={  <PitchesList /> }></Route>
-                      <Route path="/pitche/info" element={  <PitchInfo /> }></Route>
+                      <Route path="/pitches" element={  <PitchCards /> }></Route>
                       <Route path="/unauthorized" element={  <Unauthorized /> } />
 
 

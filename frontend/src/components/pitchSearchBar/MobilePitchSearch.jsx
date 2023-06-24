@@ -12,6 +12,8 @@ import './pitchSearchBar.css';
 import { Controller, useForm } from 'react-hook-form';
 import SportsSoccerIcon from '@mui/icons-material/SportsSoccer';
 import axios from '../../api/axios';
+import { useNavigate } from 'react-router-dom';
+
 
 
 
@@ -86,19 +88,17 @@ const [pitches, setPitches] = useState([]);
 const [ isPending, setIsPending ] = useState(false); //manage pending time from the server response
 const [success, setSuccess] = useState(false);
 
-
-//FORM DATA
-const pitchNameValue = watch('name');
-const sportsTypevalue = watch('sportsType');
-const stateValue = watch('state');
-
-// API URL
-const PITCHES_URL = `/api/grounds?page=1&name=Football City&sportsType.SportsName=Football&isApproved=true&state.name`;
+const navigate = useNavigate();
 
 const onSubmit =  async (data, e) => {
-  console.log(pitchNameValue);
-  console.log(sportsTypevalue);
-  console.log(stateValue);
+  //FORM DATA
+  const pitchNameValue = watch('name');
+  const sportsTypevalue = watch('sportsType');
+  const stateValue = watch('state');
+
+  // Construct the URL
+  const PITCHES_URL = `/api/grounds?page=1&name=${pitchNameValue}&sportsType.SportsName=${sportsTypevalue}&isApproved=true&state.name=${stateValue}`;
+
 
   e.preventDefault();
   setIsPending(true);
@@ -112,6 +112,8 @@ const onSubmit =  async (data, e) => {
       setIsPending(false);
       setSuccess(true);
 
+    // Redirect to another route and pass the fetched data as state
+    navigate('/pitches', { state: { pitches: response.data } });
 
   } catch (err) {
     setSuccess(false);
@@ -119,6 +121,7 @@ const onSubmit =  async (data, e) => {
   }
  
 };
+
   return (
     <>
        <>
