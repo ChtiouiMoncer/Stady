@@ -1,10 +1,11 @@
 import { Box, Stack } from "@mui/material";
-import Navbar from "../Navbar";
-import SidebarAdmin from "./SidebarAdmin";
+import Navbar from "../../../Navbar";
+import SidebarAdmin from "../../SidebarAdmin";
 import { useState } from "react";
+import UnresolvedPitches from "./UnresolvedPitches";
 
-const AdminDashboard = () => {
-  const [activeItem, setActiveItem] = useState('Overview');
+const PendingPitches = () => {
+    const [activeItem, setActiveItem] = useState('Pending Pitches');
 
     return (
       <>
@@ -13,10 +14,11 @@ const AdminDashboard = () => {
           <Navbar />
           <Stack direction="row"  > {/* comment above */} 
            <SidebarAdmin activeItem={activeItem} />
+           <UnresolvedPitches />
           </Stack> 
       </Box>
       </>    
       );
 }
  
-export default AdminDashboard;
+export default PendingPitches;

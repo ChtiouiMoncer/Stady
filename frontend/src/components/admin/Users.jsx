@@ -2,12 +2,17 @@ import { useState, useEffect } from "react";
 import axios from "../../api/axios";
 import useAxiosPrivate from "../../Hooks/useAxiosPrivate";
 import { Link as RouterLink, useNavigate, useLocation } from "react-router-dom";
-import { Button, Typography } from "@mui/material";
+import { Box, Button, Stack, Typography } from "@mui/material";
 import useAuth from "../../Hooks/useAuth";
 import Navbar from "../Navbar";
+import SidebarOwner from "../owner/SidebarOwner";
+import SidebarAdmin from "./SidebarAdmin";
+import Feed from "../owner/Feed";
 
 
 const Users = () => {
+
+    const [activeItem, setActiveItem] = useState('Members');
 
     //users data state
     const [users, setUsers] = useState(); 
@@ -68,21 +73,16 @@ const Users = () => {
 
     return (
         <>
-        <Navbar />
-        <article>
-            <Button component={RouterLink} to="/">
-                        <Typography variant="subtitle2" className="greySubtitle">Home</Typography>
-            </Button>
-            <h2>Users List</h2>
-            {users?.length
-                ? (
-                    <ul>
-                        {users.map((user, i) => <li key={i}>{user?.username}</li>)}
-                    </ul>
-                ) : <p>No users to display</p>
-            }
-           
-        </article>
+        <Box>
+            <Navbar />
+            <Stack direction="row"  > {/* comment above */} 
+                 <SidebarAdmin activeItem={activeItem} />
+                 <Feed />
+
+               
+            </Stack> 
+
+        </Box>
         </>
     );
 };

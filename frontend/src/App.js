@@ -1,5 +1,4 @@
 import { Box, Stack, ThemeProvider } from '@mui/material';
-import Navbar from "./components/Navbar";
 import { useEffect, useState } from "react";
 import {theme} from "./theme"
 import { AuthProvider } from './context/AuthProvider';
@@ -14,20 +13,18 @@ import PersistLogin from './components/PersistLogin';
 import AuthGuard from './components/AuthGuard ';
 import PitchesList from './components/pitches/PitchesList';
 import PitchInfo from './components/pitches/pitchCards/PitchInfo';
-import PitchCard from './components/pitches/pitchCards/PitchCards';
 import AdminDashboard from './components/admin/AdminDashboard';
-import PitchesManagement from './components/admin/PitchesManagement';
 import AllReservations from './components/admin/AllReservations';
 import Users from './components/admin/Users';
 import Addpitch from './components/owner/Addpitch';
-import OwnerDashboard from './components/owner/OwnerDashboardStats';
 import OwnerPitches from './components/owner/OwnerPitches';
 import Reservations from './components/member/Reservations';
 import MakeReservation from './components/member/MakeReservation';
 import HorizontalLinearStepper from './components/chat';
 import OwnerDashboardStats from './components/owner/OwnerDashboardStats';
-import SidebarOwner from './components/owner/SidebarOwner';
-import SidebarAdmin from './components/admin/SidebarAdmin';
+import PendingPitches from './components/admin/managePitches/pendingPitches/PendingPitches';
+import ApprovedPitches from './components/admin/managePitches/approvedPitches/ApprovedPitches';
+import RejectedPitches from './components/admin/managePitches/rejectedPitches/RejectedPitches';
 
 
 
@@ -62,7 +59,6 @@ function App() {
                   {/* Public Routes */}
                   <Route element={ <PersistLogin /> }>  { /* When a user refresh the page he remain authenticated */ }
                       
-                  <Route path="/test" element={  <HorizontalLinearStepper />}></Route>
 
                       <Route path="/" element={  <HomePage /> }></Route>
                       <Route path="/pitches" element={  <PitchesList /> }></Route>
@@ -80,10 +76,21 @@ function App() {
 
                       { /* Admin Protected Routes */}
                       <Route element= { <RequireAuth  allowedRoles={[ ROLES.Admin ]}/> }> { /* Only when we have a user we can show the comp's inside the Required Auth*/ }
-                        <Route path="/admin/dashboard" element={<SidebarAdmin/>}></Route>
+
+                        { /* Dashboared Overview */}
+                        <Route path="/admin/dashboard" element={<AdminDashboard/>}></Route>
+
+                        { /* Manage Pitches */}
+                        <Route path="/admin/manage/pitches/pending" element={<PendingPitches />}></Route>
+                        <Route path="/admin/manage/pitches/approved" element={<ApprovedPitches />}></Route>
+                        <Route path="/admin/manage/pitches/rejected" element={<RejectedPitches />}></Route>
+
+
+
+
+
                         <Route path="/admin/manage/users" element={<Users />}></Route>.
                         <Route path="/admin/manage/reservations" element={<AllReservations />}></Route>
-                        <Route path="/admin/manage/pitches" element={<PitchesManagement />}></Route>
                       </Route>
 
                        { /* Owner Protected Routes */}

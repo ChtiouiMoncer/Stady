@@ -511,7 +511,7 @@ const onSubmit = async (data, e) => {
     handleReset();
     setTimeout(() => {
       navigate('/owner/dashboard', {replace: true});
-    }, 3000); 
+    }, 2000); 
 
   } catch (err) {
     setIsPending(false);

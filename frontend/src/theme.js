@@ -61,7 +61,6 @@ export const theme = (mode) => createTheme({
     },
     body2: {
       fontWeight: 500,
-      fontStyle: "italic",
     },
     button: {
       fontWeight: 500,
@@ -122,7 +121,9 @@ export const theme = (mode) => createTheme({
     grey: {
       main: mode === "light" ? "#7C8DB0" : grey[50], // black or white
       light: mode === "light" ? grey[600] : grey[50], // black or white
+      dark: mode === "light" ? grey[700] : grey[50], // black or white
 
+      
 
     },
     green: {

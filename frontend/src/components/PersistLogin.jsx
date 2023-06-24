@@ -55,8 +55,7 @@ const PersistLogin = () => {
                 alignItems: 'center',
                 justifyContent: 'center',
                 backgroundColor: grey[250], // Use the green color value here
-            }}
-
+                }}
                 >
 
                     <CircularProgress sx={{color:"green.main"}} />

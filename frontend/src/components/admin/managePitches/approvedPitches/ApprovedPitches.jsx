@@ -1,10 +1,11 @@
 import { Box, Stack } from "@mui/material";
-import Navbar from "../Navbar";
-import SidebarAdmin from "./SidebarAdmin";
+import Navbar from "../../../Navbar";
+import SidebarAdmin from "../../SidebarAdmin";
 import { useState } from "react";
+import PitchesApproval from "./PitchesApproval";
 
-const AdminDashboard = () => {
-  const [activeItem, setActiveItem] = useState('Overview');
+const ApprovedPitches = () => {
+    const [activeItem, setActiveItem] = useState('Approved Pitches');
 
     return (
       <>
@@ -13,10 +14,11 @@ const AdminDashboard = () => {
           <Navbar />
           <Stack direction="row"  > {/* comment above */} 
            <SidebarAdmin activeItem={activeItem} />
+           <PitchesApproval />
           </Stack> 
       </Box>
       </>    
       );
 }
  
-export default AdminDashboard;
+export default ApprovedPitches;
