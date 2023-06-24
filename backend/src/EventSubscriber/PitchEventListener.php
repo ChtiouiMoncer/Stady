@@ -124,7 +124,7 @@ class PitchEventListener
     public function generateTimeSlotsForAllApprovedPitches(): void
     {
         // Fetch all approved pitches
-        $pitches = $this->entityManager->getRepository(Pitch::class)->findBy(['isApproved' => true, 'isPending' => false]);
+        $pitches = $this->entityManager->getRepository(Pitch::class)->findBy(['isApproved' => true, 'isPending' => false, 'isPaused' => false]);
 
         // Generate timeslots for each pitch
         foreach ($pitches as $pitch) {

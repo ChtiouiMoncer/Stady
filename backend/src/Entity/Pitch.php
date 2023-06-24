@@ -93,6 +93,8 @@ use function Symfony\Component\String\u;
 #[ApiFilter(\ApiPlatform\Doctrine\Orm\Filter\SearchFilter::class, properties: [
     "owner.username" => 'partial',
     "sportsType.SportsName" => 'partial',
+    "state.name" => 'partial',
+
 ])]
 
 
@@ -226,6 +228,13 @@ class Pitch
     #[ORM\JoinColumn(nullable: false)]
     private ?State $state = null;
 
+    #[ORM\Column(nullable: true)]
+    #[Groups(['ground:read','ground:write'])]
+    #[ApiProperty(
+        securityPostDenormalize: 'is_granted("ROLE_OWNER") or is_granted("ROLE_ADMIN")',
+    )]
+    private ?bool $isPaused = null;
+
 
     public function __construct(string $name = null)
     {
@@ -233,8 +242,9 @@ class Pitch
         $this->createdAt = new \DateTimeImmutable();
         $this->openingTimes = new ArrayCollection();
         $this->isPending = true; // Set $isPending to true by default
-        $this->isApproved = false; // Set $isPending to false by default
-        $this->isRejected = false; // Set $isPending to false by default
+        $this->isApproved = false;
+        $this->isRejected = false;
+        $this->isPaused = false;
         $this->reservations = new ArrayCollection();
         $this->images = new ArrayCollection();
         $this->reviews = new ArrayCollection();
@@ -621,6 +631,18 @@ class Pitch
     public function setState(?State $state): self
     {
         $this->state = $state;
+
+        return $this;
+    }
+
+    public function isIsPaused(): ?bool
+    {
+        return $this->isPaused;
+    }
+
+    public function setIsPaused(?bool $isPaused): self
+    {
+        $this->isPaused = $isPaused;
 
         return $this;
     }
