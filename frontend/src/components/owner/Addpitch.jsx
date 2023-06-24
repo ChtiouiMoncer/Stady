@@ -667,11 +667,11 @@ const handleFormReset = () => {
                     <>  
                       {/* First step */}
                       <Controller
-                      name="name" 
-                      control={control} 
-                      defaultValue="" 
-                      rules={validationRules.name} 
-                      render={({ field, fieldState }) => ( //
+                        name="name" 
+                        control={control} 
+                        defaultValue="" 
+                        rules={validationRules.name} 
+                        render={({ field, fieldState }) => ( //
                           <StyledTextField 
                           fullWidth
                           id="outlined-username-input"
@@ -684,8 +684,7 @@ const handleFormReset = () => {
                           helperText={fieldState.error?.message} 
                           {...field}   
                           />
-                      )}
-                      
+                        )}
                       />                        
                       <Controller
                       name="description" 
