@@ -23,6 +23,7 @@ const StyledBox = styled(Box) (({ theme }) => ({
     bgcolor: "background.default",
     display: 'flex',
     flexDirection:"column",
+    justifyContent:'center',
     padding: '10px',
 }));
 
@@ -81,7 +82,7 @@ if (pitches.length === 0) {
     <div>
     <Navbar />
     <StyledBox>
-        <Typography variant="h5" sx={{ color: 'green.main', fontWeight: 600, margin: '10px' }}>Find your next adventure</Typography>
+        <Typography variant="subtitle1" sx={{ color: 'green.main', fontWeight: 600, margin: '10px' }}>Find your next adventure</Typography>
 
         <Grid container spacing={2}>
             {pitches.map((pitch, index) => {
@@ -104,8 +105,8 @@ if (pitches.length === 0) {
                                 borderRadius: '12px',
                                 flexGrow: 1,
                                 mb: 2,
-                                width: isMobile ? '90%' : '90%',
-                                height: isMobile ? '90%' : '100%',
+                                width: isMobile ? '98%' : '88%',
+                                height: isMobile ? '95%' : '95%',
                                 margin: '5px',
                             }}
                         >
@@ -131,17 +132,17 @@ if (pitches.length === 0) {
                                 }}
                             >
 
-                            <Box sx={{ display: 'flex', flexDirection: 'row', gap: isMobile ? '50px': '150px', marginBottom: '3px'}}>      
+                            <Box sx={{ display: 'flex', flexDirection: 'row', gap: isMobile ? '165px': '230px', marginBottom: '3px'}}>      
                                 <Box sx={{ display: 'flex', flexDirection: 'row', gap: '5px'}}>
                                     <Typography variant="subtitle1" color="text.secondary">
-                                        {pitch.name}, 
+                                    {pitch.name.toUpperCase()}, 
                                     </Typography>
                                     <Typography variant="subtitle1" color="green.main" >
                                         {pitch.state.name} 
                                     </Typography>
                                 </Box>
                                 <Typography variant="subtitle1" color="text.secondary" textAlign="end">
-                                    Starts from {pitch.openingTimes && Math.min(...pitch.openingTimes.map(time => time.price))} DT
+                                      {pitch.openingTimes && Math.min(...pitch.openingTimes.map(time => time.price))} DT
                                 </Typography>
                             </Box>
 
@@ -149,7 +150,7 @@ if (pitches.length === 0) {
                         
                             <Divider sx={{ marginTop:"5px", marginBottom:"5px" }} />
 
-                            <Box sx={{  padding: '0px 10px', display: 'flex', flexDirection: 'row', gap: isMobile ? '100px': '230px', marginBottom: '15px'}}>      
+                            <Box sx={{  padding: '0px 10px', display: 'flex', flexDirection: 'row', gap: isMobile ? '165px': '230px', marginBottom: '15px'}}>      
                             <Typography variant="subtitle1" color="text.secondary">Rating </Typography>
                                 <Rating sx={{color: 'green.main'}} name="read-only" value={averageRating} precision={0.5} readOnly />
                             </Box>
