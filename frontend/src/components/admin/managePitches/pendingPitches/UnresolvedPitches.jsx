@@ -50,7 +50,7 @@ const UnresolvedPitches = () => {
     const handleOpenInfo = async (id) => {
         const response = await axiosPrivate.get(`/api/grounds/${id}`);
         setSelectedPitch(response.data);
-      }
+    }
 
     const theme = useTheme(); 
 

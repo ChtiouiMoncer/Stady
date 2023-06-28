@@ -24,6 +24,7 @@ import PendingPitches from './components/admin/managePitches/pendingPitches/Pend
 import ApprovedPitches from './components/admin/managePitches/approvedPitches/ApprovedPitches';
 import RejectedPitches from './components/admin/managePitches/rejectedPitches/RejectedPitches';
 import PitchCards from './components/pitches/PitchCards';
+import TimeslotSelection from './components/pitches/TimeslotsSelection';
 
 
 
@@ -60,8 +61,11 @@ function App() {
                       
 
                       <Route path="/" element={  <HomePage /> }></Route>
-                      <Route path="/pitches" element={  <PitchCards /> }></Route>
                       <Route path="/unauthorized" element={  <Unauthorized /> } />
+
+                      <Route path="/pitches" element={  <PitchCards /> }></Route>
+                      <Route path="/timeslots/:pitchName" element={<TimeslotSelection />} />
+
 
 
                     <Route element= { <AuthGuard  /> }> { /*If we have a user logged in we redirect to '/'*/ }
