@@ -25,8 +25,10 @@ const PersistLogin = () => {
                  const iat = decoded_token.iat; 
                  const exp = decoded_token.exp; 
                  const userId = decoded_token.userId; //(expiration time) represents the timestamp when the token is set to expire
+                 const email = decoded_token.email; 
+
                  setAuth(prev => { //get the prev state
-                     return {...prev, username, roles, iat, exp, userId } 
+                     return {...prev, username, roles, iat, exp, userId, email} 
                   }); 
               
             }

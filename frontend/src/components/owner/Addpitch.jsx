@@ -368,6 +368,16 @@ const [openingTimes, setOpeningTimes] = useState(
 const handleInputChange = (index, field) => event => {
   const newOpeningTimes = [...openingTimes];
   newOpeningTimes[index][field] = event.target.value;
+  
+  // Parse the value as a number if it's for the 'interval' or 'price' field
+  if (field === 'interval') {
+    newOpeningTimes[index][field] = parseInt(event.target.value, 10);
+  } else if (field === 'price') {
+    newOpeningTimes[index][field] = parseFloat(event.target.value);
+  } else {
+    newOpeningTimes[index][field] = event.target.value;
+  }
+
   setOpeningTimes(newOpeningTimes);
 };
 

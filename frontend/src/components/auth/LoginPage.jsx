@@ -163,8 +163,9 @@ const onSubmit =  async (data, e) => {
     const roles = decoded_token.roles; //get the roles from payload data of the access token
     const iat = decoded_token.iat; //(issued at) represents the timestamp when the token was issued/generated
     const exp = decoded_token.exp; //(expiration time) represents the timestamp when the token is set to expire
-    const userId = decoded_token.userId; //(expiration time) represents the timestamp when the token is set to expire
-    setAuth({ access_token, username, roles, userId, iat, exp }) //pass user informations to the AuthContext
+    const userId = decoded_token.userId; 
+    const email = decoded_token.email; 
+    setAuth({ access_token, username, roles, userId, iat, exp, email }) //pass user informations to the AuthContext
     //console.log(auth.username); 
 
     // Determine the default redirect path based on the user's roles
@@ -181,8 +182,16 @@ const onSubmit =  async (data, e) => {
 
     // If the user came from a protected route 
     // redirect them back there. Otherwise, redirect them based on their role.
-    const redirectPath = from || defaultRedirectPath;
+    //const redirectPath = from || defaultRedirectPath;
+    //navigate(redirectPath, {replace: true});
+    const redirectPath = localStorage.getItem('previousPath') || defaultRedirectPath;
     navigate(redirectPath, {replace: true});
+  // Clear local storage after redirecting
+  setTimeout(() => {
+    localStorage.removeItem('previousPath');
+    localStorage.removeItem('reservationState');
+    localStorage.removeItem('pitchInfo');
+  }, 2000);
   
     } catch (err) {
     if (!err?.response) {

@@ -14,9 +14,6 @@ import RestaurantIcon from '@mui/icons-material/Restaurant';
 import ShowerIcon from '@mui/icons-material/Shower';
 import { Checkroom, SpaceDashboard } from "@mui/icons-material";
 
-
-
-
 const StyledBox = styled(Box) (({ theme }) => ({
 
     bgcolor: "background.default",
