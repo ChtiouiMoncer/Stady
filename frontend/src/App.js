@@ -17,7 +17,6 @@ import Users from './components/admin/Users';
 import Addpitch from './components/owner/Addpitch';
 import OwnerPitches from './components/owner/OwnerPitches';
 import Reservations from './components/member/Reservations';
-import MakeReservation from './components/member/MakeReservation';
 import HorizontalLinearStepper from './components/chat';
 import OwnerDashboardStats from './components/owner/OwnerDashboardStats';
 import PendingPitches from './components/admin/managePitches/pendingPitches/PendingPitches';
@@ -105,7 +104,6 @@ function App() {
                       { /* Member Protected Routes */}
                       <Route element= { <RequireAuth  allowedRoles={[ ROLES.Member ]}/> }> { /* Only when we have a user we can show the comp's inside the Required Auth*/ }
                         <Route path="/member/reservations" element={<Reservations/>}></Route>
-                        <Route path="/member/reservation" element={<MakeReservation/>}></Route>
                       </Route>   
 
                     {/* catch All */}
