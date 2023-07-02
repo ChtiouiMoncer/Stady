@@ -1,4 +1,4 @@
-import {Alert, Box, Button, Card, CardContent, CircularProgress, Divider, Grid, IconButton, Link, Modal, Paper, Rating, Snackbar, TextField, Tooltip, Typography, styled } from '@mui/material';
+import {Alert, Box, Button, Card, CardContent, CircularProgress, Dialog, DialogActions, DialogContent, DialogTitle, Divider, Grid, IconButton, Link, Modal, Paper, Rating, Snackbar, TextField, Tooltip, Typography, styled } from '@mui/material';
 import { useLocation, useParams, useNavigate, redirect } from 'react-router-dom';
 import axios from '../../api/axios';
 import { useEffect, useState } from 'react';
@@ -26,8 +26,10 @@ import CloseIcon from '@mui/icons-material/Close';
 import emailjs from 'emailjs-com';
 import QRCode from 'qrcode';
 import DownloadIcon from '@mui/icons-material/Download';
-
-
+import RateReviewIcon from '@mui/icons-material/RateReview';
+import ViewListIcon from '@mui/icons-material/ViewList';
+import ReviewCard from './ReviewCard';
+import StarBorderIcon from '@mui/icons-material/StarBorder';
 
 const StyledButton = styled(Button)(({ theme }) => ({
     marginTop: '8px',
@@ -120,6 +122,7 @@ const TimeslotSelection = () => {
     const [totalPrice, setTotalPrice] = useState(0);
     const [fees, setFees] = useState(2); // Assume fees is 2DT
 
+    
     // Function to handle changes in timeslot selection
     const handleTimeslotSelection = (selectedTimeslotIds) => {
     const newSelectedTimeslots = timeslots.filter(timeslot =>
@@ -478,58 +481,307 @@ const TimeslotSelection = () => {
 
     const [qrImage, setQrImage] = useState(null);
 
-    
+    //REVIEW 
+    const [reviews, setReviews] = useState([]);
+    const [openReviewsModal, setOpenReviewsModal] = useState(false);
+    const [reviewOpen, setReviewOpen] = useState(false);
+    const [isPendingReview, setIsPendingReview] = useState(false);
+
+    const [reviewFormData, setReviewFormData] = useState({
+    reviewText: '',
+    reviewStar: 0
+    });
+
+    const handleReviewOpen = () => {
+        setReviewOpen(true);
+    };
+
+    const handleReviewClose = () => {
+        setReviewOpen(false);
+    };
+
+    const handleOpenReviewsModal = () => {
+        setOpenReviewsModal(true);
+    };
+
+      const handleCloseReviewsModal = () => {
+        setOpenReviewsModal(false);
+    };
+
+    const [feedbackOpen, setFeedbackOpen] = useState(false);
+
+    const handleFeedbackClose = () => {
+        setFeedbackOpen(false);
+      };
+
+    const handleReviewSubmit = async () => {
+        try {
+          setIsPending(true);
+          // Convert reviewStar to an integer
+          const reviewStar = parseInt(reviewFormData.reviewStar);
+          
+          // Create the review object
+          const review = {
+            reviewText: reviewFormData.reviewText,
+            reviewStar: reviewStar,
+            owner: `/api/users/${auth.userId}`,
+            pitch: `/api/grounds/${pitch.id}`
+          };
+      
+          // Make the POST request to create the review
+          const response = await axiosPrivate.post('/api/reviews', review, {
+            headers: {
+              'Content-Type': 'application/json',
+            },
+          });
+      
+          // Close the review dialog and clear the form data
+          setIsPending(false);
+          setReviewOpen(false);
+          setReviewFormData({
+            reviewText: '',
+            reviewStar: 0
+          });
+          getPitchData();
+          getTimeSlots();
+          setFeedbackOpen(true);         
+        } catch (error) {
+            setIsPending(false);
+          setReviewOpen(false);
+          setReviewFormData({
+            reviewText: '',
+            reviewStar: 0
+          });
+          getPitchData();
+          getTimeSlots();
+          setFeedbackOpen(true);
+        }
+      };
+
+      const handleFetchReviews = async () => {
+        try {
+          setIsPendingReview(true);  
+          const response = await axiosPrivate.get(`/api/grounds/${pitch.id}/reviews`);
+          setReviews(response.data['hydra:member']);
+          setIsPendingReview(false);  
+          setOpenReviewsModal(true);
+        } catch (error) {
+          // Handle error (e.g., show an error message)
+        }
+      };
+      
     return ( 
     <div>
         <Navbar />
-        <Box sx={{ bgcolor: 'green.main', padding: '5px'}}>
-            <Typography variant="h6" sx={{ color: 'white.main', fontWeight: 600, margin: '10px' }}>Reservation Process</Typography>
-        </Box>
+            {!isMobile ? (
+            <Box sx={{ bgcolor: 'green.main', padding: '5px', display: 'flex', justifyContent: 'space-between' }}>
+
+                <Grid container alignItems="center">
+                <Grid item xs={12} sm={6}>
+                    <Typography variant="h6" sx={{ color: 'white.main', fontWeight: 600, margin: '4px' }}>
+                    Reservation Process
+                    </Typography>
+                </Grid>
+                <Grid item xs={12} sm={6}>
+                    <Box sx={{ margin: '4px', display: 'flex', justifyContent: 'flex-end' }}>
+                    <Button
+                        sx={{ color: 'white.main', mr: 1 }}
+                        variant="outlined"
+                        onClick={handleFetchReviews}
+                        startIcon={<ViewListIcon />}
+                    >
+                          {isPendingReview ? (
+                        <CircularProgress color="white" size={24} />
+                    ) : (
+                        "View Reviews"
+                    )}
+                    </Button>
+                    {auth.username && (
+                        <Button
+                        sx={{ color: 'white.main' }}
+                        variant="outlined"
+                        onClick={handleReviewOpen}
+                        startIcon={<RateReviewIcon />}
+                        >
+                        Leave a Review
+                        </Button>
+                    )}
+                    </Box>
+                </Grid>
+                </Grid>
+            </Box>
+
+            ) : (
+                <>
+                <Box sx={{ bgcolor: 'green.main', padding: '5px', display: 'flex', justifyContent: 'space-between', textAlign:'center', alignItems:'center' }}>
+                     <Typography variant="h6" sx={{ color: 'white.main', fontWeight: 600, margin: '4px' }}>
+                    Reservation Process
+                    </Typography>
+                </Box>
+                <Box sx={{ bgcolor: 'white.main', padding: '5px', display: 'flex', justifyContent: 'space-between', textAlign:'center', alignItems:'center', margin:'10px' }}>
+                <Button
+                        sx={{ color: 'green.main', mr: 1 }}
+                        variant="outlined"
+                        onClick={handleFetchReviews}
+                        startIcon={<ViewListIcon />}
+                    >
+                        View Reviews
+                    </Button>
+                    {auth.username && (
+                        <Button
+                        sx={{ color: 'green.main' }}
+                        variant="outlined"
+                        onClick={handleReviewOpen}
+                        startIcon={<RateReviewIcon />}
+                        >
+                        Leave a Review
+                        </Button>
+                    )}
+                </Box>
+                <Divider sx={{ marginTop:"5px", marginBottom:"5px" }} /> 
+                </>
+            )}
         <StyledBox>
-        <StyledModalQr
-        open={openModal}
-        onClose={handleCloseModal}
-        aria-labelledby="simple-modal-title"
-        aria-describedby="simple-modal-description"
-        >
-            <Box
-            sx={{
-            bgcolor: "background.default",
-            color: "text.primary",
-            padding: 4,
-            borderRadius: 2,
-            //'& > *': { marginBottom:'10px' },
-            maxHeight: '80vh',
-            width: isMobile ? 'auto' : 'auto', // use 90vw (90% of the width of the viewport) width for mobile devices, otherwise use 400px width
-            height: isMobile ? 'auto' : 'auto', // use 90vw (90% of the width of the viewport) width for mobile devices, otherwise use 400px width
-            display:'flex',
-            flexDirection:'column',
-            margin:'10px'    
-            }}
-        >    
-            <Typography variant="h6" textAlign="center" sx={{ color: "green.main", marginBottom:'10px'}}>
-              Time To get your QR code!
-            </Typography>
-            <Typography variant="h5" textAlign="center" sx={{ color: "grey.main", marginBottom:'10px'}} >Please save this QR code and present it at the venue.</Typography>
-
-             <Box sx={{ display:'flex', justifyContent:'center', alignItems:'center'}}> 
-             <img src={qrImage} alt="QR Code" />
-            
-            </Box>  
-            <Button
-                href={qrImage}
-                download="QR_Code.png"
-                variant="contained"
-                color="primary"
-                disabled={!qrImage}
-                startIcon={<DownloadIcon/>}
+            <StyledModalQr
+            open={openModal}
+            onClose={handleCloseModal}
+            aria-labelledby="simple-modal-title"
+            aria-describedby="simple-modal-description"
             >
-                Download QR Code
-            </Button>
-        </Box>
-        </StyledModalQr>
+                <Box
+                    sx={{
+                    bgcolor: "background.default",
+                    color: "text.primary",
+                    padding: 4,
+                    borderRadius: 2,
+                    //'& > *': { marginBottom:'10px' },
+                    maxHeight: '80vh',
+                    width: isMobile ? 'auto' : 'auto', // use 90vw (90% of the width of the viewport) width for mobile devices, otherwise use 400px width
+                    height: isMobile ? 'auto' : 'auto', // use 90vw (90% of the width of the viewport) width for mobile devices, otherwise use 400px width
+                    display:'flex',
+                    flexDirection:'column',
+                    margin:'10px'    
+                    }}
+                >    
+                    <Typography variant="h6" textAlign="center" sx={{ color: "green.main", marginBottom:'10px'}}>
+                    Time To get your QR code!
+                    </Typography>
+                    <Typography variant="h5" textAlign="center" sx={{ color: "grey.main", marginBottom:'10px'}} >Please save this QR code and present it at the venue.</Typography>
 
-        <Snackbar
+                    <Box sx={{ display:'flex', justifyContent:'center', alignItems:'center'}}> 
+                    <img src={qrImage} alt="QR Code" />
+                    
+                    </Box>  
+                    <Button
+                        href={qrImage}
+                        download="QR_Code.png"
+                        variant="contained"
+                        color="primary"
+                        disabled={!qrImage}
+                        startIcon={<DownloadIcon/>}
+                    >
+                        Download QR Code
+                    </Button>
+                </Box>
+            </StyledModalQr>
+            
+            <Dialog 
+            open={reviewOpen} 
+            onClose={handleReviewClose}
+            >
+                <DialogTitle>
+                    <Typography variant="h5" sx={{ color: 'green.main' }}>
+                    Leave a Review
+                    </Typography>
+                </DialogTitle>
+                <DialogContent sx={{ width: isMobile ? '280px' : '500px' }}>
+                    <Typography variant="subtitle1" color="text.secondary" sx={{ marginBottom: '10px' }}>
+                    Opinion:
+                    </Typography>
+                    <TextField
+                    required
+                    sx={{ width: isMobile ? '280px' : '500px' }}
+                    label="Review Text"
+                    multiline
+                    rows={5}
+                    value={reviewFormData.reviewText}
+                    variant="filled"
+                    onChange={(e) =>
+                        setReviewFormData({
+                        ...reviewFormData,
+                        reviewText: e.target.value,
+                        })
+                    }
+                    />
+                    <Box sx={{ marginTop: '10px' }}>
+                    <Typography variant="subtitle1" color="text.secondary" sx={{ marginBottom: '10px' }}>
+                        Rating:
+                    </Typography>
+                    <Rating
+                        name="reviewStar"
+                        value={reviewFormData.reviewStar}
+                        onChange={(event, newValue) =>
+                        setReviewFormData({
+                            ...reviewFormData,
+                            reviewStar: newValue,
+                        })
+                        }
+                        sx={{ color: 'green.main' }}
+                        required
+                        emptyIcon={<StarBorderIcon fontSize="inherit" />}
+                    />
+                    </Box>
+                </DialogContent>
+                <DialogActions>
+                    <Button onClick={handleReviewClose}>Cancel</Button>
+                    <Button
+                    onClick={handleReviewSubmit}
+                    disabled={!reviewFormData.reviewText || !reviewFormData.reviewStar}
+                    >
+                    {isPending ? (
+                        <CircularProgress color="green" size={24} />
+                    ) : (
+                        "Submit"
+                    )}
+                    </Button>
+                </DialogActions>
+            </Dialog>
+
+            <Dialog open={feedbackOpen} onClose={handleFeedbackClose}>
+            <DialogTitle>
+                <Typography variant="h5" sx={{ color: 'green.main' }}>Thank You!</Typography>
+            </DialogTitle>
+            <DialogContent sx={{ width: isMobile ? '280px' : '500px' }}>
+               <Typography variant='body2'>Thanks for sharing your experience !</Typography> 
+            </DialogContent>
+            <DialogActions>
+                <Button onClick={handleFeedbackClose} autoFocus>
+                Close
+                </Button>
+            </DialogActions>
+            </Dialog>
+
+
+            <Dialog open={openReviewsModal} onClose={handleCloseReviewsModal} maxWidth="sm" fullWidth>
+                <DialogTitle>
+                    <Typography variant="h5" sx={{ color: 'green.main' }}>
+                    Reviews 
+                    </Typography>
+                </DialogTitle>                <DialogContent>
+                    {Array.isArray(reviews) && reviews.length > 0 ? (
+                    reviews.map((review) => (
+                        <ReviewCard key={review.id} review={review} />
+                    ))
+                    ) : (
+                    <Typography>No reviews available</Typography>
+                    )}
+                </DialogContent>
+                <DialogActions>
+                    <Button onClick={handleCloseReviewsModal}>Close</Button>
+                </DialogActions>
+            </Dialog>
+
+            <Snackbar
               open={snackbarOpen}
               autoHideDuration={6000}
               onClose={handleClose}
@@ -555,8 +807,9 @@ const TimeslotSelection = () => {
                  'You successfully created your reservation!'
                 ) : errMsg} 
                </Alert>
-        </Snackbar>         
+             </Snackbar>         
             <Box>
+                
             <Grid container spacing={2}>
 
                     <Grid item xs={12} sm={12} md={5}>   
@@ -759,11 +1012,11 @@ const TimeslotSelection = () => {
             
                                     <Divider sx={{ marginTop:"5px", marginBottom:"5px" }} />
 
-                                    <Box sx={{  padding: '0px 10px', display: 'flex', flexDirection: 'row',   justifyContent: 'space-between' , marginBottom: '2px'}}> 
+                                    <Box sx={{  padding: '0px 10px', display: 'flex', flexDirection: 'row',   justifyContent: 'space-between' , marginBottom: '4px'}}>    
                                         <Typography variant="subtitle1" color="text.secondary">Rating </Typography>
                                         <Rating sx={{color: 'green.main'}} name="read-only" value={averageRating} precision={0.5} readOnly />
+                                         
                                     </Box>
-
                                     <Divider sx={{ marginTop:"5px", marginBottom:"5px" }} />
 
                                     <Box sx={{  padding: '0px 10px', display: 'flex', flexDirection: 'row',   justifyContent: 'space-between' , marginBottom: '5px'}}> 

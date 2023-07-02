@@ -196,14 +196,14 @@ const Reservations = () => {
             {
               field: 'timeSlots',
               headerName: 'Time Slots',
-              width: 500,
+              width: 550,
               renderCell: (params) => <pre>{params.value}</pre>,
             }
           );
         }
         
         columns.push(
-          { field: 'reservationCode', headerName: 'Code', width: isMobile ? 90 : 50, disableColumnMenu: true  },
+          { field: 'reservationCode', headerName: 'Code', width: isMobile ? 90 : 100, disableColumnMenu: true  },
           {
             field: 'qr',
             headerName: 'QR Code',
@@ -299,7 +299,7 @@ const Reservations = () => {
                                 columns={columns}
                                 initialState={{
                                     pagination: {
-                                    paginationModel: { page: 0, pageSize: 5 },
+                                    paginationModel: { page: 0, pageSize: 10 },
                                     },
                                 }}
                                 pageSizeOptions={[5, 10]}

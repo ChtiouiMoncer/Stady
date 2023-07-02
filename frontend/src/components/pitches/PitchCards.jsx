@@ -26,15 +26,45 @@ const StyledBox = styled(Box) (({ theme }) => ({
 const StyledModal = styled(Box) (({ theme }) => ({
 
     //backgroundColor: theme.palette.green.main,
-    //backgroundImage: `url(${loginbg})`,
+    backgroundImage: `url(${loginbg})`,
     height: '90vh',
     backgroundSize: 'cover',
     display: 'flex',
     flexDirection:"column",
     alignItems: 'center',
-    justifyContent: 'center',    
+    justifyContent: 'center',
+    
+    ".action-button": {
+        marginTop: "20px",
+        marginBottom: "8px",
+        color: theme.palette.white.main,
+        backgroundColor: theme.palette.green.main,
+        textTransform: "none",
+        "&:hover": {
+            backgroundColor: theme.palette.green.light,
+          },
+        "&.MuiButton-focusVisible": {
+            boxShadow: "none !important"
+          }  
+      },
+  ".social-login": {
+      borderColor: theme.palette.green.main, // Set the color of the border
+      color: theme.palette.green.main,
+          backgroundColor: theme.palette.white.main,
+          textTransform: "none",
+          "&:hover": {
+              backgroundColor: theme.palette.green.light,
+              color: theme.palette.white.main, // Set the color of the border
+  
+            },
+          '& .MuiButton-startIcon': {
+              position: "absolute",
+              left: "20px"
+            },
+        }
+    
   }));
-
+  
 const PitchCards = () => {
 
     const theme = useTheme();
@@ -58,16 +88,16 @@ if (pitches.length === 0) {
             <Navbar />
             <StyledModal>
                 <Box sx={{ display: "flex" , flexDirection: "column", alignItems: "center" }}>
-                <Typography variant="h5" sx={{ color: isMobile ? 'white.main' : 'green.main' , fontWeight: 600, margin: '10px' }}>No results found for your search. Redirecting you to the home page...</Typography>
-                <Box sx={{ display: 'flex', flexDirection: 'row', justifyContent:'center', gap: '5px', marginTop: '5px'}}>
-                    <Button onClick={goBack}  component={RouterLink} to="/"  variant="contained" className="my-button"    >
-                        <Typography variant="subtitle2"  >
-                                    {"Go Back"}                        
-                        </Typography>
-                    </Button>  
-                </Box>  
+                    <Typography variant="h5" sx={{ color: isMobile ? 'white.main' : 'green.main' , fontWeight: 600, margin: '10px' }}>No results found for your search. Redirecting you to the home page...</Typography>
+                    <Box sx={{ display: 'flex', flexDirection: 'row', justifyContent:'center', gap: '5px', marginTop: '5px'}}>
+                        <Button onClick={goBack}  component={RouterLink} to="/"  variant="contained" className="my-button"    >
+                            <Typography variant="subtitle2"  >
+                                        {"Go Back"}                        
+                            </Typography>
+                        </Button>  
+                    </Box>  
                 
-            </Box>
+                </Box>
             </StyledModal>
         </div>
     )
@@ -78,6 +108,7 @@ if (pitches.length === 0) {
     <div>
     <Navbar />
     <StyledBox>
+                    
         <Typography variant="subtitle1" sx={{ color: 'green.main', fontWeight: 600, margin: '10px' }}>Find your next adventure</Typography>
 
         <Grid container spacing={2}>
@@ -90,6 +121,7 @@ if (pitches.length === 0) {
                 let averageRating = sum / pitch.reviews.length;
 
                 return (
+
                     <Grid item xs={12} sm={6} md={4} key={index}>                      
                             <Card
                                 sx={{
@@ -133,6 +165,16 @@ if (pitches.length === 0) {
                                         <Typography variant="subtitle1" color="text.secondary" textAlign="end">
                                             {pitch.openingTimes && Math.min(...pitch.openingTimes.map(time => time.price))} DT
                                         </Typography>
+                                    </Box>
+                                    <Box sx={{  padding: '0px 10px', display: 'flex', flexDirection: 'row',   justifyContent: 'space-between' , marginBottom: '5px'}}> 
+                                        <Box sx={{ display: 'flex', flexDirection: 'row', gap: '5px'}}>
+                                            <Typography variant="subtitle1" color="text.secondary">
+                                            {pitch.sportsType.SportsName},                                             {pitch.floorType.floorName}
+
+                                            </Typography>
+                                           
+                                        </Box>
+                                           
                                     </Box>
 
                                 </CardContent>
