@@ -18,6 +18,7 @@ import RestaurantIcon from '@mui/icons-material/Restaurant';
 import ShowerIcon from '@mui/icons-material/Shower';
 import { Checkroom, SpaceDashboard } from "@mui/icons-material";
 import { grey } from "@mui/material/colors";
+import Footer from "../homePage/Footer";
 
 const StyledModal = styled(Box) (({ theme }) => ({
 
@@ -68,26 +69,25 @@ useEffect(() => {
             <>
             <Navbar />
             {!isPendingPitches ? (
-            <StyledModal>
-            <Box sx={{ marginTop:'20px',marginBottom:'10px', display:'flex', justifyContent:'center', alignItems:'center', flexDirection:'column'}}>
-                <Typography variant="h6" sx={{marginBottom:'10px', color:'green.main'}}>Search for a Facility! </Typography>
-                <AllPitchSearch />
-            </Box>
-                <Box 
-                sx={{ 
-                    color: "text.primary",
-                    padding: 3,
-                    borderRadius: 2,
-                    marginBottom: '10px',
-                    width: isMobile ? '80vw' : '80vw', // use 90vw (90% of the width of the viewport) width for mobile devices, otherwise use 400px width
-                    height: isMobile ? 'auto' : 'auto', 
-                    overflow: 'auto',
+            <><StyledModal>
+                    <Box sx={{ marginTop: '20px', marginBottom: '10px', display: 'flex', justifyContent: 'center', alignItems: 'center', flexDirection: 'column' }}>
+                        <Typography variant="h6" sx={{ marginBottom: '10px', color: 'green.main' }}>Search for a Facility! </Typography>
+                        <AllPitchSearch />
+                    </Box>
+                    <Box
+                        sx={{
+                            color: "text.primary",
+                            padding: 3,
+                            borderRadius: 2,
+                            marginBottom: '10px',
+                            width: isMobile ? '80vw' : '80vw',
+                            height: isMobile ? 'auto' : 'auto',
+                            overflow: 'auto',
+                        }}
+                    >
 
-                }}
-                >   
-                    
-                       {/* Add the UI here */}
-                       <Grid container spacing={2}>
+                        {/* Add the UI here */}
+                        <Grid container spacing={2}>
                             {pitches.map((pitch, index) => {
                                 let sum = 0;
                                 pitch.reviews.forEach(review => {
@@ -113,85 +113,86 @@ useEffect(() => {
                                                 margin: '5px',
                                                 cursor: 'pointer',
                                                 maxHeight: '600px', // Add max height property
-
                                             }}
                                             onClick={() => navigate(`/timeslots/${pitch.name}`, { state: { pitchId: pitch.id } })}
                                         >
-                                    <Carousel autoPlay infiniteLoop useKeyboardArrows >
-                                    {pitch.images.map((image, idx) => (
-                                        <div key={idx} style={{ height: "300px" }}>
-                                            <img src={`http://127.0.0.1:8000${image.contentUrl}`} alt={pitch.name} />
-                                        </div>
-                                    ))}
-                                     </Carousel>
+                                            <Carousel autoPlay infiniteLoop useKeyboardArrows>
+                                                {pitch.images.map((image, idx) => (
+                                                    <div key={idx} style={{ height: "300px" }}>
+                                                        <img src={`http://127.0.0.1:8000${image.contentUrl}`} alt={pitch.name} />
+                                                    </div>
+                                                ))}
+                                            </Carousel>
 
-                                <Divider sx={{ marginTop:"5px", marginBottom:"5px" }} />
+                                            <Divider sx={{ marginTop: "5px", marginBottom: "5px" }} />
 
-                                <CardContent>
+                                            <CardContent>
 
-                                    <Box sx={{  padding: '0px 10px', display: 'flex', flexDirection: 'row',   justifyContent: 'space-between' , marginBottom: '5px'}}> 
-                                        <Box sx={{ display: 'flex', flexDirection: 'row', gap: '5px'}}>
-                                            <Typography variant="subtitle1" color="text.secondary">
-                                            {pitch.name.toUpperCase()}, 
-                                            </Typography>
-                                            <Typography variant="subtitle1" color="green.main" >
-                                                {pitch.state.name} 
-                                            </Typography>
-                                        </Box>
-                                        <Typography variant="subtitle1" color="text.secondary" textAlign="end">
-                                            {pitch.openingTimes && Math.min(...pitch.openingTimes.map(time => time.price))} DT
-                                        </Typography>
-                                    </Box>
-                                 
+                                                <Box sx={{ padding: '0px 10px', display: 'flex', flexDirection: 'row', justifyContent: 'space-between', marginBottom: '5px' }}>
+                                                    <Box sx={{ display: 'flex', flexDirection: 'row', gap: '5px' }}>
+                                                        <Typography variant="subtitle1" color="text.secondary">
+                                                            {pitch.name.toUpperCase()},
+                                                        </Typography>
+                                                        <Typography variant="subtitle1" color="green.main">
+                                                            {pitch.state.name}
+                                                        </Typography>
+                                                    </Box>
+                                                    <Typography variant="subtitle1" color="text.secondary" textAlign="end">
+                                                        {pitch.openingTimes && Math.min(...pitch.openingTimes.map(time => time.price))} DT
+                                                    </Typography>
+                                                </Box>
 
-                                </CardContent>
-                            
-                                <Divider sx={{ marginTop:"5px", marginBottom:"5px" }} />
 
-                                <Box sx={{  padding: '0px 10px', display: 'flex', flexDirection: 'row',   justifyContent: 'space-between' , marginBottom: '5px'}}> 
-                                    <Typography variant="subtitle1" color="text.secondary">Rating </Typography>
-                                    <Rating sx={{color: 'green.main'}} name="read-only" value={averageRating} precision={0.5} readOnly />
-                                </Box>
+                                            </CardContent>
 
-                                <Divider sx={{ marginTop:"5px", marginBottom:"5px" }} />
+                                            <Divider sx={{ marginTop: "5px", marginBottom: "5px" }} />
 
-                                
-                                <Box sx={{  padding: '0px 10px', display: 'flex', flexDirection: 'row',   justifyContent: 'space-between' , marginBottom: '30px'}}> 
-                                        <Typography variant="subtitle1" color="text.secondary">Amenties </Typography>     
-                                        <Typography variant="h5" textAlign="left" sx={{ color: "grey.dark", fontWeight: 500  }}>
-                                        { (pitch.amenties.hasShower && pitch.amenties.hasSecureStorage && pitch.amenties.hasChangingRoom && pitch.amenties.hasRestaurent && pitch.amenties.hasParking)  ? (
-                                            <>
-                                            <Tooltip title="Shower">
-                                                {pitch.amenties.hasShower ? <ShowerIcon sx={{marginBottom:'-5px'}} style={{ color: 'grey.main' }} /> : ( <></> )}
-                                            </Tooltip>
-                                            <Tooltip title="Secure Storage">
-                                                {pitch.amenties.hasSecureStorage ? <SpaceDashboard sx={{marginBottom:'-5px'}} style={{ color: 'grey.main' }} /> : ( <></> )}
-                                            </Tooltip>
-                                            <Tooltip title="Changing Room">
-                                                {pitch.amenties.hasChangingRoom ? <Checkroom sx={{marginBottom:'-5px'}} style={{ color: 'grey.main' }} /> : ( <></> )}
-                                            </Tooltip>
-                                            <Tooltip title="Restaurent">
-                                                {pitch.amenties.hasRestaurent ? <RestaurantIcon sx={{marginBottom:'-5px'}} style={{ color: 'grey.main' }} /> : ( <></> )}
-                                            </Tooltip>
-                                            <Tooltip title="Parking">
-                                                {pitch.amenties.hasParking ? <LocalParkingIcon sx={{marginBottom:'-5px'}} style={{ color: 'grey.main' }} /> : ( <></> )}
-                                            </Tooltip>
-                                            </>
-                                        ) : (
-                                        <>
-                                            No Amenities
-                                        </>
-                                        )}
-                                        </Typography>
-                                </Box>
+                                            <Box sx={{ padding: '0px 10px', display: 'flex', flexDirection: 'row', justifyContent: 'space-between', marginBottom: '5px' }}>
+                                                <Typography variant="subtitle1" color="text.secondary">Rating </Typography>
+                                                <Rating sx={{ color: 'green.main' }} name="read-only" value={averageRating} precision={0.5} readOnly />
+                                            </Box>
+
+                                            <Divider sx={{ marginTop: "5px", marginBottom: "5px" }} />
+
+
+                                            <Box sx={{ padding: '0px 10px', display: 'flex', flexDirection: 'row', justifyContent: 'space-between', marginBottom: '30px' }}>
+                                                <Typography variant="subtitle1" color="text.secondary">Amenties </Typography>
+                                                <Typography variant="h5" textAlign="left" sx={{ color: "grey.dark", fontWeight: 500 }}>
+                                                    {(pitch.amenties.hasShower && pitch.amenties.hasSecureStorage && pitch.amenties.hasChangingRoom && pitch.amenties.hasRestaurent && pitch.amenties.hasParking) ? (
+                                                        <>
+                                                            <Tooltip title="Shower">
+                                                                {pitch.amenties.hasShower ? <ShowerIcon sx={{ marginBottom: '-5px' }} style={{ color: 'grey.main' }} /> : (<></>)}
+                                                            </Tooltip>
+                                                            <Tooltip title="Secure Storage">
+                                                                {pitch.amenties.hasSecureStorage ? <SpaceDashboard sx={{ marginBottom: '-5px' }} style={{ color: 'grey.main' }} /> : (<></>)}
+                                                            </Tooltip>
+                                                            <Tooltip title="Changing Room">
+                                                                {pitch.amenties.hasChangingRoom ? <Checkroom sx={{ marginBottom: '-5px' }} style={{ color: 'grey.main' }} /> : (<></>)}
+                                                            </Tooltip>
+                                                            <Tooltip title="Restaurent">
+                                                                {pitch.amenties.hasRestaurent ? <RestaurantIcon sx={{ marginBottom: '-5px' }} style={{ color: 'grey.main' }} /> : (<></>)}
+                                                            </Tooltip>
+                                                            <Tooltip title="Parking">
+                                                                {pitch.amenties.hasParking ? <LocalParkingIcon sx={{ marginBottom: '-5px' }} style={{ color: 'grey.main' }} /> : (<></>)}
+                                                            </Tooltip>
+                                                        </>
+                                                    ) : (
+                                                        <>
+                                                            No Amenities
+                                                        </>
+                                                    )}
+                                                </Typography>
+                                            </Box>
                                         </Card>
                                     </Grid>
-                                )
+                                );
                             })}
                         </Grid>
-                        {/* End of added UI */} 
-                </Box>
-            </StyledModal>
+                        {/* End of added UI */}
+                    </Box>
+                </StyledModal><Footer /></>
+            
+
             ) : (
                 <Box
                 sx={{

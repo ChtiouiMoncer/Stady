@@ -3,6 +3,7 @@ import Navbar from "../../../Navbar";
 import SidebarAdmin from "../../SidebarAdmin";
 import { useState } from "react";
 import PitchRejection from "./PitchRejection";
+import AppFooter from "../../../homePage/AppFooter";
 
 const RejectedPitches = () => {
     const [activeItem, setActiveItem] = useState('Rejected Pitches');
@@ -16,6 +17,8 @@ const RejectedPitches = () => {
            <SidebarAdmin activeItem={activeItem} />
            <PitchRejection />
           </Stack> 
+          <AppFooter />
+
       </Box>
       </>    
       );

@@ -28,6 +28,7 @@ import useAxiosPrivate from "../../Hooks/useAxiosPrivate";
 import Snackbar from '@mui/material/Snackbar';
 import CloseIcon from '@mui/icons-material/Close';
 import { useNavigate } from "react-router-dom";
+import Footer from "../homePage/Footer";
 
 
 const containerStyle = {
@@ -1145,6 +1146,7 @@ const handleFormReset = () => {
       </Box>
       
     </StyledModal>
+    <Footer />
   </>
   );
 };

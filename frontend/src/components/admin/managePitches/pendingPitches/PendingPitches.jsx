@@ -3,6 +3,7 @@ import Navbar from "../../../Navbar";
 import SidebarAdmin from "../../SidebarAdmin";
 import { useState } from "react";
 import UnresolvedPitches from "./UnresolvedPitches";
+import AppFooter from "../../../homePage/AppFooter";
 
 const PendingPitches = () => {
     const [activeItem, setActiveItem] = useState('Pending Pitches');
@@ -16,6 +17,8 @@ const PendingPitches = () => {
            <SidebarAdmin activeItem={activeItem} />
            <UnresolvedPitches />
           </Stack> 
+          <AppFooter />
+
       </Box>
       </>    
       );

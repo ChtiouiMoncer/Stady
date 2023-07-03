@@ -11,6 +11,7 @@ import useAxiosPrivate from "../../Hooks/useAxiosPrivate";
 import FeedbackIcon from '@mui/icons-material/Feedback';
 import RateReviewIcon from '@mui/icons-material/RateReview';
 import StarBorderIcon from '@mui/icons-material/StarBorder';
+import Footer from "../homePage/Footer";
 
 
 const StyledButton = styled(Button)(({ theme }) => ({
@@ -339,6 +340,7 @@ const handleReviewSubmit = async () => {
                     <CircularProgress sx={{ color:"green.main" }} />
                 )}
             </StyledModal>
+            <Footer />
         </>
      );
 }

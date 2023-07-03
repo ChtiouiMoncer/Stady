@@ -1,5 +1,6 @@
 import Navbar from "../Navbar";
 import LoginPage from "../auth/LoginPage";
+import Footer from "./Footer";
 import Hero from "./Hero";
 import MiniUserFeedback from "./MiniUserFeedback";
 import MiniUserPitches from "./MiniUserPitches";
@@ -11,6 +12,7 @@ const HomePage = () => {
             <Hero />
             <MiniUserFeedback />
             <MiniUserPitches />
+            <Footer />
         </>
      );
 }

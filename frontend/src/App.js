@@ -17,7 +17,6 @@ import Users from './components/admin/Users';
 import Addpitch from './components/owner/Addpitch';
 import OwnerPitches from './components/owner/OwnerPitches';
 import Reservations from './components/member/Reservations';
-import HorizontalLinearStepper from './components/chat';
 import OwnerDashboardStats from './components/owner/OwnerDashboardStats';
 import PendingPitches from './components/admin/managePitches/pendingPitches/PendingPitches';
 import ApprovedPitches from './components/admin/managePitches/approvedPitches/ApprovedPitches';
@@ -26,6 +25,10 @@ import PitchCards from './components/pitches/PitchCards';
 import TimeslotSelection from './components/pitches/TimeslotsSelection';
 import UserFeedback from './components/member/UserFeedback';
 import SearchAllPitches from './components/pitches/SearchAllPitches';
+import About from './components/homePage/About';
+import HowItWorks from './components/homePage/HowItWorks';
+import AppContact from './components/homePage/AppContact';
+import AppTerms from './components/homePage/AppTerms';
 
 
 
@@ -63,6 +66,12 @@ function App() {
                       <Route path="/" element={  <HomePage /> }></Route>
                       <Route path="/unauthorized" element={  <Unauthorized /> } />
                       <Route path="/stady/feedback" element={<UserFeedback/>}></Route>
+                      <Route path="/about" element={<About/>}></Route>
+                      <Route path="/process" element={<HowItWorks/>}></Route>
+                      <Route path="/process" element={<HowItWorks/>}></Route>
+                      <Route path="/contact" element={<AppContact/>}></Route>
+                      <Route path="/terms" element={<AppTerms/>}></Route>
+
 
                       <Route path="/pitches" element={  <PitchCards /> }></Route>
                       <Route path="/pitches/search" element={  <SearchAllPitches /> }></Route>

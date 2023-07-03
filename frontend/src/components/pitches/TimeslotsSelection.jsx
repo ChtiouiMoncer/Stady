@@ -30,6 +30,8 @@ import RateReviewIcon from '@mui/icons-material/RateReview';
 import ViewListIcon from '@mui/icons-material/ViewList';
 import ReviewCard from './ReviewCard';
 import StarBorderIcon from '@mui/icons-material/StarBorder';
+import Footer from '../homePage/Footer';
+import AppFooter from '../homePage/AppFooter';
 
 const StyledButton = styled(Button)(({ theme }) => ({
     marginTop: '8px',
@@ -1073,6 +1075,7 @@ const TimeslotSelection = () => {
                 </Grid>
             </Box>
         </StyledBox>
+        <AppFooter />
     </div>
 
     );

@@ -13,6 +13,7 @@ import QRCode from "qrcode.react";
 import QrCode2Icon from '@mui/icons-material/QrCode2';
 import CloseIcon from '@mui/icons-material/Close';
 import FeedbackIcon from '@mui/icons-material/Feedback';
+import Footer from "../homePage/Footer";
 
 const StyledButton = styled(Button)(({ theme }) => ({
     marginTop: '20px',
@@ -380,7 +381,10 @@ const Reservations = () => {
                     <CircularProgress sx={{ color:"green.main" }} />
                 )}
             </StyledModal>
-        </>
+            <Footer />
+          </>
+
+
      );
 }
  

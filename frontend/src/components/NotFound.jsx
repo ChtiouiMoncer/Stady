@@ -4,6 +4,7 @@ import loginbg from '../assets/herobg.png'
 import notfound from '../assets/notFound.png'
 import { useTheme } from '@mui/material/styles';
 import { Link as RouterLink, useNavigate, useLocation } from "react-router-dom";
+import Footer from "./homePage/Footer";
 
 
 
@@ -27,6 +28,7 @@ const NotFound = () => {
     const theme = useTheme(); //using the the Material-UI theme object, which is provided by the useTheme hook from Material-UI.
     const isMobile = useMediaQuery(theme.breakpoints.down('sm')); // checking if device is mobile
     return (
+        <>
         <StyledModal>
             <Box  
             sx={{
@@ -76,6 +78,8 @@ const NotFound = () => {
             </Box>
         
         </StyledModal>
+        <Footer />
+        </>
      );
 }
  

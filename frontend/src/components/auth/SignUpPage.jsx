@@ -499,7 +499,7 @@ const handleRoleChange = (event) => {
                         label={
                           <Typography variant="subtitle2" textAlign="left" sx={{ color: "grey.main" }}>
                             I agree to the
-                            <Link href="#" underline="none" sx={{ color: "green.main" }}>
+                            <Link target="_blank" component={RouterLink} to="/terms" underline="none">
                               {" terms and conditions"}
                             </Link>
                           </Typography>

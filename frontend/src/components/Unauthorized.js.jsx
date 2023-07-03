@@ -4,6 +4,7 @@ import loginbg from '../assets/herobg.png'
 import notfound from '../assets/notFound.png'
 import { useTheme } from '@mui/material/styles';
 import { Link as RouterLink, useNavigate, useLocation } from "react-router-dom";
+import Footer from "./homePage/Footer";
 
 const StyledModal = styled(Box) (({ theme }) => ({
 
@@ -25,6 +26,7 @@ const Unauthorized = () => {
     const goBack = () => navigate(-1);
 
     return (
+        <>
         <StyledModal>
             <Box  
             sx={{
@@ -69,6 +71,9 @@ const Unauthorized = () => {
             </Box>
 
         </StyledModal>
+        <Footer />
+        </>
+
     )
 }
 

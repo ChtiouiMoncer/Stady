@@ -3,6 +3,7 @@ import Navbar from "../../../Navbar";
 import SidebarAdmin from "../../SidebarAdmin";
 import { useState } from "react";
 import PitchesApproval from "./PitchesApproval";
+import AppFooter from "../../../homePage/AppFooter";
 
 const ApprovedPitches = () => {
     const [activeItem, setActiveItem] = useState('Approved Pitches');
@@ -16,6 +17,7 @@ const ApprovedPitches = () => {
            <SidebarAdmin activeItem={activeItem} />
            <PitchesApproval />
           </Stack> 
+          <AppFooter />
       </Box>
       </>    
       );

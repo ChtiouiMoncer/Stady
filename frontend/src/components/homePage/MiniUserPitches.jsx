@@ -1,5 +1,5 @@
 import PitchSearch from "../pitchSearchBar/PitchSearch";
-import loginbg from '../../assets/tennis.jpg'
+import loginbg from '../../assets/herobg2.png'
 import useAuth from "../../Hooks/useAuth";
 import React, { useEffect, useState } from "react";
 import axios, { axiosPrivate } from "../../api/axios";
@@ -85,7 +85,7 @@ useEffect(() => {
             {!isPendingPitches ? (
             <StyledModal>
               <Box sx={{ marginTop: '20px', textAlign: 'left' }}>
-                <Typography variant="h6" sx={{ marginBottom: '1px', color: 'white.main' }}>Our Facilities! </Typography>
+                <Typography variant="h6" sx={{marginTop:'10px', marginBottom: '1px', color: 'white.main' }}>Explore unique Pitches!</Typography>
             </Box>
                 <Box 
                 sx={{ 

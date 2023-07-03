@@ -13,6 +13,7 @@ import LocalParkingIcon from '@mui/icons-material/LocalParking';
 import RestaurantIcon from '@mui/icons-material/Restaurant';
 import ShowerIcon from '@mui/icons-material/Shower';
 import { Checkroom, SpaceDashboard } from "@mui/icons-material";
+import AppFooter from "../homePage/AppFooter";
 
 const StyledBox = styled(Box) (({ theme }) => ({
 
@@ -227,6 +228,7 @@ if (pitches.length === 0) {
             })}
         </Grid>
     </StyledBox>
+    <AppFooter />
 </div>
 
     </>
