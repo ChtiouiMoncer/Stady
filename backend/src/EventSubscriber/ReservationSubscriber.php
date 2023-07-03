@@ -36,6 +36,7 @@ class ReservationSubscriber
             // Check if one of the timeslots reservation start time is about to start less than 10 min.
             $nowTimestamp = $now->getTimestamp();
             $startTimeTimestamp = $timeSlot->getStartTime()->getTimestamp();
+            $today = new \DateTime();
 
             if (($startTimeTimestamp - $nowTimestamp) < 600) {
                 throw new \Exception('Cannot cancel a reservation that have a timeslot that is going to start less then 10min from now.');

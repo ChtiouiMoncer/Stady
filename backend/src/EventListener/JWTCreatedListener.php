@@ -38,7 +38,7 @@ class JWTCreatedListener
 
         $payload['ip'] = $request->getClientIp(); // Add the client IP address to the payload data
         $payload['userId'] = $user->getId(); // Add the user ID to the payload data
-
+        $payload['email'] = $user->getEmail();
         $event->setData($payload); // Update the payload data in the event with the modified payload
 
         //$header = $event->getHeader(); // Retrieve the existing header data from the event

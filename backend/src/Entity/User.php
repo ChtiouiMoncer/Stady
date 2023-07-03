@@ -91,7 +91,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     private ?string $plainPassword = null;
 
     #[ORM\Column(length: 255, unique: true)]
-    #[Groups(['user:read', 'user:write','ground:item:get','ground:write', 'ground:read','reservation:read'])]
+    #[Groups(['user:read', 'user:write','ground:item:get','ground:write', 'ground:read','reservation:read','review:read','feedback:read'])]
     #[Assert\NotBlank]
     private ?string $username = null;
 
@@ -116,6 +116,14 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[Assert\Valid]
     private Collection $reservations;
 
+    #[ORM\OneToMany(mappedBy: 'owner', targetEntity: Feedback::class)]
+    #[Groups(['user:read','user:write'])]
+    #[Assert\Valid]
+    #[ApiProperty(
+        security: 'is_granted("ROLE_MEMBER") or is_granted("ROLE_ADMIN") and object == user',
+    )]
+    private Collection $feedback;
+
 
 
 
@@ -124,6 +132,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         $this->pitches = new ArrayCollection();
         $this->reservations = new ArrayCollection();
         $this->reviews = new ArrayCollection();
+        $this->feedback = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -312,6 +321,36 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
             // set the owning side to null (unless already changed)
             if ($reservation->getOwner() === $this) {
                 $reservation->setOwner(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Feedback>
+     */
+    public function getFeedback(): Collection
+    {
+        return $this->feedback;
+    }
+
+    public function addFeedback(Feedback $feedback): self
+    {
+        if (!$this->feedback->contains($feedback)) {
+            $this->feedback->add($feedback);
+            $feedback->setOwner($this);
+        }
+
+        return $this;
+    }
+
+    public function removeFeedback(Feedback $feedback): self
+    {
+        if ($this->feedback->removeElement($feedback)) {
+            // set the owning side to null (unless already changed)
+            if ($feedback->getOwner() === $this) {
+                $feedback->setOwner(null);
             }
         }
 
