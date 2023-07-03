@@ -12,7 +12,7 @@ import useAxiosPrivate from "../../Hooks/useAxiosPrivate";
 import QRCode from "qrcode.react";
 import QrCode2Icon from '@mui/icons-material/QrCode2';
 import CloseIcon from '@mui/icons-material/Close';
-
+import FeedbackIcon from '@mui/icons-material/Feedback';
 
 const StyledButton = styled(Button)(({ theme }) => ({
     marginTop: '20px',
@@ -172,7 +172,7 @@ const Reservations = () => {
     }
 
 
-        //Load Pitches Data  
+        //Load Reservations Data  
         useEffect(() => {
             let isMounted = true;
             const controller = new AbortController();
@@ -246,8 +246,18 @@ const Reservations = () => {
 
         // Function to handle opening the QR dialog
         const handleOpenQR = (rowData) => {
-        setCurrentQRData(JSON.stringify(rowData));
-        setOpenQR(true);
+          const { reservationCode, pitchName, totalPrice, timeSlots, status } = rowData;
+          
+          // Check if timeSlots is a string and split into an array
+          const timeSlotsArray = typeof timeSlots === 'string' ? timeSlots.split('\n') : [timeSlots];
+        
+          // Format each time slot with its corresponding slot number
+          const formattedTimeSlots = timeSlotsArray.map((slot, index) => `Slot ${index + 1}: ${slot}`).join('\n');
+          
+          const formattedQRData = `Reservation Code: ${reservationCode}\nPitch Name: ${pitchName}\nTotal Price: ${totalPrice}\nTime Slots:\n${formattedTimeSlots}\nStatus: ${status}`;
+          
+          setCurrentQRData(formattedQRData);
+          setOpenQR(true);
         }
 
         // Function to handle closing the QR dialog
@@ -270,6 +280,24 @@ const Reservations = () => {
         document.body.removeChild(downloadLink);
         };
 
+
+       //APP REVIEW
+       const [openReviewsModal, setOpenReviewsModal] = useState(false);
+       const [reviewOpen, setReviewOpen] = useState(false);
+       const [isPendingReview, setIsPendingReview] = useState(false);
+   
+       const [reviewFormData, setReviewFormData] = useState({
+       reviewText: '',
+       reviewStar: 0
+       }); 
+
+       const handleReviewOpen = () => {
+        setReviewOpen(true);
+    };
+
+    const handleReviewClose = () => {
+        setReviewOpen(false);
+    };
     return ( 
         <>
             <Navbar />
@@ -280,12 +308,12 @@ const Reservations = () => {
                 position: "relative",  
                 bgcolor: "background.default",
                 color: "text.primary",
-                padding: 4,
+                padding: 3,
                 borderRadius: 2,
                 border: `1px solid ${theme.palette.green.main}`, // Add border property
                 //'& > *': { marginBottom:'10px' },
                 maxHeight: '80vh',
-                width: isMobile ? '70vw' : '80vw', // use 90vw (90% of the width of the viewport) width for mobile devices, otherwise use 400px width
+                width: isMobile ? '80vw' : '80vw', // use 90vw (90% of the width of the viewport) width for mobile devices, otherwise use 400px width
                 height: isMobile ? 'auto' : 'auto', // use 90vw (90% of the width of the viewport) width for mobile devices, otherwise use 400px width
                 }}
                 >   

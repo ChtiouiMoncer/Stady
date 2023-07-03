@@ -248,7 +248,7 @@ import { AccountCircle, AddCircle, AddIcCallOutlined } from "@mui/icons-material
                    
                     <Links>
 
-                         {/* Only render the home and pitches links for a member or a guest */}
+                         {/* Only render the home and pitches links for a admin */}
                         {auth?.roles?.find(role => [ROLES.Admin].includes(role))  ? (
                         <>
                             <Button component={RouterLink} to="/admin/dashboard">
@@ -264,8 +264,11 @@ import { AccountCircle, AddCircle, AddIcCallOutlined } from "@mui/icons-material
                             <Button component={RouterLink} to="/">
                                 <Typography variant="subtitle2" className="greenSubtitle">Home</Typography>
                             </Button>
-                            <Button component={RouterLink} to="/pitches">
+                            <Button component={RouterLink} to="/pitches/search">
                                 <Typography variant="subtitle2" className="greySubtitle">Pitches</Typography>
+                            </Button>
+                            <Button component={RouterLink} to="/stady/feedback">
+                                <Typography variant="subtitle2" className="greySubtitle">Feedback</Typography>
                             </Button>
                         </>
                         ) : null}

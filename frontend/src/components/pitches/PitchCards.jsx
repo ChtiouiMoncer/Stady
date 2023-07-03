@@ -136,14 +136,17 @@ if (pitches.length === 0) {
                                     width: isMobile ? '98%' : '88%',
                                     height: isMobile ? '95%' : '95%',
                                     margin: '5px',
+                                    marginBottom: '10px',
                                     cursor: 'pointer', 
+                                    maxHeight: '700px'
+                                    
                                 }}
                                 onClick={() => navigate(`/timeslots/${pitch.name}`, { state: { pitchId: pitch.id } })}
 
                             >
                                 <Carousel autoPlay infiniteLoop useKeyboardArrows dynamicHeight>
                                     {pitch.images.map((image, idx) => (
-                                        <div key={idx}>
+                                        <div key={idx} style={{ height: "300px" }}>
                                             <img src={`http://127.0.0.1:8000${image.contentUrl}`} alt={pitch.name} />
                                         </div>
                                     ))}

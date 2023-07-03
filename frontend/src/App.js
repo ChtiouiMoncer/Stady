@@ -24,6 +24,8 @@ import ApprovedPitches from './components/admin/managePitches/approvedPitches/Ap
 import RejectedPitches from './components/admin/managePitches/rejectedPitches/RejectedPitches';
 import PitchCards from './components/pitches/PitchCards';
 import TimeslotSelection from './components/pitches/TimeslotsSelection';
+import UserFeedback from './components/member/UserFeedback';
+import SearchAllPitches from './components/pitches/SearchAllPitches';
 
 
 
@@ -58,11 +60,12 @@ function App() {
                   {/* Public Routes */}
                   <Route element={ <PersistLogin /> }>  { /* When a user refresh the page he remain authenticated */ }
                       
-
                       <Route path="/" element={  <HomePage /> }></Route>
                       <Route path="/unauthorized" element={  <Unauthorized /> } />
+                      <Route path="/stady/feedback" element={<UserFeedback/>}></Route>
 
                       <Route path="/pitches" element={  <PitchCards /> }></Route>
+                      <Route path="/pitches/search" element={  <SearchAllPitches /> }></Route>
                       <Route path="/timeslots/:pitchName" element={<TimeslotSelection />} />
 
 
