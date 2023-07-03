@@ -21,21 +21,19 @@
             Typography,
             Link,
             MenuItem,
-            Menu,
-            Avatar
+            Menu
         } from "@mui/material";
 import SignUpModal from "./auth/SignUpModal";
 import LoginModal from "./auth/LoginModal";
 import { Link as RouterLink, useNavigate} from "react-router-dom";
 import useLogout from "../Hooks/useLogout";
 import useAuth from "../Hooks/useAuth";
-import { AccountCircle, AddCircle} from "@mui/icons-material";
+import { AccountCircle, AddCircle, AddIcCallOutlined } from "@mui/icons-material";
 import DashboardIcon from '@mui/icons-material/Dashboard';
 import FeedbackIcon from '@mui/icons-material/Feedback';
 import BookOnlineIcon from '@mui/icons-material/BookOnline';
 import ManageAccountsIcon from '@mui/icons-material/ManageAccounts';
-import AccountBoxIcon from '@mui/icons-material/AccountBox';
-import LogoutIcon from '@mui/icons-material/Logout';
+
     const drawerWidth = 200;
 
     const  Navbar = () => {
@@ -96,235 +94,210 @@ import LogoutIcon from '@mui/icons-material/Logout';
         const handleLogInModalOpen = () => {
             setShowLoginModal(true);
         }; 
-        const firstLetter = auth?.username ? auth.username.charAt(0).toUpperCase() : "";
-
 
         
         const drawer = (
             <div sx={{ bgcolor: "grey.light" }}>
-                <Divider />
-                <List>
-                    {/* Only render the home and pitches links for a admin */}
-                    {auth?.roles?.find(role => [ROLES.Admin].includes(role))  ? (
+              <Divider />
+              <List>
+                  {/* Only render the home and pitches links for a admin */}
+                  {auth?.roles?.find(role => [ROLES.Admin].includes(role))  ? (
+                  <ListItem disablePadding>
+                    <ListItemButton
+                      component={RouterLink}
+                      to="/admin/dashboard"
+                    >
+                      <ListItemIcon>
+                        <DashboardIcon sx={{ color: "green.main" }} />
+                      </ListItemIcon>
+                      <ListItemText
+                        primary={<Typography variant="subtitle2" sx={{ color: "green.main" }}>Dashboard</Typography>}
+                      />
+                    </ListItemButton>
+                  </ListItem>
+                ) : null}
+
+                {/* Only render the home link for a member or a guest */}
+                {(auth?.roles?.find(role => [ROLES.Member].includes(role)) || !auth?.access_token) && (
+                    <>
                     <ListItem disablePadding>
                         <ListItemButton
                         component={RouterLink}
-                        to="/admin/dashboard"
+                        to="/"
                         >
                         <ListItemIcon>
-                            <DashboardIcon sx={{ color: "green.main" }} />
+                            <HomeIcon sx={{ color: "green.main" }} />
                         </ListItemIcon>
                         <ListItemText
-                            primary={<Typography variant="subtitle2" sx={{ color: "green.main" }}>Dashboard</Typography>}
+                            primary={<Typography variant="subtitle2" sx={{ color: "green.main" }}>Home</Typography>}
                         />
                         </ListItemButton>
                     </ListItem>
-                    ) : null}
-
-                    {/* Only render the home link for a member or a guest */}
-                    {(auth?.roles?.find(role => [ROLES.Member].includes(role)) || !auth?.access_token) && (
-                        <>
-                        <ListItem disablePadding>
-                            <ListItemButton
-                            component={RouterLink}
-                            to="/"
-                            >
-                            <ListItemIcon>
-                                <HomeIcon sx={{ color: "green.main" }} />
-                            </ListItemIcon>
-                            <ListItemText
-                                primary={<Typography variant="subtitle2" sx={{ color: "green.main" }}>Home</Typography>}
-                            />
-                            </ListItemButton>
-                        </ListItem>
-
-                        <ListItem disablePadding>
-                            <ListItemButton
-                            component={RouterLink}
-                            to="/pitches/search"
-                            >
-                            <ListItemIcon>
-                                <StadiumIcon sx={{ color: "grey.main" }} />
-                            </ListItemIcon>
-                            <ListItemText
-                                primary={<Typography variant="subtitle2" sx={{ color: "grey.main" }}>Pitches</Typography>}
-                            />
-                            </ListItemButton>
-                        </ListItem>
-
-                        <ListItem disablePadding>
-                            <ListItemButton
-                            component={RouterLink}
-                            to="/stady/feedback"
-                            >
-                            <ListItemIcon>
-                                <FeedbackIcon sx={{ color: "grey.main" }} />
-                            </ListItemIcon>
-                            <ListItemText
-                                primary={<Typography variant="subtitle2" sx={{ color: "grey.main" }}>Feedback</Typography>}
-                            />
-                            </ListItemButton>
-                        </ListItem>
-                        </>
-                    )}
-            
-                    {/* Only render the home and pitches links for a member */}
-                    {auth?.roles?.find(role => [ROLES.Member].includes(role))  ? (
-                    <>
-                        <ListItem disablePadding>
-                            <ListItemButton
-                            component={RouterLink}
-                            to="/member/reservations"
-                            >
-                            <ListItemIcon>
-                                <BookOnlineIcon sx={{ color: "grey.main" }} />
-                            </ListItemIcon>
-                            <ListItemText
-                                primary={<Typography variant="subtitle2" sx={{ color: "grey.main" }}>Reservations</Typography>}
-                            />
-                            </ListItemButton>
-                        </ListItem>
-                    </>
-                    ) : null}
-            
-                {/* Only render the home and pitches links for an Owner */}
-                    {auth?.roles?.find(role => [ROLES.Owner].includes(role))  ? (
-                    <>
-                    <ListItem disablePadding>
-                            <ListItemButton
-                            component={RouterLink}
-                            to="/owner/dashboard"
-                            >
-                            <ListItemIcon>
-                                <DashboardIcon sx={{ color: "grey.main" }} />
-                            </ListItemIcon>
-                            <ListItemText
-                                primary={<Typography variant="subtitle2" sx={{ color: "grey.main" }}>Dashboard</Typography>}
-                            />
-                            </ListItemButton>
-                        </ListItem>
-
-                        <ListItem disablePadding>
-                            <ListItemButton
-                            component={RouterLink}
-                            to="/owner/pitches"
-                            >
-                            <ListItemIcon>
-                                <StadiumIcon sx={{ color: "grey.main" }} />
-                            </ListItemIcon>
-                            <ListItemText
-                                primary={<Typography variant="subtitle2" sx={{ color: "grey.main" }}>My Pitches</Typography>}
-                            />
-                            </ListItemButton>
-                        </ListItem>
-
-                        <ListItem disablePadding>
-                            <ListItemButton
-                            component={RouterLink}
-                            to="/owner/add/pitch"
-                            >
-                            <ListItemIcon>
-                                <AddCircle sx={{ color: "grey.main" }} />
-                            </ListItemIcon>
-                            <ListItemText
-                                primary={<Typography variant="subtitle2" sx={{ color: "grey.main" }}>
-                                        Add Pitch
-                                        </Typography>}
-                            />
-                            </ListItemButton>
-                        </ListItem>
-                    
-                    </>
-                    ) : null}
-            
-                    {/* Only render the users link for super admin */}
-                    {auth?.roles?.find(role => [ ROLES.SUPER_ADMIN].includes(role)) ? (
-                    <>   
-                    <ListItem disablePadding>
-                            <ListItemButton
-                            component={RouterLink}
-                            to="/superadmin/dashboard"
-                            >
-                            <ListItemIcon>
-                                <DashboardIcon sx={{ color: "grey.main" }} />
-                            </ListItemIcon>
-                            <ListItemText
-                                primary={<Typography variant="subtitle2" sx={{ color: "grey.main" }}> 
-                                Dashboard
-                                </Typography>}
-                            />
-                            </ListItemButton>
-                    </ListItem>
-
-                    <ListItem disablePadding>
-                            <ListItemButton
-                            component={RouterLink}
-                            to="/superadmin/manage/admins"
-                            >
-                            <ListItemIcon>
-                                <ManageAccountsIcon sx={{ color: "grey.main" }} />
-                            </ListItemIcon>
-                            <ListItemText
-                                primary={<Typography variant="subtitle2" sx={{ color: "grey.main" }}>
-                                Manage Admins
-                                </Typography>}
-                            />
-                            </ListItemButton>
-                        </ListItem>
-                    </> 
-                    ) : null}       
-                    </List>
-
-                    <Divider />
-
-                    {/* Only render the Login link when auth is empty */}
-                    {auth?.access_token ? null : (
 
                     <ListItem disablePadding>
                         <ListItemButton
                         component={RouterLink}
-                        to="/login"
-                        onClick={handleDrawerToggle}
-                        sx={{ backgroundColor: "green.main" }}
+                        to="/pitches/search"
                         >
                         <ListItemIcon>
-                            <LoginTwoToneIcon sx={{ color: "white.light" }} />
+                            <StadiumIcon sx={{ color: "grey.main" }} />
                         </ListItemIcon>
                         <ListItemText
-                            primary={
-                            <Typography sx={{ color: "white.light" }} variant="subtitle2">
-                                Login
-                            </Typography>
-                            }
+                            primary={<Typography variant="subtitle2" sx={{ color: "grey.main" }}>Pitches</Typography>}
                         />
                         </ListItemButton>
                     </ListItem>
-                    )}
 
-                    
-                    {/* Only render the Login link when auth is empty */}
-                    {auth?.roles?.find(role => [ROLES.Owner, ROLES.Member].includes(role)) ? (                        <ListItem disablePadding>
-                            <ListItemButton
-                            component={RouterLink}
-                            to="/user/profile"
-                            onClick={handleDrawerToggle}
-                            sx={{ backgroundColor: "green.main" }}
-                            >
-                            <ListItemIcon>
-                                <AccountBoxIcon sx={{ color: "white.light" }} />
-                            </ListItemIcon>
-                            <ListItemText
-                                primary={
-                                <Typography sx={{ color: "white.light" }} variant="subtitle2">
-                                    Profile
-                                </Typography>
-                                }
-                            />
-                            </ListItemButton>
-                        </ListItem>
-                    ) : null}
-                </div>
-            );
+                    <ListItem disablePadding>
+                        <ListItemButton
+                        component={RouterLink}
+                        to="/stady/feedback"
+                        >
+                        <ListItemIcon>
+                            <FeedbackIcon sx={{ color: "grey.main" }} />
+                        </ListItemIcon>
+                        <ListItemText
+                            primary={<Typography variant="subtitle2" sx={{ color: "grey.main" }}>Feedback</Typography>}
+                        />
+                        </ListItemButton>
+                    </ListItem>
+                    </>
+                )}
+        
+                {/* Only render the home and pitches links for a member */}
+                {auth?.roles?.find(role => [ROLES.Member].includes(role))  ? (
+                <>
+                    <ListItem disablePadding>
+                        <ListItemButton
+                        component={RouterLink}
+                        to="/member/reservations"
+                        >
+                        <ListItemIcon>
+                            <BookOnlineIcon sx={{ color: "grey.main" }} />
+                        </ListItemIcon>
+                        <ListItemText
+                            primary={<Typography variant="subtitle2" sx={{ color: "grey.main" }}>Reservations</Typography>}
+                        />
+                        </ListItemButton>
+                    </ListItem>
+                </>
+                ) : null}
+        
+               {/* Only render the home and pitches links for an Owner */}
+                {auth?.roles?.find(role => [ROLES.Owner].includes(role))  ? (
+                <>
+                  <ListItem disablePadding>
+                        <ListItemButton
+                        component={RouterLink}
+                        to="/owner/dashboard"
+                        >
+                        <ListItemIcon>
+                            <DashboardIcon sx={{ color: "grey.main" }} />
+                        </ListItemIcon>
+                        <ListItemText
+                            primary={<Typography variant="subtitle2" sx={{ color: "grey.main" }}>Dashboard</Typography>}
+                        />
+                        </ListItemButton>
+                    </ListItem>
+
+                    <ListItem disablePadding>
+                        <ListItemButton
+                        component={RouterLink}
+                        to="/owner/pitches"
+                        >
+                        <ListItemIcon>
+                            <StadiumIcon sx={{ color: "grey.main" }} />
+                        </ListItemIcon>
+                        <ListItemText
+                            primary={<Typography variant="subtitle2" sx={{ color: "grey.main" }}>My Pitches</Typography>}
+                        />
+                        </ListItemButton>
+                    </ListItem>
+
+                    <ListItem disablePadding>
+                        <ListItemButton
+                        component={RouterLink}
+                        to="/owner/add/pitch"
+                        >
+                        <ListItemIcon>
+                            <AddCircle sx={{ color: "grey.main" }} />
+                        </ListItemIcon>
+                        <ListItemText
+                            primary={<Typography variant="subtitle2" sx={{ color: "grey.main" }}>
+                                    Add Pitch
+                                    </Typography>}
+                        />
+                        </ListItemButton>
+                    </ListItem>
+                   
+                </>
+                ) : null}
+        
+                {/* Only render the users link for super admin */}
+                {auth?.roles?.find(role => [ ROLES.SUPER_ADMIN].includes(role)) ? (
+                <>   
+                <ListItem disablePadding>
+                        <ListItemButton
+                        component={RouterLink}
+                        to="/superadmin/dashboard"
+                        >
+                        <ListItemIcon>
+                            <DashboardIcon sx={{ color: "grey.main" }} />
+                        </ListItemIcon>
+                        <ListItemText
+                            primary={<Typography variant="subtitle2" sx={{ color: "grey.main" }}> 
+                            Dashboard
+                            </Typography>}
+                        />
+                        </ListItemButton>
+                </ListItem>
+
+                <ListItem disablePadding>
+                        <ListItemButton
+                        component={RouterLink}
+                        to="/superadmin/manage/admins"
+                        >
+                        <ListItemIcon>
+                            <ManageAccountsIcon sx={{ color: "grey.main" }} />
+                        </ListItemIcon>
+                        <ListItemText
+                            primary={<Typography variant="subtitle2" sx={{ color: "grey.main" }}>
+                            Manage Admins
+                            </Typography>}
+                        />
+                        </ListItemButton>
+                    </ListItem>
+                </> 
+                ) : null}       
+              </List>
+
+              <Divider />
+
+              {/* Only render the Login link when auth is empty */}
+              {auth?.access_token ? null : (
+
+            <ListItem disablePadding>
+                <ListItemButton
+                component={RouterLink}
+                to="/login"
+                onClick={handleDrawerToggle}
+                sx={{ backgroundColor: "green.main" }}
+                >
+                <ListItemIcon>
+                    <LoginTwoToneIcon sx={{ color: "white.light" }} />
+                </ListItemIcon>
+                <ListItemText
+                    primary={
+                    <Typography sx={{ color: "white.light" }} variant="subtitle2">
+                        Login
+                    </Typography>
+                    }
+                />
+                </ListItemButton>
+            </ListItem>
+                )}
+            </div>
+          );
     
     
         //Styled Toolbar compoenent (every appbar requires a toolbar)
@@ -545,54 +518,33 @@ import LogoutIcon from '@mui/icons-material/Logout';
                             color="inherit"
                             // Adjust the size by modifying the fontSize value
                             >
-                             {auth?.username ? (
-                                <Avatar sx={{ bgcolor: 'green.main', fontSize: "18px", width: 35, height:35 }}>
-                                {firstLetter}
-                                </Avatar>
-                            ) : (
-                                <AccountCircle sx={{ fontSize: "33px", color: "green.light" }} />
-                            )}
+                            <AccountCircle  sx={{ fontSize: '33px', color: 'green.light' }} />
                         </IconButton>
-                            <Menu 
+                        <Menu 
                             id="menu-appbar"
                             anchorOrigin={{
-                                vertical: 'top',
-                                horizontal: 'right',
+                                vertical: 'top', // changed from 'top'
+                                horizontal: 'right', // changed from 'right'
                             }}
                             keepMounted
                             transformOrigin={{
-                                vertical: 'top',
-                                horizontal: 'center',
+                                vertical: 'top', // changed from 'top'
+                                horizontal: 'center', // changed from 'right'
                             }}
                             open={Boolean(anchorEl)}
                             onClose={handleClose}
                             sx={{
-                                mt: 6,
-                                ml: -5,
+                                mt: 6, // Top margin
+                                ml: -5, // Negative right margin
                             }}
-                            >
-                                <MenuItem sx={{ paddingRight: '30px' }}>
-                                    <Link component={RouterLink} to="/user/profile" underline="none">
-                                        <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                                        <ListItemIcon>
-                                            <AccountCircle sx={{ color: 'black.main' }} />
-                                        </ListItemIcon>
-                                        <Typography variant="subtitle2" sx={{ color: 'black.main', ml: 1 }}>
-                                            Profile
-                                        </Typography>
-                                        </Box>
-                                    </Link>
-                                </MenuItem>
-                                <MenuItem onClick={signOut}>
-                                    <ListItemIcon>
-                                    <LogoutIcon />
-                                    </ListItemIcon>
-                                    <ListItemText primary="Logout" />
-                                </MenuItem>
-                            </Menu>
+
+                        >
+                            <MenuItem onClick={handleClose}>Profile</MenuItem>
+                            <MenuItem onClick={signOut}>Logout</MenuItem>
+                        </Menu>
                         </> 
                         ) : null}
-        
+
                     </Links>
                 </StyledToolbar>
 
