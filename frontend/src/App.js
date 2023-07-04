@@ -29,6 +29,7 @@ import About from './components/homePage/About';
 import HowItWorks from './components/homePage/HowItWorks';
 import AppContact from './components/homePage/AppContact';
 import AppTerms from './components/homePage/AppTerms';
+import UserProfile from './components/auth/UserProfile';
 
 
 
@@ -99,9 +100,6 @@ function App() {
                         <Route path="/admin/manage/pitches/rejected" element={<RejectedPitches />}></Route>
 
 
-
-
-
                         <Route path="/admin/manage/users" element={<Users />}></Route>.
                         <Route path="/admin/manage/reservations" element={<AllReservations />}></Route>
                       </Route>
@@ -118,7 +116,12 @@ function App() {
                         <Route path="/member/reservations" element={<Reservations/>}></Route>
                       </Route>   
 
-                    {/* catch All */}
+                      { /* Member & Owner Shared Routes */}
+                      <Route element= { <RequireAuth  allowedRoles={[ ROLES.Member, ROLES.Owner ]}/> }> { /* Only when we have a user we can show the comp's inside the Required Auth*/ }
+                        <Route path="/profile/user/:userName" element={<UserProfile/>}></Route>
+                      </Route>
+                      {/* catch All */}
+
                     <Route path="*" element={<NotFound />}></Route>
                   </Route>
                 </Routes>  

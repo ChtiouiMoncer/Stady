@@ -306,7 +306,7 @@ import LogoutIcon from '@mui/icons-material/Logout';
                     {auth?.roles?.find(role => [ROLES.Owner, ROLES.Member].includes(role)) ? (                        <ListItem disablePadding>
                             <ListItemButton
                             component={RouterLink}
-                            to="/user/profile"
+                            to={`/profile/user/${auth?.username}`}
                             onClick={handleDrawerToggle}
                             sx={{ backgroundColor: "green.main" }}
                             >
@@ -571,8 +571,10 @@ import LogoutIcon from '@mui/icons-material/Logout';
                                 ml: -5,
                             }}
                             >
+                                {auth?.roles?.find(role => [ROLES.Member, ROLES.Owner].includes(role)) ? (
+                                <> 
                                 <MenuItem sx={{ paddingRight: '30px' }}>
-                                    <Link component={RouterLink} to="/user/profile" underline="none">
+                                    <Link component={RouterLink}  to={`/profile/user/${auth?.username}`} underline="none">
                                         <Box sx={{ display: 'flex', alignItems: 'center' }}>
                                         <ListItemIcon>
                                             <AccountCircle sx={{ color: 'black.main' }} />
@@ -583,7 +585,9 @@ import LogoutIcon from '@mui/icons-material/Logout';
                                         </Box>
                                     </Link>
                                 </MenuItem>
-                                <MenuItem onClick={signOut}>
+                                </> 
+                                ) : null}
+                                <MenuItem onClick={signOut} sx={{ paddingRight: '30px' }}>
                                     <ListItemIcon>
                                     <LogoutIcon />
                                     </ListItemIcon>
