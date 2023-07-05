@@ -124,6 +124,10 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     )]
     private Collection $feedback;
 
+    #[ORM\Column(length: 255, nullable: true)]
+    #[Groups(['user:read','user:write'])]
+    private ?string $phoneNumber = null;
+
 
 
 
@@ -353,6 +357,18 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
                 $feedback->setOwner(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getPhoneNumber(): ?string
+    {
+        return $this->phoneNumber;
+    }
+
+    public function setPhoneNumber(?string $phoneNumber): self
+    {
+        $this->phoneNumber = $phoneNumber;
 
         return $this;
     }
