@@ -19,6 +19,7 @@ import ShowerIcon from '@mui/icons-material/Shower';
 import { Checkroom, SpaceDashboard } from "@mui/icons-material";
 import { grey } from "@mui/material/colors";
 import Footer from "../homePage/Footer";
+import { useTranslation } from "react-i18next";
 
 const StyledModal = styled(Box) (({ theme }) => ({
 
@@ -32,6 +33,8 @@ const StyledModal = styled(Box) (({ theme }) => ({
   }));
   
 const SearchAllPitches = () => {
+    
+    const { t } = useTranslation();
 
     const navigate = useNavigate();
 
@@ -71,7 +74,7 @@ useEffect(() => {
             {!isPendingPitches ? (
             <><StyledModal>
                     <Box sx={{ marginTop: '20px', marginBottom: '10px', display: 'flex', justifyContent: 'center', alignItems: 'center', flexDirection: 'column' }}>
-                        <Typography variant="h6" sx={{ marginBottom: '10px', color: 'green.main' }}>Search for a Facility! </Typography>
+                        <Typography variant="h6" sx={{ marginBottom: '10px', color: 'green.main' }}>{t('SeeAllPitches.action')} </Typography>
                         <AllPitchSearch />
                     </Box>
                     <Box
@@ -148,7 +151,7 @@ useEffect(() => {
                                             <Divider sx={{ marginTop: "5px", marginBottom: "5px" }} />
 
                                             <Box sx={{ padding: '0px 10px', display: 'flex', flexDirection: 'row', justifyContent: 'space-between', marginBottom: '5px' }}>
-                                                <Typography variant="subtitle1" color="text.secondary">Rating </Typography>
+                                                <Typography variant="subtitle1" color="text.secondary">{t('PitchCard1.rating')} </Typography>
                                                 <Rating sx={{ color: 'green.main' }} name="read-only" value={averageRating} precision={0.5} readOnly />
                                             </Box>
 
@@ -156,7 +159,7 @@ useEffect(() => {
 
 
                                             <Box sx={{ padding: '0px 10px', display: 'flex', flexDirection: 'row', justifyContent: 'space-between', marginBottom: '30px' }}>
-                                                <Typography variant="subtitle1" color="text.secondary">Amenties </Typography>
+                                                <Typography variant="subtitle1" color="text.secondary">{t('PitchCard1.amenties')} </Typography>
                                                 <Typography variant="h5" textAlign="left" sx={{ color: "grey.dark", fontWeight: 500 }}>
                                                     {(pitch.amenties.hasShower && pitch.amenties.hasSecureStorage && pitch.amenties.hasChangingRoom && pitch.amenties.hasRestaurent && pitch.amenties.hasParking) ? (
                                                         <>
@@ -178,7 +181,7 @@ useEffect(() => {
                                                         </>
                                                     ) : (
                                                         <>
-                                                            No Amenities
+                                                            {t('PitchCard1.Noamenties')}
                                                         </>
                                                     )}
                                                 </Typography>

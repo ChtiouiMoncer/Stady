@@ -1,6 +1,7 @@
 import { Link as RouterLink } from "react-router-dom";
-import { Box, Grid, Link, Typography } from "@mui/material";
+import { Box, Button, Grid, Link, Typography } from "@mui/material";
 import logo from '../../assets/logo.png'
+import { useTranslation } from "react-i18next";
 
 const AppFooter = () => {
     const currentYear = new Date().getFullYear();
@@ -21,9 +22,21 @@ const AppFooter = () => {
             <Typography variant="body2" sx={{ color: "white.main" }}>
               &#169; {currentYear} DOT-IT. All rights reserved
             </Typography>
+            <LanguageSwitcher />
     </Box>
    </>
   );
 }
 
 export default AppFooter;
+
+function LanguageSwitcher() {
+  const { i18n } = useTranslation();
+
+  return (
+      <Box>
+          <Button sx={{margin:'10px'}} variant="contained" color="inherit" onClick={() => i18n.changeLanguage('en')}><Typography sx={{ color: 'grey.black'}} variant="body">ENG</Typography></Button>
+          <Button sx={{margin:'10px'}} variant="contained" color="inherit" onClick={() => i18n.changeLanguage('fr')}><Typography sx={{ color: 'grey.black'}} variant="body">FR</Typography></Button>
+      </Box>
+  );
+}

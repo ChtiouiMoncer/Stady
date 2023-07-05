@@ -14,6 +14,9 @@ import axios from '../../api/axios'
 import loginbg from '../../assets/herobg.png'
 import {Link as RouterLink, useNavigate} from 'react-router-dom';
 import Navbar from "../Navbar";
+import MuiPhoneNumber from "mui-phone-number";
+import { useTranslation } from "react-i18next";
+import Footer from "../homePage/Footer";
 
 
 
@@ -116,6 +119,7 @@ const [role, setRole] = React.useState('ROLE_MEMBER'); //set the dafault role as
 const [showPassword, setShowPassword] = React.useState(false); //manage the state of 'showPassword'
 const [ isPending, setIsPending ] = useState(false); //manage pending time from the server response
 
+const { t } = useTranslation();
 
 //for the ERRORS AND SUCCESS
 const [errMsg, setErrMsg] = useState('');
@@ -189,7 +193,9 @@ const validationRules = {
   conditions:{
     required: 'Please Accept our Conditions',
   },   
-  // Add more input validation rules here...
+  phoneNumber: {
+    required: 'Phone Number is required',
+  },
 };
 const navigate = useNavigate(); //hook from 'react-router' to redirect to a path for example
 
@@ -200,6 +206,7 @@ const onSubmit =  async (data, e) => {
   e.preventDefault();
   const usernameValue = watch('username');
   const emailValue = watch('email');
+  const phoneNumber = watch('phoneNumber');
   const passwordValue = watch('password');
   const rolesValue = watch('roles');
   //console.log(rolesValue);
@@ -210,7 +217,8 @@ const onSubmit =  async (data, e) => {
       email: emailValue,
       roles: [rolesValue],
       plainPassword: passwordValue,
-      username : usernameValue
+      username : usernameValue,
+      phoneNumber: phoneNumber
       }),
       {
         headers: {'Content-Type' : 'application/ld+json'},
@@ -290,7 +298,7 @@ const handleRoleChange = (event) => {
 
             <Box sx={{ display: "flex",  justifyContent: "space-between", marginBottom:'10px'}}>
                 <Typography variant="h6" textAlign="left" sx={{ color: "green.main" }}>
-                Sign up for Stady
+                {t('SignUp.signUp')}
                 </Typography>
                 <Tooltip title="Reset" arrow>
                   <IconButton onClick={handleReset} >
@@ -313,7 +321,7 @@ const handleRoleChange = (event) => {
                       color: 'green.main', // set the color of the icon
                     },
                     }} severity="success">
-                  User added successfully!
+                  {t('SignUp.success')}
                 </Alert>
               )}
               {errMsg && (
@@ -347,7 +355,7 @@ const handleRoleChange = (event) => {
                   fullWidth
                   id="outlined-username-input"
                   label= {<Typography  variant="subtitle2" textAlign="left" sx={{ color: "grey.main"}}>
-                  Username
+                  {t('SignUp.username')}
                   </Typography>}
                   type="text"
                   autoComplete="Right Down your Username!"
@@ -371,7 +379,7 @@ const handleRoleChange = (event) => {
                 fullWidth
                 id="outlined-email-input"
                 label= {<Typography  variant="subtitle2" textAlign="left" sx={{ color: "grey.main"}}>
-                Email
+                {t('SignUp.email')}
                 </Typography>}
                 type="text"
                 autoComplete="Email or phone number"    
@@ -382,6 +390,29 @@ const handleRoleChange = (event) => {
               )}
               />   
 
+              <Controller 
+                name="phoneNumber"
+                control = {control}
+                defaultValue=""
+                rules={validationRules.phoneNumber}
+                render={ ({ field, fieldState }) => (
+                  <MuiPhoneNumber
+                    sx={{ marginTop: '15px', marginLeft: '5px' }}
+                      defaultCountry={'tn'}
+                      fullWidth
+                      id="outlined-phoneNumber-input"
+                      label= {
+                      <Typography  variant="subtitle2" textAlign="left" sx={{ color: "grey.main"}}>
+                          {t('SignUp.phoneNumber')}
+                      </Typography>}
+                          type='text'
+                          autoComplete="Write your phone number"
+                          error={!!fieldState.error} 
+                          helperText={fieldState.error?.message} 
+                          {...field} 
+                    />
+                )}
+              />  
 
              <Grid container spacing={2}>
               <Grid xs={6}>
@@ -396,7 +427,7 @@ const handleRoleChange = (event) => {
                     id="outlined-password-input"
                     label= {
                     <Typography  variant="subtitle2" textAlign="left" sx={{ color: "grey.main"}}>
-                      Password
+                      {t('SignUp.actualPassword')}
                     </Typography>}
                     type={showPassword ? 'text' : 'password'}
                     InputProps={{  //pass additional props to the Input    
@@ -436,7 +467,7 @@ const handleRoleChange = (event) => {
                     id="outlined-passwordMatch-input"
                     label= {
                     <Typography  variant="subtitle2" textAlign="left" sx={{ color: "grey.main"}}>
-                      Confirm Password
+                      {t('SignUp.confirmNewPassowrd')}
                     </Typography>}
                     type='password'
                     autoComplete="password Match"
@@ -461,7 +492,7 @@ const handleRoleChange = (event) => {
                     labelId="role-select-label"
                     id="rolee-select"
                     value={role} // set default value to 10 for "Member"
-                    label="Role"
+                    label={t('SignUp.roles')}
                     onChange={handleRoleChange}
                     error={!!fieldState.error} 
                     {...field} 
@@ -469,7 +500,7 @@ const handleRoleChange = (event) => {
                     <MenuItem value={'ROLE_MEMBER'}>Member</MenuItem>
                     <MenuItem value={'ROLE_OWNER'}>Owner</MenuItem>
                   </Select>
-                  <FormHelperText>If you are a Pitch Owner change the Role.  </FormHelperText>
+                  <FormHelperText>{t('SignUp.help')}</FormHelperText>
                 </StyledRoleSelect>
               )}
              /> 
@@ -498,9 +529,9 @@ const handleRoleChange = (event) => {
                         } 
                         label={
                           <Typography variant="subtitle2" textAlign="left" sx={{ color: "grey.main" }}>
-                            I agree to the
+                            {t('SignUp.terms')}
                             <Link target="_blank" component={RouterLink} to="/terms" underline="none">
-                              {" terms and conditions"}
+                            {t('SignUp.conditions')}
                             </Link>
                           </Typography>
                         }
@@ -543,7 +574,7 @@ const handleRoleChange = (event) => {
               {isPending ? (
                 <CircularProgress color="white" size={24} /> // use MUI's Button component for the progress indicator
               ) : (
-                "Create account"
+                t('SignUp.create')
               )}
              </Button>
 
@@ -551,28 +582,29 @@ const handleRoleChange = (event) => {
             <Divider sx={{ marginTop:"10px", marginBottom:"10px" }}>
                 <Chip label={
                     <Typography  variant="subtitle2" textAlign="left" sx={{ color: "grey.main"}}>
-                    or
+                    {t('SignUp.or')}
                     </Typography>   
                 } />
             </Divider> 
 
             <Box sx={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-                <Button startIcon={ <img src={googleLogo} alt="Google" width="20px" height="20px" />} fullWidth className="social-login" variant="outlined"> Continue with Google </Button>
+                <Button startIcon={ <img src={googleLogo} alt="Google" width="20px" height="20px" />} fullWidth className="social-login" variant="outlined"> {t('SignUp.continue')} </Button>
                 {/*<Button startIcon={<img src={facebookLogo} alt="Google" width="20px" height="20px" />}  fullWidth className="social-login" variant="outlined"> Continue with Facebook </Button> */ }
             </Box>  
 
              <Box sx={{ display: 'flex', flexDirection: 'row', justifyContent:'center', gap: '5px', marginTop: '15px'}}>      
               <Typography sx={{ fontSize: "15px", color: "green.main", fontWeight: 600 }} >
-                {"Already have an account? "}
+              {t('SignUp.already')}
               </Typography> 
               <Link  component={RouterLink} to="/login"  underline="always" variant="subtitle2" sx={{ color: "grey.main"}}  >
                 <Typography sx={{ fontSize: "13px" }} >
-                  {"Log in "}
+                {t('SignUp.login')}
                 </Typography>
               </Link>
             </Box>       
         </Box>
     </StyledModal>
+    <Footer />
     </>
 
 

@@ -48,7 +48,6 @@ use function Symfony\Component\String\u;
         new Post(
             security: 'is_granted("ROLE_PITCH_CREATE")',
             securityPostDenormalize: 'is_granted("ROLE_PITCH_CREATE") and object.getOwner() == user'
-
         ),
         new Patch(
             security: 'is_granted("ROLE_ADMIN") or is_granted("ROLE_PITCH_EDIT") and object.getOwner() == user',

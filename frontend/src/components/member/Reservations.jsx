@@ -14,6 +14,7 @@ import QrCode2Icon from '@mui/icons-material/QrCode2';
 import CloseIcon from '@mui/icons-material/Close';
 import FeedbackIcon from '@mui/icons-material/Feedback';
 import Footer from "../homePage/Footer";
+import { useTranslation } from "react-i18next";
 
 const StyledButton = styled(Button)(({ theme }) => ({
     marginTop: '20px',
@@ -73,6 +74,8 @@ const StyledModal = styled(Box) (({ theme }) => ({
   }));
 
 const Reservations = () => {
+    const { t } = useTranslation();
+
     const theme = useTheme(); //using the the Material-UI theme object, which is provided by the useTheme hook from Material-UI.
     const isMobile = useMediaQuery(theme.breakpoints.down('sm')); // checking if device is mobile
 
@@ -191,12 +194,12 @@ const Reservations = () => {
 
         if (!isMobile) {
           columns.push(
-            { field: 'pitchName', headerName: 'Pitch name', width: 140 },
-            { field: 'totalPrice', headerName: 'Price', width: 70 },
-            { field: 'status', headerName: 'Status', width: 100 },
+            { field: 'pitchName', headerName: t('UserReservtion.code'), width: 140 },
+            { field: 'totalPrice', headerName: t('UserReservtion.price'), width: 70 },
+            { field: 'status', headerName: t('UserReservtion.status'), width: 100 },
             {
               field: 'timeSlots',
-              headerName: 'Time Slots',
+              headerName: t('UserReservtion.timeslots'),
               width: 550,
               renderCell: (params) => <pre>{params.value}</pre>,
             }
@@ -319,7 +322,7 @@ const Reservations = () => {
                 }}
                 >   
                     <Box sx={{ display: "flex",  justifyContent: "space-between" }}>
-                        <Typography variant="h6" textAlign="left" sx={{ color: "green.main", marginBottom:'10px'}}>Reservations</Typography>
+                        <Typography variant="h6" textAlign="left" sx={{ color: "green.main", marginBottom:'10px'}}> {t('UserReservtion.reservation')}</Typography>
                     </Box>
                         <div style={{ height: 500, width: '100%' }}>
                             <DataGrid
@@ -342,10 +345,10 @@ const Reservations = () => {
                         </DialogContent>
                         <DialogActions>
                             <Button onClick={downloadQR}>
-                            Download QR
+                            {t('UserReservtion.qr3')}
                             </Button>
                             <Button onClick={handleCloseQR}>
-                            Close
+                            {t('UserReservtion.close')}
                             </Button>
                         </DialogActions>
                         </Dialog>
@@ -372,7 +375,7 @@ const Reservations = () => {
                         sx={{ width: '100%' }}
                         >
                             {success ? (
-                            'You successfully canceled your reservation!'
+                            t('UserReservtion.reservationSuccess')
                             ) : errMsg} 
                         </Alert>
                         </Snackbar>        

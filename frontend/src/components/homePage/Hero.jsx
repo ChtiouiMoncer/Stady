@@ -4,6 +4,7 @@ import React from 'react';
 import herobg from '../../assets/herobg.png'
 import mobileHerobg2 from '../../assets/mobileHerobg2.png'
 import PitchSearch from '../pitchSearchBar/PitchSearch';
+import { useTranslation } from 'react-i18next';
 
 
 
@@ -41,10 +42,12 @@ const ContentWrapper = styled(Box) (({ theme }) => ({
 
 
 const Hero = () => {
+  const { t } = useTranslation();
+
     return ( 
         <StyledHero>
           <ContentWrapper>
-            <Typography variant='h1' margin={4} >Book a sports pitch near you</Typography>
+            <Typography variant='h1' margin={4} >{t('book')}</Typography>
             <PitchSearch  />
           </ContentWrapper>
         </StyledHero>

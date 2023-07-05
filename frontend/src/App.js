@@ -30,6 +30,7 @@ import HowItWorks from './components/homePage/HowItWorks';
 import AppContact from './components/homePage/AppContact';
 import AppTerms from './components/homePage/AppTerms';
 import UserProfile from './components/auth/UserProfile';
+import './i18n';
 
 
 

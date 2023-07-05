@@ -8,6 +8,7 @@ import axios, { axiosPrivate } from "../../api/axios";
 import { Link as RouterLink, useNavigate} from "react-router-dom";
 import useAxiosPrivate from "../../Hooks/useAxiosPrivate";
 import EastIcon from '@mui/icons-material/East';
+import { useTranslation } from "react-i18next";
 
 const StyledModal = styled(Box) (({ theme }) => ({
 
@@ -70,10 +71,9 @@ const MiniUserFeedback = () => {
         controller.abort();
     }
 }, [])
-  
-        
+          
+const { t } = useTranslation();
 
-    
     return ( 
         <>
             <StyledModal>
@@ -95,12 +95,12 @@ const MiniUserFeedback = () => {
                         marginBottom: '10px',
                     }}
                     >
-                        <Typography variant="h5" sx={{ color: "grey.main", marginBottom:'10px' }}>
-                            What  
-                            <Typography variant="h5" component="span" sx={{color:'green.main'}}>
-                            {" "}Stady{" "}
-                            </Typography>
-                            users are saying
+                         <Typography variant="h5" sx={{ color: "grey.main", marginBottom:'10px' }}>
+                        {t("What")}  
+                        <Typography variant="h5" component="span" sx={{ color: 'green.main' }}>
+                            {t("Stady")}
+                        </Typography>
+                        {t("users are saying")}
                         </Typography>
                     </Box>
 
@@ -141,8 +141,8 @@ const MiniUserFeedback = () => {
                         color="primary"
                         endIcon={<EastIcon />}
                         >                     
-                        Sell All
-            
+                        {t("SeeAll")}
+
                         </StyledButton>
                     </Box>
                 </Box>

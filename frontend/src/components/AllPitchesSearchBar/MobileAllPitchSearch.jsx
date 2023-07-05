@@ -12,6 +12,7 @@ import { Controller, useForm } from 'react-hook-form';
 import SportsSoccerIcon from '@mui/icons-material/SportsSoccer';
 import axios from '../../api/axios';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 
 
 const MobileAllPitchSearch = () => {
@@ -78,6 +79,8 @@ const validationRules = {
   }
 };
 
+const { t } = useTranslation();
+
 //Pitch data state
 const [pitches, setPitches] = useState([]);
 const [ isPending, setIsPending ] = useState(false); //manage pending time from the server response
@@ -134,7 +137,7 @@ const onSubmit =  async (data, e) => {
               <Box sx={{ display: 'flex', alignItems: 'center', width: '100%' }}>
                   <InputBase  
                       {...field}
-                      placeholder="Search for a facility"
+                      placeholder={t('searchbar')}
                       inputProps={{ 'aria-label': 'Search for a facility' }}
                       sx={{ ml: 1, flex: 1 }}
                   />
@@ -196,7 +199,7 @@ const onSubmit =  async (data, e) => {
                     }
                 }}
                   select
-                  label="State"
+                  label={t('searchstate')}
                   {...field}
                   error={!!fieldState.error}
                   SelectProps={{
@@ -229,7 +232,7 @@ const onSubmit =  async (data, e) => {
               {isPending ? (
                 <CircularProgress color="white" size={24} />
               ) : (
-                "Search"
+                t('searchbutton')
               )}
             </Button>      
       </Paper>

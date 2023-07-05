@@ -12,6 +12,7 @@ import FeedbackIcon from '@mui/icons-material/Feedback';
 import RateReviewIcon from '@mui/icons-material/RateReview';
 import StarBorderIcon from '@mui/icons-material/StarBorder';
 import Footer from "../homePage/Footer";
+import { useTranslation } from "react-i18next";
 
 
 const StyledButton = styled(Button)(({ theme }) => ({
@@ -99,6 +100,8 @@ const [reviewFormData, setReviewFormData] = useState({
 reviewText: '',
 reviewStar: 0
 });
+
+const { t } = useTranslation();
 
 const handleReviewOpen = () => {
     setReviewOpen(true);
@@ -189,9 +192,6 @@ const handleReviewSubmit = async () => {
     }
 }, [])
   
-        
-
-    
     return ( 
         <>
             <Navbar />
@@ -221,7 +221,7 @@ const handleReviewSubmit = async () => {
                         }}
                     >
                         <Typography variant="h6" textAlign="left" sx={{ color: "green.main", marginBottom:'2px' }}>
-                            Clients Feedbacks
+                            {t('Feedbacks.feedback')}  
                         </Typography>
                         {auth.username && (
                             <Button
@@ -230,11 +230,12 @@ const handleReviewSubmit = async () => {
                                 onClick={handleReviewOpen}
                                 startIcon={<FeedbackIcon />}
                             >
-                               Share Your Experience
+                                {t('Feedbacks.experience')}  
+
                             </Button>
                         )}
                     </Box>
-                    <Typography variant="h5" textAlign="left" sx={{ color: "grey.main", marginBottom:'10px', textAlign:'center'}}>They Trust Us!</Typography>
+                    <Typography variant="h5" textAlign="left" sx={{ color: "grey.main", marginBottom:'10px', textAlign:'center'}}>{t('Feedbacks.trust')}  </Typography>
 
 
                     <Grid container spacing={3}>
@@ -264,12 +265,12 @@ const handleReviewSubmit = async () => {
                     >
                         <DialogTitle>
                             <Typography variant="h5" sx={{ color: 'green.main' }}>
-                            Feel Free To share Your Experience With Us!
+                            {t('Feedbacks.feel')}
                             </Typography>
                         </DialogTitle>
                         <DialogContent sx={{ width: isMobile ? '280px' : '500px' }}>
                             <Typography variant="subtitle1" color="text.secondary" sx={{ marginBottom: '10px' }}>
-                            Opinion:
+                            {t('Feedbacks.opinion')}
                             </Typography>
                             <TextField
                             required
@@ -288,7 +289,7 @@ const handleReviewSubmit = async () => {
                             />
                             <Box sx={{ marginTop: '10px' }}>
                             <Typography variant="subtitle1" color="text.secondary" sx={{ marginBottom: '10px' }}>
-                                Rating:
+                            {t('Feedbacks.rate')}
                             </Typography>
                             <Rating
                                 name="reviewStar"
@@ -306,7 +307,7 @@ const handleReviewSubmit = async () => {
                             </Box>
                         </DialogContent>
                         <DialogActions>
-                            <Button onClick={handleReviewClose}>Cancel</Button>
+                            <Button onClick={handleReviewClose}>{t('Feedbacks.cancel')}</Button>
                             <Button
                             onClick={handleReviewSubmit}
                             disabled={!reviewFormData.reviewText || !reviewFormData.reviewStar}
@@ -314,7 +315,7 @@ const handleReviewSubmit = async () => {
                             {isPending ? (
                                 <CircularProgress color="green" size={24} />
                             ) : (
-                                "Submit"
+                                t('Feedbacks.submit')
                             )}
                             </Button>
                         </DialogActions>
@@ -325,7 +326,7 @@ const handleReviewSubmit = async () => {
                         <Typography variant="h5" sx={{ color: 'green.main' }}>Thank You!</Typography>
                     </DialogTitle>
                     <DialogContent sx={{ width: isMobile ? '280px' : '500px' }}>
-                    <Typography variant='body2'>We will always try to improve you experience here! </Typography> 
+                    <Typography variant='body2'>{t('Feedbacks.msg')}</Typography> 
                     </DialogContent>
                     <DialogActions>
                         <Button onClick={handleFeedbackClose} autoFocus>

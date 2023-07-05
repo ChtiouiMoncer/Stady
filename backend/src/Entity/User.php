@@ -48,7 +48,7 @@ use Symfony\Component\Validator\Constraints as Assert;
             security: 'is_granted("ROLE_USER_EDIT") and object == user',
             processor: UserPasswordHasher::class),
         new Delete(
-            security: 'is_granted("ROLE_ADMIN")'
+            security: 'is_granted("ROLE_USER_EDIT") and object == user',
         )
     ],
     normalizationContext: ['groups' => ['user:read']],

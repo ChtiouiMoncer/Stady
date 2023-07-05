@@ -11,6 +11,8 @@ import useAuth from "../../Hooks/useAuth";
 import { Link as RouterLink, useNavigate, useLocation } from "react-router-dom";
 import loginbg from '../../assets/herobg.png'
 import Navbar from "../Navbar";
+import { useTranslation } from "react-i18next";
+import Footer from "../homePage/Footer";
 
 
 const StyledModal = styled(Box) (({ theme }) => ({
@@ -77,6 +79,8 @@ const StyledTextField = styled(TextField)({
   });
   
 const LoginPage = () => {  
+
+const { t } = useTranslation();
 
 const theme = useTheme(); //using the the Material-UI theme object, which is provided by the useTheme hook from Material-UI.
 const isMobile = useMediaQuery(theme.breakpoints.down('sm')); // checking if device is mobile
@@ -165,7 +169,8 @@ const onSubmit =  async (data, e) => {
     const exp = decoded_token.exp; //(expiration time) represents the timestamp when the token is set to expire
     const userId = decoded_token.userId; 
     const email = decoded_token.email; 
-    setAuth({ access_token, username, roles, userId, iat, exp, email }) //pass user informations to the AuthContext
+    const phone = decoded_token.phoneNumber; 
+    setAuth({ access_token, username, roles, userId, iat, exp, email, phone }) //pass user informations to the AuthContext
     //console.log(auth.username); 
 
     // Determine the default redirect path based on the user's roles
@@ -235,7 +240,7 @@ const onSubmit =  async (data, e) => {
       
             <Box sx={{ display: "flex",  justifyContent: "space-between" }}>
                 <Typography variant="h6" textAlign="left" sx={{ color: "green.main"}}>
-                Welcome Back! 👋
+                {t('Login.login')} 👋
                 </Typography>
             
             </Box>
@@ -268,7 +273,7 @@ const onSubmit =  async (data, e) => {
                 fullWidth
                 id="outlined-username-input"
                 label= {<Typography  variant="subtitle2" textAlign="left" sx={{ color: "grey.main"}}>
-                Username
+                {t('Login.username')}
                 </Typography>}
                 type="text"
                 autoComplete="Username"   
@@ -290,7 +295,7 @@ const onSubmit =  async (data, e) => {
               fullWidth
               id="outlined-password-input"
               label= {<Typography  variant="subtitle2" textAlign="left" sx={{ color: "grey.main"}}>
-              Password
+              {t('Login.actualPassword')}
               </Typography>}
               type="password"
               autoComplete="Password"
@@ -312,41 +317,42 @@ const onSubmit =  async (data, e) => {
               {isPending ? (
                 <CircularProgress color="white" size={24} /> // use MUI's Button component for the progress indicator
               ) : (
-                "Login"
+                t('Login.create')
               )}
             </Button>
           </form>    
   
             <Link  component={RouterLink} to="/"  underline="hover" variant="subtitle2" sx={{ color: "grey.main"}}  >
               <Typography sx={{ fontSize: "12px" }} textAlign='center'>
-                {'Forgotten account?'}
+                {t('Login.forgot')}
               </Typography> 
             </Link>
 
             <Divider sx={{ marginTop:"15px", marginBottom:"15px" }}>
                 <Chip label={
                     <Typography  variant="subtitle2" textAlign="left" sx={{ color: "grey.main"}}>
-                    or
+                   {t('Login.or')}
                     </Typography>   
                 } />
             </Divider> 
           
             <Box sx={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-                <Button startIcon={ <img src={googleLogo} alt="Google" width="20px" height="20px" />} fullWidth className="social-login" variant="outlined"> Continue with Google </Button>
+                <Button startIcon={ <img src={googleLogo} alt="Google" width="20px" height="20px" />} fullWidth className="social-login" variant="outlined"> {t('Login.continue')} </Button>
             </Box>  
 
             <Box sx={{ display: 'flex', flexDirection: 'row', justifyContent:'center', gap: '5px', marginTop: '15px'}}>      
               <Typography sx={{ fontSize: "15px", color: "green.main", fontWeight: 600 }} >
-                {"Don't have an account? "}
+              {t('Login.notAccount')}
               </Typography> 
               <Link  component={RouterLink} to="/signup"  underline="always" variant="subtitle2" sx={{ color: "grey.main"}}  >
                 <Typography sx={{ fontSize: "13px" }} >
-                  {"Register now "}
+                {t('Login.register')}
                 </Typography>
               </Link>
             </Box>  
         </Box>
     </StyledModal>
+    <Footer />
     </>
 
   );

@@ -36,9 +36,12 @@ import BookOnlineIcon from '@mui/icons-material/BookOnline';
 import ManageAccountsIcon from '@mui/icons-material/ManageAccounts';
 import AccountBoxIcon from '@mui/icons-material/AccountBox';
 import LogoutIcon from '@mui/icons-material/Logout';
+import { useTranslation } from 'react-i18next';
+
     const drawerWidth = 200;
 
     const  Navbar = () => {
+        const { t } = useTranslation();
         const [mobileOpen, setMobileOpen] = React.useState(false);
         const [showModal, setShowModal] = useState(false);
         const [showLoginModal, setShowLoginModal] = useState(false);
@@ -97,8 +100,7 @@ import LogoutIcon from '@mui/icons-material/Logout';
             setShowLoginModal(true);
         }; 
         const firstLetter = auth?.username ? auth.username.charAt(0).toUpperCase() : "";
-
-
+        
         
         const drawer = (
             <div sx={{ bgcolor: "grey.light" }}>
@@ -115,7 +117,7 @@ import LogoutIcon from '@mui/icons-material/Logout';
                             <DashboardIcon sx={{ color: "green.main" }} />
                         </ListItemIcon>
                         <ListItemText
-                            primary={<Typography variant="subtitle2" sx={{ color: "green.main" }}>Dashboard</Typography>}
+                            primary={<Typography variant="subtitle2" sx={{ color: "green.main" }}>{t('dashboard')}</Typography>}
                         />
                         </ListItemButton>
                     </ListItem>
@@ -133,7 +135,7 @@ import LogoutIcon from '@mui/icons-material/Logout';
                                 <HomeIcon sx={{ color: "green.main" }} />
                             </ListItemIcon>
                             <ListItemText
-                                primary={<Typography variant="subtitle2" sx={{ color: "green.main" }}>Home</Typography>}
+                                primary={<Typography variant="subtitle2" sx={{ color: "green.main" }}>{t('home')}</Typography>}
                             />
                             </ListItemButton>
                         </ListItem>
@@ -144,10 +146,10 @@ import LogoutIcon from '@mui/icons-material/Logout';
                             to="/pitches/search"
                             >
                             <ListItemIcon>
-                                <StadiumIcon sx={{ color: "grey.main" }} />
+                                <StadiumIcon sx={{ color: "grey.dark" }} />
                             </ListItemIcon>
                             <ListItemText
-                                primary={<Typography variant="subtitle2" sx={{ color: "grey.main" }}>Pitches</Typography>}
+                                primary={<Typography variant="subtitle2" sx={{ color: "grey.dark" }}>{t('pitches')}</Typography>}
                             />
                             </ListItemButton>
                         </ListItem>
@@ -158,10 +160,10 @@ import LogoutIcon from '@mui/icons-material/Logout';
                             to="/stady/feedback"
                             >
                             <ListItemIcon>
-                                <FeedbackIcon sx={{ color: "grey.main" }} />
+                                <FeedbackIcon sx={{ color: "grey.dark" }} />
                             </ListItemIcon>
                             <ListItemText
-                                primary={<Typography variant="subtitle2" sx={{ color: "grey.main" }}>Feedback</Typography>}
+                                primary={<Typography variant="subtitle2" sx={{ color: "grey.dark" }}>{t('feedback')}</Typography>}
                             />
                             </ListItemButton>
                         </ListItem>
@@ -177,29 +179,29 @@ import LogoutIcon from '@mui/icons-material/Logout';
                             to="/member/reservations"
                             >
                             <ListItemIcon>
-                                <BookOnlineIcon sx={{ color: "grey.main" }} />
+                                <BookOnlineIcon sx={{ color: "grey.dark" }} />
                             </ListItemIcon>
                             <ListItemText
-                                primary={<Typography variant="subtitle2" sx={{ color: "grey.main" }}>Reservations</Typography>}
+                                primary={<Typography variant="subtitle2" sx={{ color: "grey.dark" }}>{t('reservations')}</Typography>}
                             />
                             </ListItemButton>
                         </ListItem>
                     </>
                     ) : null}
             
-                {/* Only render the home and pitches links for an Owner */}
+                    {/* Only render the home and pitches links for an Owner */}
                     {auth?.roles?.find(role => [ROLES.Owner].includes(role))  ? (
                     <>
-                    <ListItem disablePadding>
+                        <ListItem disablePadding>
                             <ListItemButton
                             component={RouterLink}
                             to="/owner/dashboard"
                             >
                             <ListItemIcon>
-                                <DashboardIcon sx={{ color: "grey.main" }} />
+                                <DashboardIcon sx={{ color: "grey.dark" }} />
                             </ListItemIcon>
                             <ListItemText
-                                primary={<Typography variant="subtitle2" sx={{ color: "grey.main" }}>Dashboard</Typography>}
+                                primary={<Typography variant="subtitle2" sx={{ color: "grey.dark" }}>{t('dashboard')}</Typography>}
                             />
                             </ListItemButton>
                         </ListItem>
@@ -210,10 +212,10 @@ import LogoutIcon from '@mui/icons-material/Logout';
                             to="/owner/pitches"
                             >
                             <ListItemIcon>
-                                <StadiumIcon sx={{ color: "grey.main" }} />
+                                <StadiumIcon sx={{ color: "grey.dark" }} />
                             </ListItemIcon>
                             <ListItemText
-                                primary={<Typography variant="subtitle2" sx={{ color: "grey.main" }}>My Pitches</Typography>}
+                                primary={<Typography variant="subtitle2" sx={{ color: "grey.dark" }}>{t('myPitches')}</Typography>}
                             />
                             </ListItemButton>
                         </ListItem>
@@ -224,12 +226,10 @@ import LogoutIcon from '@mui/icons-material/Logout';
                             to="/owner/add/pitch"
                             >
                             <ListItemIcon>
-                                <AddCircle sx={{ color: "grey.main" }} />
+                                <AddCircle sx={{ color: "grey.dark" }} />
                             </ListItemIcon>
                             <ListItemText
-                                primary={<Typography variant="subtitle2" sx={{ color: "grey.main" }}>
-                                        Add Pitch
-                                        </Typography>}
+                                primary={<Typography variant="subtitle2" sx={{ color: "grey.dark" }}>{t('addPitch')}</Typography>}
                             />
                             </ListItemButton>
                         </ListItem>
@@ -238,47 +238,43 @@ import LogoutIcon from '@mui/icons-material/Logout';
                     ) : null}
             
                     {/* Only render the users link for super admin */}
-                    {auth?.roles?.find(role => [ ROLES.SUPER_ADMIN].includes(role)) ? (
+                    {auth?.roles?.find(role => [ROLES.SUPER_ADMIN].includes(role)) ? (
                     <>   
-                    <ListItem disablePadding>
+                        <ListItem disablePadding>
                             <ListItemButton
                             component={RouterLink}
                             to="/superadmin/dashboard"
                             >
                             <ListItemIcon>
-                                <DashboardIcon sx={{ color: "grey.main" }} />
+                                <DashboardIcon sx={{ color: "grey.dark" }} />
                             </ListItemIcon>
                             <ListItemText
-                                primary={<Typography variant="subtitle2" sx={{ color: "grey.main" }}> 
-                                Dashboard
-                                </Typography>}
+                                primary={<Typography variant="subtitle2" sx={{ color: "grey.dark" }}>{t('dashboard')}</Typography>}
                             />
                             </ListItemButton>
-                    </ListItem>
+                        </ListItem>
 
-                    <ListItem disablePadding>
+                        <ListItem disablePadding>
                             <ListItemButton
                             component={RouterLink}
                             to="/superadmin/manage/admins"
                             >
                             <ListItemIcon>
-                                <ManageAccountsIcon sx={{ color: "grey.main" }} />
+                                <ManageAccountsIcon sx={{ color: "grey.dark" }} />
                             </ListItemIcon>
                             <ListItemText
-                                primary={<Typography variant="subtitle2" sx={{ color: "grey.main" }}>
-                                Manage Admins
-                                </Typography>}
+                                primary={<Typography variant="subtitle2" sx={{ color: "grey.dark" }}>{t('manageAdmins')}</Typography>}
                             />
                             </ListItemButton>
                         </ListItem>
                     </> 
                     ) : null}       
-                    </List>
+                </List>
 
-                    <Divider />
+                <Divider />
 
-                    {/* Only render the Login link when auth is empty */}
-                    {auth?.access_token ? null : (
+                {/* Only render the Login link when auth is empty */}
+                {auth?.access_token ? null : (
 
                     <ListItem disablePadding>
                         <ListItemButton
@@ -293,38 +289,38 @@ import LogoutIcon from '@mui/icons-material/Logout';
                         <ListItemText
                             primary={
                             <Typography sx={{ color: "white.light" }} variant="subtitle2">
-                                Login
+                                {t('login')}
                             </Typography>
                             }
                         />
                         </ListItemButton>
                     </ListItem>
-                    )}
+                )}
 
-                    
-                    {/* Only render the Login link when auth is empty */}
-                    {auth?.roles?.find(role => [ROLES.Owner, ROLES.Member].includes(role)) ? (                        <ListItem disablePadding>
-                            <ListItemButton
-                            component={RouterLink}
-                            to={`/profile/user/${auth?.username}`}
-                            onClick={handleDrawerToggle}
-                            sx={{ backgroundColor: "green.main" }}
-                            >
-                            <ListItemIcon>
-                                <AccountBoxIcon sx={{ color: "white.light" }} />
-                            </ListItemIcon>
-                            <ListItemText
-                                primary={
-                                <Typography sx={{ color: "white.light" }} variant="subtitle2">
-                                    Profile
-                                </Typography>
-                                }
-                            />
-                            </ListItemButton>
-                        </ListItem>
-                    ) : null}
-                </div>
-            );
+                {/* Only render the Login link when auth is empty */}
+                {auth?.roles?.find(role => [ROLES.Owner, ROLES.Member].includes(role)) ? (                        
+                    <ListItem disablePadding>
+                        <ListItemButton
+                        component={RouterLink}
+                        to={`/profile/user/${auth?.username}`}
+                        onClick={handleDrawerToggle}
+                        sx={{ backgroundColor: "green.main" }}
+                        >
+                        <ListItemIcon>
+                            <AccountBoxIcon sx={{ color: "white.light" }} />
+                        </ListItemIcon>
+                        <ListItemText
+                            primary={
+                            <Typography sx={{ color: "white.light" }} variant="subtitle2">
+                                {t('profile')}
+                            </Typography>
+                            }
+                        />
+                        </ListItemButton>
+                    </ListItem>
+                ) : null}
+            </div>
+        );
     
     
         //Styled Toolbar compoenent (every appbar requires a toolbar)
@@ -452,13 +448,13 @@ import LogoutIcon from '@mui/icons-material/Logout';
                         {auth?.roles?.find(role => [ROLES.Member].includes(role)) || !auth?.access_token ? (
                         <>
                             <Button component={RouterLink} to="/">
-                                <Typography variant="subtitle2" className="greenSubtitle">Home</Typography>
+                                <Typography variant="subtitle2" className="greenSubtitle">{t('home')}</Typography>
                             </Button>
                             <Button component={RouterLink} to="/pitches/search">
-                                <Typography variant="subtitle2" className="greySubtitle">Pitches</Typography>
+                                <Typography variant="subtitle2" className="greySubtitle">{t('pitches')}</Typography>
                             </Button>
                             <Button component={RouterLink} to="/stady/feedback">
-                                <Typography variant="subtitle2" className="greySubtitle">Feedback</Typography>
+                                <Typography variant="subtitle2" className="greySubtitle">{t('feedback')}</Typography>
                             </Button>
                         </>
                         ) : null}
@@ -467,7 +463,7 @@ import LogoutIcon from '@mui/icons-material/Logout';
                          {auth?.roles?.find(role => [ROLES.Member].includes(role))  ? (
                         <>
                             <Button component={RouterLink} to="/member/reservations">
-                                <Typography variant="subtitle2" className="greySubtitle">Reservations</Typography>
+                                <Typography variant="subtitle2" className="greySubtitle">{t('reservations')}</Typography>
                             </Button>
                         </>
                         ) : null}
@@ -480,7 +476,7 @@ import LogoutIcon from '@mui/icons-material/Logout';
                                 <Typography variant="subtitle2" className="greenSubtitle">Dashboard</Typography>
                             </Button>
                             <Button component={RouterLink} to="/owner/pitches">
-                                <Typography variant="subtitle2" className="greySubtitle">My Pitches</Typography>
+                                <Typography variant="subtitle2" className="greySubtitle">{t('myPitches')}</Typography>
                             </Button>
 
                             <Button
@@ -492,7 +488,7 @@ import LogoutIcon from '@mui/icons-material/Logout';
                                 size="small"
                                 >
                                     <Typography variant="subtitle2">
-                                        Add Pitch
+                                    {t('addPitch')}
                                     </Typography>
                             </Button>
                         </>
@@ -507,7 +503,7 @@ import LogoutIcon from '@mui/icons-material/Logout';
                                 <Typography variant="subtitle2" className="greySubtitle">Dashboard</Typography>
                             </Button>
                             <Button component={RouterLink} to="/superadmin/manage/admins">
-                                <Typography variant="subtitle2" className="greySubtitle">Manage Admins</Typography>
+                                <Typography variant="subtitle2" className="greySubtitle">{t('manageAdmins')}</Typography>
                             </Button>
                         </> 
                         ) : null}
@@ -518,7 +514,7 @@ import LogoutIcon from '@mui/icons-material/Logout';
                             <>
                                 <Button component={RouterLink} to="/login">
                                     <Typography variant="subtitle2" className="greySubtitle">
-                                        {"Log In"}                        
+                                        {t('login')}                      
                                     </Typography>
                                 </Button>
                                 <Button
@@ -528,7 +524,7 @@ import LogoutIcon from '@mui/icons-material/Logout';
                                 className="my-button"
                                 >
                                     <Typography variant="subtitle2">
-                                        Sign Up
+                                        {t('signup')} 
                                     </Typography>
                                 </Button>
                             </>
@@ -580,7 +576,7 @@ import LogoutIcon from '@mui/icons-material/Logout';
                                             <AccountCircle sx={{ color: 'black.main' }} />
                                         </ListItemIcon>
                                         <Typography variant="subtitle2" sx={{ color: 'black.main', ml: 1 }}>
-                                            Profile
+                                            {t('profile')} 
                                         </Typography>
                                         </Box>
                                     </Link>
@@ -591,7 +587,7 @@ import LogoutIcon from '@mui/icons-material/Logout';
                                     <ListItemIcon>
                                     <LogoutIcon />
                                     </ListItemIcon>
-                                    <ListItemText primary="Logout" />
+                                    <ListItemText primary= {t('logout')}  />
                                 </MenuItem>
                             </Menu>
                         </> 
@@ -647,11 +643,11 @@ import LogoutIcon from '@mui/icons-material/Logout';
                             ) : null }
                     </Box>
                     {auth?.access_token ? null : (
-                    <Button  component={RouterLink} to="/signup"  variant="contained" className="my-button"  >Sign Up</Button>
+                    <Button  component={RouterLink} to="/signup"  variant="contained" className="my-button"  >{t('signup')}</Button>
                     )}
 
                     {auth?.access_token ? (
-                    <Button  component={RouterLink} onClick={signOut} variant="contained" className="my-button" >Logout</Button>
+                    <Button  component={RouterLink} onClick={signOut} variant="contained" className="my-button" >{t('logout')}</Button>
                     ) : null }
                         
                     

@@ -32,6 +32,7 @@ import ReviewCard from './ReviewCard';
 import StarBorderIcon from '@mui/icons-material/StarBorder';
 import Footer from '../homePage/Footer';
 import AppFooter from '../homePage/AppFooter';
+import { useTranslation } from 'react-i18next';
 
 const StyledButton = styled(Button)(({ theme }) => ({
     marginTop: '8px',
@@ -105,7 +106,7 @@ const StyledModalQr = styled(Modal) (({ theme }) => ({
   }));
 
 const TimeslotSelection = () => {
-
+    const { t } = useTranslation();
     const theme = useTheme();
     const isMobile = useMediaQuery(theme.breakpoints.down('sm')); 
     const location = useLocation();
@@ -237,16 +238,16 @@ const TimeslotSelection = () => {
 
 
       const columns = [
-        { field: 'id', headerName: 'Code', width: isMobile ? 85: 100, disableColumnMenu: true },
-        { field: 'start_time', headerName: isMobile ? 'Start' : 'Start Time' ,  width: isMobile ? 85: 150, disableColumnMenu: true,
+        { field: 'id', headerName: t('Reservation.code'), width: isMobile ? 85: 100, disableColumnMenu: true },
+        { field: 'start_time', headerName: isMobile ? t('Reservation.start') : t('Reservation.startTime') ,  width: isMobile ? 95: 150, disableColumnMenu: true,
         valueFormatter: (params) => formatTime(params.value),
         },
         
-        { field: 'end_time', headerName: isMobile ? 'End' : 'End Time',  width: isMobile ? 85: 150, disableColumnMenu: true ,
+        { field: 'end_time', headerName: isMobile ? t('Reservation.end') : t('Reservation.endTime'),  width: isMobile ? 85: 150, disableColumnMenu: true ,
         valueFormatter: (params) => formatTime(params.value),
         },
 
-        { field: 'price', headerName: 'Price',  width: isMobile ? 85: 150, disableColumnMenu: true ,
+        { field: 'price', headerName: t('Reservation.price'),  width: isMobile ? 85: 150, disableColumnMenu: true ,
         valueFormatter: (params) => `${params.value} DT`,
         }
     ];
@@ -563,7 +564,7 @@ const TimeslotSelection = () => {
       const handleFetchReviews = async () => {
         try {
           setIsPendingReview(true);  
-          const response = await axiosPrivate.get(`/api/grounds/${pitch.id}/reviews`);
+          const response = await axios.get(`/api/grounds/${pitch.id}/reviews`);
           setReviews(response.data['hydra:member']);
           setIsPendingReview(false);  
           setOpenReviewsModal(true);
@@ -581,7 +582,7 @@ const TimeslotSelection = () => {
                 <Grid container alignItems="center">
                 <Grid item xs={12} sm={6}>
                     <Typography variant="h6" sx={{ color: 'white.main', fontWeight: 600, margin: '4px' }}>
-                    Reservation Process
+                    {t('Reservation.reservation')}
                     </Typography>
                 </Grid>
                 <Grid item xs={12} sm={6}>
@@ -595,8 +596,8 @@ const TimeslotSelection = () => {
                           {isPendingReview ? (
                         <CircularProgress color="white" size={24} />
                     ) : (
-                        "View Reviews"
-                    )}
+                        t('Reservation.reviews')
+                        )}
                     </Button>
                     {auth.username && (
                         <Button
@@ -605,7 +606,7 @@ const TimeslotSelection = () => {
                         onClick={handleReviewOpen}
                         startIcon={<RateReviewIcon />}
                         >
-                        Leave a Review
+                        {t('Reservation.writeReview')}
                         </Button>
                     )}
                     </Box>
@@ -627,7 +628,7 @@ const TimeslotSelection = () => {
                         onClick={handleFetchReviews}
                         startIcon={<ViewListIcon />}
                     >
-                        View Reviews
+                        {t('Reservation.reviews')}
                     </Button>
                     {auth.username && (
                         <Button
@@ -636,7 +637,7 @@ const TimeslotSelection = () => {
                         onClick={handleReviewOpen}
                         startIcon={<RateReviewIcon />}
                         >
-                        Leave a Review
+                        {t('Reservation.writeReview')}
                         </Button>
                     )}
                 </Box>
@@ -666,9 +667,9 @@ const TimeslotSelection = () => {
                     }}
                 >    
                     <Typography variant="h6" textAlign="center" sx={{ color: "green.main", marginBottom:'10px'}}>
-                    Time To get your QR code!
+                    {t('Reservation.qr')}
                     </Typography>
-                    <Typography variant="h5" textAlign="center" sx={{ color: "grey.main", marginBottom:'10px'}} >Please save this QR code and present it at the venue.</Typography>
+                    <Typography variant="h5" textAlign="center" sx={{ color: "grey.main", marginBottom:'10px'}} >{t('Reservation.qr2')}</Typography>
 
                     <Box sx={{ display:'flex', justifyContent:'center', alignItems:'center'}}> 
                     <img src={qrImage} alt="QR Code" />
@@ -682,7 +683,7 @@ const TimeslotSelection = () => {
                         disabled={!qrImage}
                         startIcon={<DownloadIcon/>}
                     >
-                        Download QR Code
+                       {t('Reservation.qr3')}
                     </Button>
                 </Box>
             </StyledModalQr>
@@ -693,12 +694,12 @@ const TimeslotSelection = () => {
             >
                 <DialogTitle>
                     <Typography variant="h5" sx={{ color: 'green.main' }}>
-                    Leave a Review
+                    {t('Reservation.addReview')}
                     </Typography>
                 </DialogTitle>
                 <DialogContent sx={{ width: isMobile ? '280px' : '500px' }}>
                     <Typography variant="subtitle1" color="text.secondary" sx={{ marginBottom: '10px' }}>
-                    Opinion:
+                    {t('Reservation.opinion')}
                     </Typography>
                     <TextField
                     required
@@ -717,7 +718,7 @@ const TimeslotSelection = () => {
                     />
                     <Box sx={{ marginTop: '10px' }}>
                     <Typography variant="subtitle1" color="text.secondary" sx={{ marginBottom: '10px' }}>
-                        Rating:
+                    {t('Reservation.note')}
                     </Typography>
                     <Rating
                         name="reviewStar"
@@ -743,8 +744,8 @@ const TimeslotSelection = () => {
                     {isPending ? (
                         <CircularProgress color="green" size={24} />
                     ) : (
-                        "Submit"
-                    )}
+                        t('Reservation.submit')
+                        )}
                     </Button>
                 </DialogActions>
             </Dialog>
@@ -754,11 +755,11 @@ const TimeslotSelection = () => {
                 <Typography variant="h5" sx={{ color: 'green.main' }}>Thank You!</Typography>
             </DialogTitle>
             <DialogContent sx={{ width: isMobile ? '280px' : '500px' }}>
-               <Typography variant='body2'>Thanks for sharing your experience !</Typography> 
+               <Typography variant='body2'>{t('Reservation.thanks')}</Typography> 
             </DialogContent>
             <DialogActions>
                 <Button onClick={handleFeedbackClose} autoFocus>
-                Close
+                {t('Reservation.cancel')}
                 </Button>
             </DialogActions>
             </Dialog>
@@ -767,7 +768,7 @@ const TimeslotSelection = () => {
             <Dialog open={openReviewsModal} onClose={handleCloseReviewsModal} maxWidth="sm" fullWidth>
                 <DialogTitle>
                     <Typography variant="h5" sx={{ color: 'green.main' }}>
-                    Reviews 
+                    {t('Reservation.reviewsDialog')} 
                     </Typography>
                 </DialogTitle>                <DialogContent>
                     {Array.isArray(reviews) && reviews.length > 0 ? (
@@ -775,11 +776,11 @@ const TimeslotSelection = () => {
                         <ReviewCard key={review.id} review={review} />
                     ))
                     ) : (
-                    <Typography>No reviews available</Typography>
+                    <Typography>{t('Reservation.reviewsNo')} </Typography>
                     )}
                 </DialogContent>
                 <DialogActions>
-                    <Button onClick={handleCloseReviewsModal}>Close</Button>
+                    <Button onClick={handleCloseReviewsModal}>{t('Reservation.close')}</Button>
                 </DialogActions>
             </Dialog>
 
@@ -806,7 +807,7 @@ const TimeslotSelection = () => {
                sx={{ width: '100%' }}
                >
                 {success ? (
-                 'You successfully created your reservation!'
+                 t('Reservation.reservationSuccess')
                 ) : errMsg} 
                </Alert>
              </Snackbar>         
@@ -815,12 +816,12 @@ const TimeslotSelection = () => {
             <Grid container spacing={2}>
 
                     <Grid item xs={12} sm={12} md={5}>   
-                    <Typography variant="subtitle1" sx={{ color: 'green.main', fontWeight: 600, margin: '10px', textAlign:'center' }}>Select a Timeslot</Typography>  
+                    <Typography variant="subtitle1" sx={{ color: 'green.main', fontWeight: 600, margin: '10px', textAlign:'center' }}>{t('Reservation.timeslot')}</Typography>  
                         <LocalizationProvider dateAdapter={AdapterDayjs}>
                             <DemoContainer components={['DatePicker']}>
                                 <DatePicker 
                                 sx={{ width: isMobile ? 'auto': '100%', margin:'10px'}}
-                                label="Pick a date"
+                                label={t('Reservation.pickDate')}
                                 value={selectedDate}
                                 minDate={dayjs()} 
                                 maxDate={dayjs().add(1, 'month')} 
@@ -832,7 +833,7 @@ const TimeslotSelection = () => {
 
                         <Box sx={{ display: "flex",  justifyContent: "space-between", margin:'10px'}}>
                             <Typography variant="subtitle1" textAlign="left" sx={{ color: "green.main" }}>
-                                Available TimeSlots:
+                            {t('Reservation.AvailableTimeSlots')}
                             </Typography>
                         
                         </Box>
@@ -861,7 +862,7 @@ const TimeslotSelection = () => {
                     </Grid>
                     <Grid item xs={12} sm={12} md={4} sx={{textAlign:'center'}}> 
                     <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center'}}>
-                        <Typography variant="subtitle1" sx={{ color: 'green.main', fontWeight: 600, margin: '10px', textAlign:'center' }}>Reservation Basket</Typography>
+                        <Typography variant="subtitle1" sx={{ color: 'green.main', fontWeight: 600, margin: '10px', textAlign:'center' }}>{t('Reservation.basket')}</Typography>
                             <Card
                             sx={{
                                 display: 'flex',
@@ -921,15 +922,15 @@ const TimeslotSelection = () => {
 
                                         <Box sx={{display: 'flex', flexDirection: 'column', marginTop: '15px'}}>
                                         <Box sx={{ display: 'flex', justifyContent: 'space-between', marginBottom: '5px' }}>
-                                            <Typography variant="h5" sx={{ color: 'grey.main'}}>Price:</Typography>
+                                            <Typography variant="h5" sx={{ color: 'grey.main'}}>{t('Reservation.price1')}</Typography>
                                             <Typography variant="h5" sx={{ color: 'grey.main'}}>{totalPrice} DT</Typography>
                                         </Box>
                                         <Box sx={{ display: 'flex', justifyContent: 'space-between', marginBottom: '5px' }}>
-                                            <Typography variant="h5" sx={{ color: 'grey.main'}}>Fees:</Typography>
+                                            <Typography variant="h5" sx={{ color: 'grey.main'}}>{t('Reservation.fees')}</Typography>
                                             <Typography variant="h5" sx={{ color: 'grey.main'}}>{fees} DT</Typography>
                                         </Box>
                                         <Box sx={{ display: 'flex', justifyContent: 'space-between', marginBottom: '5px' }}>
-                                            <Typography variant="h5" sx={{ color: 'grey.main'}}>Total:</Typography>
+                                            <Typography variant="h5" sx={{ color: 'grey.main'}}>{t('Reservation.total')}</Typography>
                                             <Typography variant="h5" sx={{ color: 'grey.main'}}>{totalPrice + fees} DT</Typography>
                                         </Box>
                                         </Box>
@@ -944,13 +945,13 @@ const TimeslotSelection = () => {
                                             {isPending ? (
                                                 <CircularProgress color="white" size={24} />
                                             ) : (
-                                                "Reserve"
+                                                t('Reservation.reserve')
                                             )}
                                         </StyledButton>
                                         </Box>
                                     </>
                                     ) : (
-                                    <Typography variant="h5" sx={{marginTop: '15px', color: 'grey.main'}}>No timeslots selected yet</Typography>
+                                    <Typography variant="h5" sx={{marginTop: '15px', color: 'grey.main'}}>{t('Reservation.noTimeSlotSelect')}</Typography>
                                     )}
                                 </CardContent>
                             </Card>
@@ -958,7 +959,7 @@ const TimeslotSelection = () => {
                     </Grid>
 
                     <Grid item xs={12} sm={12} md={3} sx={{textAlign:'center'}}>     
-                        <Typography variant="subtitle1" sx={{ color: 'green.main', fontWeight: 600, margin: '10px' }}>Pitch Informations</Typography>
+                        <Typography variant="subtitle1" sx={{ color: 'green.main', fontWeight: 600, margin: '10px' }}>{t('Reservation.pitchInfo')}</Typography>
                             {pitch && (
                                 <Card
                                     sx={{
@@ -1006,7 +1007,7 @@ const TimeslotSelection = () => {
                                     <Divider sx={{ marginTop:"5px", marginBottom:"5px" }} />
 
                                     <Box sx={{  padding: '0px 10px', display: 'flex', flexDirection: 'row',   justifyContent: 'space-between' , marginBottom: '2px'}}> 
-                                        <Typography variant="subtitle1" color="text.secondary">Contact </Typography>
+                                        <Typography variant="subtitle1" color="text.secondary">{t('PitchCard1.contact')} </Typography>
                                         <Link href={`tel:${pitch.phoneNumber}`} underline="none" color="inherit">
                                             <Typography variant="subtitle1" color="text.secondary">{pitch.phoneNumber}</Typography>
                                         </Link>
@@ -1015,14 +1016,14 @@ const TimeslotSelection = () => {
                                     <Divider sx={{ marginTop:"5px", marginBottom:"5px" }} />
 
                                     <Box sx={{  padding: '0px 10px', display: 'flex', flexDirection: 'row',   justifyContent: 'space-between' , marginBottom: '4px'}}>    
-                                        <Typography variant="subtitle1" color="text.secondary">Rating </Typography>
+                                        <Typography variant="subtitle1" color="text.secondary">{t('PitchCard1.rating')} </Typography>
                                         <Rating sx={{color: 'green.main'}} name="read-only" value={averageRating} precision={0.5} readOnly />
                                          
                                     </Box>
                                     <Divider sx={{ marginTop:"5px", marginBottom:"5px" }} />
 
                                     <Box sx={{  padding: '0px 10px', display: 'flex', flexDirection: 'row',   justifyContent: 'space-between' , marginBottom: '5px'}}> 
-                                        <Typography variant="subtitle1" color="text.secondary">Amenties </Typography>     
+                                        <Typography variant="subtitle1" color="text.secondary">{t('PitchCard1.amenties')} </Typography>     
                                         <Typography variant="h5" textAlign="left" sx={{ color: "grey.dark", fontWeight: 500  }}>
                                         { (pitch.amenties.hasShower && pitch.amenties.hasSecureStorage && pitch.amenties.hasChangingRoom && pitch.amenties.hasRestaurent && pitch.amenties.hasParking)  ? (
                                             <>
@@ -1053,7 +1054,7 @@ const TimeslotSelection = () => {
                                     <Divider sx={{ marginTop:"5px", marginBottom:"5px" }} />
 
                                     <Box sx={{  padding: '0px 10px', display: 'flex', flexDirection: 'row',   justifyContent: 'space-between' , marginBottom: '5px'}}> 
-                                        <Typography variant="subtitle1" color="text.secondary">Location </Typography>
+                                        <Typography variant="subtitle1" color="text.secondary">{t('PitchCard1.location')} </Typography>
                                         {pitch?.address && (
                                          <Button 
                                          variant="outlined" 
@@ -1062,7 +1063,7 @@ const TimeslotSelection = () => {
                                          target="_blank" 
                                          rel="noopener noreferrer"
                                        >
-                                         View on Maps
+                                         {t('PitchCard1.maps')}
                                        </Button>
                                         )}
                                     </Box>

@@ -13,6 +13,7 @@ import { Controller, useForm } from 'react-hook-form';
 import SportsSoccerIcon from '@mui/icons-material/SportsSoccer';
 import axios from '../../api/axios';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 
 
 
@@ -121,6 +122,7 @@ const onSubmit =  async (data, e) => {
   }
  
 };
+const { t } = useTranslation();
 
   return (
     <>
@@ -139,8 +141,8 @@ const onSubmit =  async (data, e) => {
               <Box sx={{ display: 'flex', alignItems: 'center', width: '100%' }}>
                   <InputBase  
                       {...field}
-                      placeholder="Search for a facility"
-                      inputProps={{ 'aria-label': 'Search for a facility' }}
+                      placeholder={t('searchbar')}
+                      inputProps={{ 'aria-label': t('searchbar') }}
                       sx={{ ml: 1, flex: 1 }}
                   />
                   <IconButton type="button" sx={{ p: '10px' }} aria-label="search">
@@ -201,7 +203,7 @@ const onSubmit =  async (data, e) => {
                     }
                 }}
                   select
-                  label="State"
+                  label={t('searchstate')}
                   {...field}
                   error={!!fieldState.error}
                   SelectProps={{
@@ -234,7 +236,7 @@ const onSubmit =  async (data, e) => {
               {isPending ? (
                 <CircularProgress color="white" size={24} />
               ) : (
-                "Search"
+                t('searchbutton')
               )}
             </Button>      
       </Paper>

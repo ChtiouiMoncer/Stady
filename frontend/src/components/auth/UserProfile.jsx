@@ -16,6 +16,9 @@ import CloseIcon from '@mui/icons-material/Close';
 import useLogout from "../../Hooks/useLogout";
 import { InputAdornment } from "@mui/material";
 import { Visibility, VisibilityOff } from "@mui/icons-material";
+import MuiPhoneNumber from "mui-phone-number";
+import { Document, Page, Text, View, StyleSheet } from '@react-pdf/renderer';
+import { useTranslation } from "react-i18next";
 
 
 const StyledButton = styled(Button)(({ theme }) => ({
@@ -84,6 +87,8 @@ const StyledModal = styled(Box)(({ theme }) => ({
 }));
 
 const UserProfile = () => {
+  const { t } = useTranslation();
+
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
 
@@ -112,6 +117,7 @@ const UserProfile = () => {
 
   const [emailValue, setEmailValue] = useState(user.email);
   const [usernameValue, setUsernameVlaue] = useState(user.username);
+  const [phoneNumberValue, setPhoneNumber] = useState(user.phoneNumber);
   const [passwordValue, setPasswordValue] = useState("");
   const [confirmPasswordValue, setConfirmPasswordValue] = useState("");
   const [showPassword, setShowPassword] = useState(false);
@@ -278,19 +284,33 @@ const UserProfile = () => {
     }
   };
 
+  
   const handleDownloadAccountData = () => {
     setIsMethodPending(true);
     const currentDate = new Date().toLocaleDateString();
   
     const content = `
-      Date: ${currentDate}
-      Username: ${user.username}
-      Email: ${user.email}
-      Roles: ${user.roles && user.roles.includes("ROLE_OWNER") ? "Role Owner" : "Role Member"}
-      Reservations: ${user.reservations && user.reservations.length}
-      Reviews: ${user.reviews && user.reviews.length}
-      Feedback: ${user.feedback && user.feedback.length}
-    `;
+    Account Data Export - Terms and Conditions:
+
+    Date: ${currentDate}
+    Username: ${user.username}
+    Email: ${user.email}
+    Phone Number: ${user.phoneNumber || 'No data'}
+    Roles: ${user.roles && user.roles.includes("ROLE_OWNER") ? "Role: Owner" : "Role: Member"}
+    ${user.roles && user.roles.includes("ROLE_OWNER") ? "Pitches: " + (user.pitches && user.pitches.length) || 'No data' : ''}
+    ${user.roles && user.roles.includes("ROLE_MEMBER") ? "Reservations: " + (user.reservations && user.reservations.length) || 'No data' : ''}
+    ${user.roles && user.roles.includes("ROLE_MEMBER") ? "Reviews: " + (user.reviews && user.reviews.length) || 'No data' : ''}
+    ${user.roles && user.roles.includes("ROLE_MEMBER") ? "Feedback: " + (user.feedback && user.feedback.length) || 'No data' : ''}
+    
+    --- Additional Information ---
+    Stady App: Your one-stop platform for managing your sports facilities and reservations.
+    Upgrade your account to access advanced features and unlock the full potential of Stady.
+    Contact our support team for any assistance or inquiries.
+
+    Note: 
+    This file contains your personal account data, including sensitive information. Please ensure the security and confidentiality of this file. 
+    By using this data, you agree to abide by the terms and conditions outlined by Stady App.
+`;
   
     const blob = new Blob([content], { type: "text/plain" });
   
@@ -310,7 +330,6 @@ const UserProfile = () => {
     
     setSuccess(true);
     setSuccMsg(' You successfully downloaded your Account Data! ')
-    getUserInfo();
     setSnackbarOpen(true);
   };
 
@@ -338,11 +357,11 @@ const UserProfile = () => {
               sx={{
                 display: "flex",
                 justifyContent: "space-between",
-                marginBottom: "10px",
+                marginBottom: "15px",
               }}
             >
               <Typography variant="h6" textAlign="left" sx={{ color: "green.main" }}>
-                User Profile
+              {t('UserProfile.profile')}
               </Typography>
               <Button
                 variant="outlined"
@@ -352,7 +371,7 @@ const UserProfile = () => {
                 }}
                 startIcon={<CancelIcon />}
               >
-                Cancel
+                {t('UserProfile.cancel')}
               </Button>
             </Box>
             <Snackbar
@@ -383,20 +402,20 @@ const UserProfile = () => {
               </Alert>
             </Snackbar>
             <Grid container spacing={2}>
-              <Grid item xs={12} md={6}>
+              <Grid item xs={12} md={4}>
          <TextField
               id="username"
-              label="Username"
+              label={t('UserProfile.username')}
               defaultValue={user.username}
               variant="outlined"
               fullWidth
               onChange={handleUsernameChange}
             />
           </Grid>
-          <Grid item xs={12} md={6}>
+          <Grid item xs={12} md={4}>
             <TextField
               id="email"
-              label="Email"
+              label={t('UserProfile.email')}
               defaultValue={user.email}
               variant="outlined"
               fullWidth
@@ -404,9 +423,23 @@ const UserProfile = () => {
               />
           </Grid>
           <Grid item xs={12} md={4}>
+          <MuiPhoneNumber
+            sx={{ marginTop: '1px', marginLeft: '5px' }}
+                defaultCountry={'tn'}
+                fullWidth
+                value={user.phoneNumber}
+                id="outlined-phoneNumber-input"
+                label= {
+                <Typography  variant="subtitle2" textAlign="left" sx={{ color: "grey.main"}}>
+                    {t('UserProfile.phoneNumber')}
+                </Typography>}
+                type='text'         
+           />
+          </Grid>
+          <Grid item xs={12} md={4}>
                 <TextField
                     id="confirmOldPassword"
-                    label="Actual Password"
+                    label={t('UserProfile.actualPassword')}
                     variant="outlined"
                     fullWidth
                     type={showOldPassword ? "text" : "password"}
@@ -425,7 +458,7 @@ const UserProfile = () => {
           <Grid item xs={12} md={4}>
             <TextField
               id="newPassword"
-              label="New Password"
+              label={t('UserProfile.newPassowrd')}
               variant="outlined"
               onChange={handlePasswordChange}
               fullWidth
@@ -444,7 +477,7 @@ const UserProfile = () => {
           <Grid item xs={12} md={4}>
             <TextField
               id="confirmPassword"
-              label="Confirm New Password"
+              label={t('UserProfile.confirmNewPassowrd')}
               variant="outlined"
               fullWidth
               type={showPassword ? "text" : "password"}
@@ -455,7 +488,7 @@ const UserProfile = () => {
               <Grid item xs={12} md={3}>
                 <Box sx={{ display: "flex", alignItems: "center" }}>
                   <Typography variant="h5" sx={{ color: "grey.main", marginRight: "8px" }}>
-                    Roles:
+                  {t('UserProfile.roles')}
                   </Typography>
                   <Typography variant="h5" sx={{ color: "green.main" }}>
                     {user.roles && user.roles.includes("ROLE_OWNER") ? "Role Owner" : "Role Member"}
@@ -467,7 +500,7 @@ const UserProfile = () => {
                   <Grid item xs={12} md={3}>
                     <Box sx={{ display: "flex", alignItems: "center" }}>
                       <Typography variant="h5" sx={{ color: "grey.main", marginRight: "8px" }}>
-                        Pitches:
+                      {t('UserProfile.pitches')}
                       </Typography>
                       <Box
                         sx={{
@@ -492,7 +525,7 @@ const UserProfile = () => {
                   <Grid item xs={12} md={3}>
                     <Box sx={{ display: "flex", alignItems: "center" }}>
                       <Typography variant="h5" sx={{ color: "grey.main", marginRight: "8px" }}>
-                        Reservations:
+                      {t('UserProfile.reservations')}
                       </Typography>
                       <Box
                         sx={{
@@ -514,7 +547,7 @@ const UserProfile = () => {
                   <Grid item xs={12} md={3}>
                     <Box sx={{ display: "flex", alignItems: "center" }}>
                       <Typography variant="h5" sx={{ color: "grey.main", marginRight: "8px" }}>
-                        Reviews:
+                      {t('UserProfile.reviews')}
                       </Typography>
                       <Box
                         sx={{
@@ -536,7 +569,7 @@ const UserProfile = () => {
                   <Grid item xs={12} md={3}>
                     <Box sx={{ display: "flex", alignItems: "center" }}>
                       <Typography variant="h5" sx={{ color: "grey.main", marginRight: "8px" }}>
-                        Feedback:
+                      {t('UserProfile.feedbacks')}
                       </Typography>
                       <Box
                         sx={{
@@ -564,8 +597,8 @@ const UserProfile = () => {
                       {isMethodPending ? (
                         <CircularProgress color="white" size={24} />
                       ) : (
-                        "Update Account"
-                      )}
+                        t('UserProfile.update')
+                        )}
                     </StyledButton>
                   </Box>
 
@@ -574,17 +607,20 @@ const UserProfile = () => {
                       {isMethodPending ? (
                         <CircularProgress color="white" size={24} />
                       ) : (
-                        "Delete Account"
+                        t('UserProfile.delete')
                       )}
                     </StyledButtonDelete>
                     <StyledButton disabled={isMethodPending} variant="contained" size="large" startIcon={<CloudDownloadIcon />} onClick={handleDownloadAccountData} sx={{ bgcolor: "green.main", marginBottom: "3px" }}>
                       {isMethodPending ? (
                         <CircularProgress color="white" size={24} />
                       ) : (
-                        "Account Data"
+                        t('UserProfile.download')
                       )}
                     </StyledButton>
                   </Box>
+                </Box>
+                <Box sx={{ marginTop: "50px", display: "flex", flexDirection: isMobile ? "column" : "row", justifyContent:  "center" , alignItems: "center" }}>
+                  <LanguageSwitcher />
                 </Box>
               </Grid>
             </Grid>
@@ -599,3 +635,23 @@ const UserProfile = () => {
 };
 
 export default UserProfile;
+
+function LanguageSwitcher() {
+  const { i18n } = useTranslation();
+
+  return (
+      
+      <Box sx={{ marginBottom: '10px' }}>
+        <StyledButton variant="contained" color="inherit" onClick={() => i18n.changeLanguage('en')}>
+          <Typography sx={{ color: 'grey.black' }} variant="body">
+          ENG
+          </Typography>
+        </StyledButton>
+        <StyledButton sx={{ marginLeft:'10px'}} variant="contained" color="inherit" onClick={() => i18n.changeLanguage('fr')}>
+          <Typography sx={{ color: 'grey.black'}} variant="body">
+          FR
+          </Typography>
+        </StyledButton>
+      </Box>
+  );
+}

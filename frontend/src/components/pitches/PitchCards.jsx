@@ -14,6 +14,7 @@ import RestaurantIcon from '@mui/icons-material/Restaurant';
 import ShowerIcon from '@mui/icons-material/Shower';
 import { Checkroom, SpaceDashboard } from "@mui/icons-material";
 import AppFooter from "../homePage/AppFooter";
+import { useTranslation } from "react-i18next";
 
 const StyledBox = styled(Box) (({ theme }) => ({
 
@@ -67,7 +68,7 @@ const StyledModal = styled(Box) (({ theme }) => ({
   }));
   
 const PitchCards = () => {
-
+    const { t } = useTranslation();
     const theme = useTheme();
     const isMobile = useMediaQuery(theme.breakpoints.down('sm')); // Returns true if screen size is small or smaller
 
@@ -89,7 +90,7 @@ if (pitches.length === 0) {
             <Navbar />
             <StyledModal>
                 <Box sx={{ display: "flex" , flexDirection: "column", alignItems: "center" }}>
-                    <Typography variant="h5" sx={{ color: isMobile ? 'white.main' : 'green.main' , fontWeight: 600, margin: '10px' }}>No results found for your search. Redirecting you to the home page...</Typography>
+                    <Typography variant="h5" sx={{ color: isMobile ? 'white.main' : 'green.main' , fontWeight: 600, margin: '10px' }}>{t('PitchCard1.NoResults')}</Typography>
                     <Box sx={{ display: 'flex', flexDirection: 'row', justifyContent:'center', gap: '5px', marginTop: '5px'}}>
                         <Button onClick={goBack}  component={RouterLink} to="/"  variant="contained" className="my-button"    >
                             <Typography variant="subtitle2"  >
@@ -110,7 +111,7 @@ if (pitches.length === 0) {
     <Navbar />
     <StyledBox>
                     
-        <Typography variant="subtitle1" sx={{ color: 'green.main', fontWeight: 600, margin: '10px' }}>Find your next adventure</Typography>
+        <Typography variant="subtitle1" sx={{ color: 'green.main', fontWeight: 600, margin: '10px' }}> {t('PitchCard1.FindAdventure')}</Typography>
 
         <Grid container spacing={2}>
             {pitches.map((pitch, index) => {
@@ -186,7 +187,7 @@ if (pitches.length === 0) {
                                 <Divider sx={{ marginTop:"5px", marginBottom:"5px" }} />
 
                                 <Box sx={{  padding: '0px 10px', display: 'flex', flexDirection: 'row',   justifyContent: 'space-between' , marginBottom: '5px'}}> 
-                                    <Typography variant="subtitle1" color="text.secondary">Rating </Typography>
+                                    <Typography variant="subtitle1" color="text.secondary">{t('PitchCard1.rating')} </Typography>
                                     <Rating sx={{color: 'green.main'}} name="read-only" value={averageRating} precision={0.5} readOnly />
                                 </Box>
 
@@ -194,7 +195,7 @@ if (pitches.length === 0) {
 
                                 
                                 <Box sx={{  padding: '0px 10px', display: 'flex', flexDirection: 'row',   justifyContent: 'space-between' , marginBottom: '30px'}}> 
-                                        <Typography variant="subtitle1" color="text.secondary">Amenties </Typography>     
+                                        <Typography variant="subtitle1" color="text.secondary">{t('PitchCard1.amenties')} </Typography>     
                                         <Typography variant="h5" textAlign="left" sx={{ color: "grey.dark", fontWeight: 500  }}>
                                         { (pitch.amenties.hasShower && pitch.amenties.hasSecureStorage && pitch.amenties.hasChangingRoom && pitch.amenties.hasRestaurent && pitch.amenties.hasParking)  ? (
                                             <>
@@ -216,7 +217,7 @@ if (pitches.length === 0) {
                                             </>
                                         ) : (
                                         <>
-                                            No Amenities
+                                           {t('PitchCard1.Noamenties')}
                                         </>
                                         )}
                                         </Typography>
