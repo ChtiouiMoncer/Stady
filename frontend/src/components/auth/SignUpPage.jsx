@@ -588,7 +588,7 @@ const handleRoleChange = (event) => {
             </Divider> 
 
             <Box sx={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-                <Button startIcon={ <img src={googleLogo} alt="Google" width="20px" height="20px" />} fullWidth className="social-login" variant="outlined"> {t('SignUp.login')} </Button>
+                <Button startIcon={ <img src={googleLogo} alt="Google" width="20px" height="20px" />} fullWidth className="social-login" variant="outlined"> {t('SignUp.continue')}</Button>
                 {/*<Button startIcon={<img src={facebookLogo} alt="Google" width="20px" height="20px" />}  fullWidth className="social-login" variant="outlined"> Continue with Facebook </Button> */ }
             </Box>  
 
