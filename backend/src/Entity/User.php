@@ -48,7 +48,7 @@ use Symfony\Component\Validator\Constraints as Assert;
             security: 'is_granted("ROLE_USER_EDIT") and object == user',
             processor: UserPasswordHasher::class),
         new Delete(
-            security: 'is_granted("ROLE_USER_EDIT") and object == user',
+            security: 'is_granted("ROLE_USER_EDIT") and object == user or is_granted("ROLE_ADMIN") ',
         )
     ],
     normalizationContext: ['groups' => ['user:read']],
@@ -60,6 +60,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 #[UniqueEntity(fields: ['username'],message: 'There is already an account with this username')]
 #[ApiFilter(PropertyFilter::class)]
 #[ApiFilter(SearchFilter::class, properties: ["pitches.name" => 'partial'] )]
+
 class User implements UserInterface, PasswordAuthenticatedUserInterface
 {
     #[ORM\Id]
@@ -95,7 +96,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[Assert\NotBlank]
     private ?string $username = null;
 
-    #[ORM\OneToMany(mappedBy: 'owner', targetEntity: Pitch::class, cascade: ['persist'],  orphanRemoval: true)]
+    #[ORM\OneToMany(mappedBy: 'owner', targetEntity: Pitch::class, cascade: ['persist', 'remove'],  orphanRemoval: true)]
     #[Groups(['user:read','user:write'])]
     #[Assert\Valid]
     #[ApiProperty(
@@ -103,7 +104,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     )]
     private Collection $pitches;
 
-    #[ORM\OneToMany(mappedBy: 'owner', targetEntity: Review::class, cascade: ['persist'],  orphanRemoval: true)]
+    #[ORM\OneToMany(mappedBy: 'owner', targetEntity: Review::class, cascade: ['persist', 'remove'],  orphanRemoval: true)]
     #[Groups(['user:read','user:write'])]
     #[Assert\Valid]
     #[ApiProperty(
@@ -111,12 +112,12 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     )]
     private Collection $reviews;
 
-    #[ORM\OneToMany(mappedBy: 'owner', targetEntity: Reservation::class)]
+    #[ORM\OneToMany(mappedBy: 'owner', targetEntity: Reservation::class, cascade: ['persist', 'remove'],  orphanRemoval: true)]
     #[Groups(['user:read','user:write'])]
     #[Assert\Valid]
     private Collection $reservations;
 
-    #[ORM\OneToMany(mappedBy: 'owner', targetEntity: Feedback::class)]
+    #[ORM\OneToMany(mappedBy: 'owner', targetEntity: Feedback::class, cascade: ['persist', 'remove'],  orphanRemoval: true)]
     #[Groups(['user:read','user:write'])]
     #[Assert\Valid]
     #[ApiProperty(

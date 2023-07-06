@@ -96,7 +96,7 @@ class TimeSlot
     private ?Reservation $reservation = null;
 
     #[ORM\Column(nullable: true)]
-    #[Groups(['timeSlot:read','timeSlot:write','opening_time:read'])]
+    #[Groups(['timeSlot:read','timeSlot:write','opening_time:read','reservation:read'])]
     #[ApiFilter(BooleanFilter::class)]
     private ?bool $isOutdated = null;
 

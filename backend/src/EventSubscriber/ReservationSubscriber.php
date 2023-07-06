@@ -33,14 +33,25 @@ class ReservationSubscriber
                 throw new \Exception('Cannot cancel a reservation that is outdated.');
             }
 
-            // Check if one of the timeslots reservation start time is about to start less than 10 min.
-            $nowTimestamp = $now->getTimestamp();
-            $startTimeTimestamp = $timeSlot->getStartTime()->getTimestamp();
-            $today = new \DateTime();
 
-            if (($startTimeTimestamp - $nowTimestamp) < 600) {
-                throw new \Exception('Cannot cancel a reservation that have a timeslot that is going to start less then 10min from now.');
+            // Check if one of the timeslots reservation start time is about to start less than 10 min.
+            $now = new \DateTime();
+
+            $timeSlotDate = $timeSlot->getDate();
+            $timeSlotTime = $timeSlot->getStartTime();
+
+            // Create a new DateTime object combining the date and time of the timeSlot
+            $timeSlotDateTime = (clone $timeSlotDate)->setTime(
+                (int)$timeSlotTime->format('H'),
+                (int)$timeSlotTime->format('i'),
+                (int)$timeSlotTime->format('s')
+            );
+
+            // Check if the timeslot's start date and time is about to start less than 10 min.
+            if (($timeSlotDateTime->getTimestamp() - $now->getTimestamp()) < 600) {
+                throw new \Exception('Cannot cancel a reservation that have a timeslot that is going to start less than 10min from now.');
             }
+
 
             // Check if the reservation is not already available
             if ($timeSlot->getIsAvailable()) {

@@ -70,10 +70,10 @@ class PitchEventListener
             $interval = new \DateInterval(sprintf('PT%dM', $openingTime->getInterval()));
 
             // Set the date range for generating the timeslots: from today to one month later
-//            $startDate = (new \DateTime());
-//            $endDate = (new \DateTime())->modify('+1 month');
-              $startDate = (new \DateTime())->modify('+1 day'); //start the timeslots from tomorrow
-              $endDate = (new \DateTime())->modify('+1 month')->modify('+1 day'); //the end date is set to one month from tomorrow
+            //$startDate = (new \DateTime());
+            //$endDate = (new \DateTime())->modify('+1 month');
+            $startDate = (new \DateTime())->modify('+1 day'); //start the timeslots from tomorrow
+            $endDate = (new \DateTime())->modify('+1 month')->modify('+1 day'); //the end date is set to one month from tomorrow
 
             // Get the day of the week for this OpeningTime
             $dayOfWeek = strtolower($openingTime->getDay());
