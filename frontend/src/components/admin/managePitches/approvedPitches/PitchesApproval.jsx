@@ -13,6 +13,7 @@ import ZoomInIcon from '@mui/icons-material/ZoomIn';
 import { Google } from '@mui/icons-material';
 import DeleteIcon from '@mui/icons-material/Delete';
 import StopIcon from '@mui/icons-material/Stop';
+import PlayArrowIcon from '@mui/icons-material/PlayArrow';
 
 const StyledButton = styled(Button)(({ theme }) => ({
     marginTop: '20px',
@@ -82,6 +83,7 @@ const PitchesApproval = () => {
 
     //for the ERRORS AND SUCCESS
     const [errMsg, setErrMsg] = useState('');
+    const [succMsg, setSucssMsg] = useState('');
     const [success, setSuccess] = useState(false);
 
     const [selectedPitch, setSelectedPitch] = useState(null);
@@ -102,43 +104,75 @@ const PitchesApproval = () => {
           );
           setSnackbarOpen(true);   
           setErrMsg('');
+          setSucssMsg('TimeSlots Generation paused Successfully!')
           setSuccess(true);
         } catch (err) {
+          setSuccess(false);
           setIsPending(false);
+          setErrMsg('They was a problem pauseing the TimeSlots Generation, Try Again!')
         }
         // Refresh data after rejecting
         getPitches();
         setLoadingRow(null);
-      };
+    };
 
-   const handleDelete = async (id) => {
-    setOperationType('delete');
-    setLoadingRow(id);
-    const DELETE_PITCH_URL = `/api/grounds/${id}`;
+    const handleResume = async (id) => {
+        setOperationType('resume');
+        setLoadingRow(id);
+        const PATCH_PITCH_URL = `/api/grounds/${id}`;
+      
+        try {
+          const response = await axiosPrivate.patch(PATCH_PITCH_URL,
+            JSON.stringify({
+                isPaused: false,
+            }),
+            {
+              headers: {'Content-Type' : 'application/merge-patch+json'},
+            }
+          );
+          setSnackbarOpen(true);   
+          setErrMsg('');
+          setSucssMsg('TimeSlots Generation resumed Successfully!')
+          setSuccess(true);
+        } catch (err) {
+            setSuccess(false);
+            setIsPending(false);
+            setErrMsg('They was a problem resuming the TimeSlots Generation, Try Again!')
+        }
+        // Refresh data after rejecting
+        getPitches();
+        setLoadingRow(null);
+    }; 
 
-    try {
-        const response = await axiosPrivate.delete(DELETE_PITCH_URL,
-        {
-            headers: {'Content-Type' : 'application/json'},
+    const handleDelete = async (id) => {
+        setOperationType('delete');
+        setLoadingRow(id);
+        const DELETE_PITCH_URL = `/api/grounds/${id}`;
+
+        try {
+            const response = await axiosPrivate.delete(DELETE_PITCH_URL,
+            {
+                headers: {'Content-Type' : 'application/json'},
+            }
+            );
+            setSnackbarOpen(true);   
+            setErrMsg('');
+            setSucssMsg('Pitch Deleted Successfully!')
+            setSuccess(true);
+        } catch (err) {
+            setSnackbarOpen(true); 
+            setIsPending(false);
+            setSuccess(false);     
+            if (err?.response?.data['hydra:description'] === "Cannot delete Pitch. There are active reservations associated with it.") {
+                setErrMsg("Cannot delete a pitch that has a reservation");
+            } else {
+            setErrMsg("An error occurred while deleting the pitch.");
+            }
         }
-        );
-        setSnackbarOpen(true); 
-        setErrMsg('');
-        setSuccess(true);
-    } catch (err) {
-        setSnackbarOpen(true); 
-        setIsPending(false);
-        setSuccess(false);     
-        if (err?.response?.data['hydra:description'] === "Cannot delete Pitch. There are active reservations associated with it.") {
-            setErrMsg("Cannot delete a pitch that has a reservation");
-        } else {
-        setErrMsg("An error occurred while deleting the pitch.");
-        }
-    }
-    // Refresh data after accepting
-    getPitches();
-    setLoadingRow(null);
-};
+        // Refresh data after accepting
+        getPitches();
+        setLoadingRow(null);
+    };
       
       
 
@@ -167,7 +201,7 @@ const PitchesApproval = () => {
                         size: pitch.size,
                         phone: pitch.phoneNumber,
                         capacity: pitch.capacity,
-                        generation: pitch.isPaused,
+                        generation: pitch.isPaused ? "Paused" : "Active",
                         info: "Info",
                         actions: "Actions" 
                     }))
@@ -202,14 +236,15 @@ const PitchesApproval = () => {
         { field: 'id', headerName: 'ID', width: 50 },
         { field: 'pitchName', headerName: 'Pitch name', width: 140 },
         { field: 'sportsType', headerName: 'Sports Type', width: 100 },
-        { field: 'floorType', headerName: 'Floor Type', width: 130 },
         { field: 'state', headerName: 'State', width: 90 },
         { field: 'size', headerName: 'Size ', width: 100 },
         { field: 'capacity', headerName: 'Capacity ', width: 80 },
         { field: 'owner', headerName: 'Owner ', width: 100 },
         { field: 'phone', headerName: 'Phone ', width: 120 },
-        { field: 'generation', headerName: 'Timeslots', width: 120 },
-
+        { field: 'generation', headerName: 'Slots Generation', width: 130 },
+        { field: 'info', headerName: 'Informations', width: 120, renderCell: (params) => (
+            <StyledButton onClick={() => handleOpenInfo(params.row.id)}>INFO</StyledButton>
+        )},
         {
             field: 'actions',
             headerName: 'Actions',
@@ -217,13 +252,18 @@ const PitchesApproval = () => {
             renderCell: (params) => (
               <>
                 <Tooltip title="Delete">
-                    <IconButton color="primary" onClick={() => handleDelete(params.row.id)}>
-                    {loadingRow === params.row.id ? <CircularProgress size={24} /> : <DeleteIcon sx={{ color: 'grey.main'}} />}
+                    <IconButton color="primary" onClick={() => handleDelete(params.row.id)} sx={{ color: 'grey.dark'}}>
+                    {loadingRow === params.row.id ? <CircularProgress size={24} /> : <DeleteIcon  />}
                     </IconButton>
                 </Tooltip> 
-                <Tooltip title="Stop TimeSlots Generation">
-                    <IconButton color="secondary" onClick={() => handlePause(params.row.id)}>
-                    {loadingRow === params.row.id ? <CircularProgress size={24} /> : <StopIcon sx={{color:'grey.main'}} />}
+                <Tooltip title="Pause TimeSlots Generation">
+                    <IconButton color="secondary" onClick={() => handlePause(params.row.id)} disabled={params.row.generation === "Paused"} sx={{color:'grey.dark'}}>
+                    {loadingRow === params.row.id ? <CircularProgress size={24} /> : <StopIcon  />}
+                    </IconButton>
+                </Tooltip> 
+                <Tooltip title="Resume TimeSlots Generation">
+                    <IconButton color="secondary" onClick={() => handleResume(params.row.id)} disabled={params.row.generation === "Active"} sx={{ color: 'grey.dark'}}> 
+                    {loadingRow === params.row.id ? <CircularProgress size={24} /> : <PlayArrowIcon  />}
                     </IconButton>
                 </Tooltip> 
 
@@ -231,9 +271,7 @@ const PitchesApproval = () => {
               
             ),
         },
-        { field: 'info', headerName: 'Informations', width: 120, renderCell: (params) => (
-            <StyledButton onClick={() => handleOpenInfo(params.row.id)}>INFO</StyledButton>
-        )},
+       
     ];
   
 
@@ -265,7 +303,7 @@ const PitchesApproval = () => {
                 severity={success ? "success" : "error"}
             >
                 {success ? (
-                operationType === 'delete' ? 'Pitch deleted successfully!' : 'Pitch paused successfully!'
+                succMsg
                 ) : errMsg}
             </Alert>
         </Snackbar>

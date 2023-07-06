@@ -135,6 +135,7 @@
         "reservationSuccess": "You successfully created your reservation!"
     },
     "UserReservtion": {
+        "pitch": "Pitch",
         "reservation": "Reservations",
         "end": "End",
         "price": "Price",

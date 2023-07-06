@@ -32,6 +32,8 @@ import {
     SupervisedUserCircleTwoTone,
   } from "@mui/icons-material";
   import { Link as RouterLink, useNavigate, useLocation } from "react-router-dom";
+  import SportsSoccerIcon from '@mui/icons-material/SportsSoccer';
+  import CalendarMonthIcon from '@mui/icons-material/CalendarMonth';
   
   const SidebarAdmin = ({ activeItem }) => {
     const [open, setOpen] = React.useState(true);
@@ -176,7 +178,7 @@ import {
             <ListItem disablePadding>
               <ListItemButton
                 component={RouterLink}
-                to="/admin/dashboard"
+                to="/admin/manage/reservations"
                 selected={activeItem === "Reservations"}
                 sx={{
                   color:
@@ -199,10 +201,11 @@ import {
                 />
               </ListItemButton>
             </ListItem>
+
             <ListItem disablePadding>
               <ListItemButton
                 component={RouterLink}
-                to="/admin/dashboard"
+                to="/admin/manage/users/members"
                 selected={activeItem === "Members"}
                 sx={{
                   color: activeItem === "Members" ? "green.main" : "grey.dark",
@@ -219,10 +222,11 @@ import {
                 <ListItemText primary="Members" sx={{ marginLeft: "-20px" }} />
               </ListItemButton>
             </ListItem>
+
             <ListItem disablePadding>
               <ListItemButton
                 component={RouterLink}
-                to="/admin/dashboard"
+                to="/admin/manage/users/owners"
                 selected={activeItem === "Owners"}
                 sx={{
                   color: activeItem === "Owners" ? "green.main" : "grey.dark",
@@ -238,25 +242,47 @@ import {
                 <ListItemText primary="Owners" sx={{ marginLeft: "-20px" }} />
               </ListItemButton>
             </ListItem>
+
             <ListItem disablePadding>
               <ListItemButton
                 component={RouterLink}
-                to="/admin/dashboard"
-                selected={activeItem === "Settings"}
+                to="/admin/manage/sportsType"
+                selected={activeItem === "Sports Type"}
                 sx={{
-                  color: activeItem === "Settings" ? "green.main" : "grey.dark",
+                  color: activeItem === "Sports Type" ? "green.main" : "grey.dark",
                 }}
               >
                 <ListItemIcon>
-                  <SettingsIcon
+                  <SportsSoccerIcon
                     sx={{
-                      color: activeItem === "Settings" ? "green.main" : "grey.dark",
+                      color: activeItem === "Sports Type" ? "green.main" : "grey.dark",
                     }}
                   />
                 </ListItemIcon>
-                <ListItemText primary="Settings" sx={{ marginLeft: "-20px" }} />
+                <ListItemText primary="Sports Type" sx={{ marginLeft: "-20px" }} />
               </ListItemButton>
             </ListItem>
+
+            <ListItem disablePadding>
+              <ListItemButton
+                component={RouterLink}
+                to="/admin/manage/timeslots"
+                selected={activeItem === "TimeSlots"}
+                sx={{
+                  color: activeItem === "TimeSlots" ? "green.main" : "grey.dark",
+                }}
+              >
+                <ListItemIcon>
+                  <CalendarMonthIcon
+                    sx={{
+                      color: activeItem === "TimeSlots" ? "green.main" : "grey.dark",
+                    }}
+                  />
+                </ListItemIcon>
+                <ListItemText primary="TimeSlots" sx={{ marginLeft: "-20px" }} />
+              </ListItemButton>
+            </ListItem>
+
             <ListItem disablePadding>
               <ListItemButton
                 component={RouterLink}

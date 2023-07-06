@@ -12,7 +12,6 @@ import Unauthorized from './components/Unauthorized.js';
 import PersistLogin from './components/PersistLogin';
 import AuthGuard from './components/AuthGuard ';
 import AdminDashboard from './components/admin/AdminDashboard';
-import AllReservations from './components/admin/AllReservations';
 import Users from './components/admin/Users';
 import Addpitch from './components/owner/Addpitch';
 import OwnerPitches from './components/owner/OwnerPitches';
@@ -31,6 +30,12 @@ import AppContact from './components/homePage/AppContact';
 import AppTerms from './components/homePage/AppTerms';
 import UserProfile from './components/auth/UserProfile';
 import './i18n';
+import ManageReservation from './components/admin/manageReservation/ManageReservation';
+import MemberMangement from './components/admin/manageMembers/MemberMangement';
+import ManageMembers from './components/admin/manageMembers/ManageMembers';
+import ManageOwners from './components/admin/manageOwners/ManageOwners';
+import ManageSportsType from './components/admin/manageSportsType/ManageSportsType';
+
 
 
 
@@ -101,8 +106,13 @@ function App() {
                         <Route path="/admin/manage/pitches/rejected" element={<RejectedPitches />}></Route>
 
 
-                        <Route path="/admin/manage/users" element={<Users />}></Route>.
-                        <Route path="/admin/manage/reservations" element={<AllReservations />}></Route>
+                        <Route path="/admin/manage/users" element={<Users />}></Route>
+                        <Route path="/admin/manage/reservations" element={<ManageReservation  />}></Route>
+                        <Route path="/admin/manage/users/members" element={<ManageMembers  />}></Route>
+                        <Route path="/admin/manage/users/owners" element={<ManageOwners  />}></Route>
+                        <Route path="/admin/manage/sportsType" element={<ManageSportsType  />}></Route>
+
+                      
                       </Route>
 
                        { /* Owner Protected Routes */}

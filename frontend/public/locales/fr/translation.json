@@ -135,6 +135,7 @@
         "reservationSuccess": "Votre réservation a été créée avec succès !"
     },
     "UserReservtion": {
+        "pitch": "Terrain",
         "reservation": "Réservations",
         "end": "Fin",
         "price": "Prix",

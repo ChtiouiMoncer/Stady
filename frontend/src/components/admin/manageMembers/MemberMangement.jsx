@@ -1,20 +1,17 @@
 import { Alert, Box, Button, CircularProgress, Dialog, DialogActions, DialogContent, DialogTitle, IconButton, Snackbar, Tooltip, Typography, useMediaQuery, useTheme } from "@mui/material";
-import Navbar from "../Navbar";
-import loginbg from '../../assets/herobg.png'
 import { styled } from "@mui/material";
-import useAuth from "../../Hooks/useAuth";
 import React, { useEffect, useState } from "react";
-import { axiosPrivate } from "../../api/axios";
 import { useNavigate } from "react-router-dom/dist";
 import CancelIcon from '@mui/icons-material/Cancel';
 import { DataGrid } from "@mui/x-data-grid";
-import useAxiosPrivate from "../../Hooks/useAxiosPrivate";
 import QRCode from "qrcode.react";
 import QrCode2Icon from '@mui/icons-material/QrCode2';
 import CloseIcon from '@mui/icons-material/Close';
 import FeedbackIcon from '@mui/icons-material/Feedback';
-import Footer from "../homePage/Footer";
 import { useTranslation } from "react-i18next";
+import useAxiosPrivate from "../../../Hooks/useAxiosPrivate";
+import useAuth from "../../../Hooks/useAuth";
+import DeleteIcon from '@mui/icons-material/Delete';
 
 const StyledButton = styled(Button)(({ theme }) => ({
     marginTop: '20px',
@@ -34,7 +31,6 @@ const StyledButton = styled(Button)(({ theme }) => ({
 const StyledModal = styled(Box) (({ theme }) => ({
 
     //backgroundColor: theme.palette.green.main,
-    backgroundImage: `url(${loginbg})`,
     height: '90vh',
     backgroundSize: 'cover',
     display: 'flex',
@@ -73,14 +69,14 @@ const StyledModal = styled(Box) (({ theme }) => ({
     
   }));
 
-const Reservations = () => {
+const MemberMangement = () => {
     const { t } = useTranslation();
 
     const theme = useTheme(); //using the the Material-UI theme object, which is provided by the useTheme hook from Material-UI.
     const isMobile = useMediaQuery(theme.breakpoints.down('sm')); // checking if device is mobile
 
     const [ isReservationsPending, setIsReservationsPending ] = useState(false);
-    const [reservations, setReservations] = useState([]);
+    const [users, setUsers] = useState([]);
     const [loadingRow, setLoadingRow] = useState(null);
     const [snackbarOpen, setSnackbarOpen] = useState(false);
 
@@ -97,6 +93,8 @@ const Reservations = () => {
 
     //for the ERRORS AND SUCCESS
     const [errMsg, setErrMsg] = useState('');
+    const [succMsg, setSuccMsg] = useState('');
+
     const [success, setSuccess] = useState(false);
 
     const navigate = useNavigate();
@@ -106,48 +104,49 @@ const Reservations = () => {
     const { auth, setAuth } = useAuth();
     const user_id = auth.userId;
 
-    const handleReject = async (id) => {
+    const handleDelete = async (id) => {
         setLoadingRow(id);
-        const PATCH_RESERVATION_URL = `/api/reservations/${id}`;
+        const DELETE_USER_URL = `/api/users/${id}`;
       
         try {
-          const response = await axiosPrivate.patch(PATCH_RESERVATION_URL,
-            JSON.stringify({
-                isCancelled: true,
-            }),
+          const response = await axiosPrivate.delete(DELETE_USER_URL,
             {
-              headers: {'Content-Type' : 'application/merge-patch+json'},
+              headers: {'Content-Type' : 'application/json'},
             }
           );
           setSnackbarOpen(true);   
           setErrMsg('');
           setSuccess(true);
-         
+          setSuccMsg('User Deleted Successfully')
+          getUsers();
+
         } catch (err) {
 
-          setIsPending(false);
-          if (err?.response?.data['hydra:description'] === "Cannot cancel a reservation that is outdated.") {
-            setErrMsg("Soory, but we can't cancel a reservation that is Outdated!");
-        } else if (err?.response?.data['hydra:description'] === "Cannot cancel a reservation that have a timeslot that is going to start less than 10min from now.") {
-            setErrMsg("Soory, but we can't can't cancel a reservation that has a timeslot starting less than 10 minutes from now.");
-        } else if (err?.response?.data['hydra:description'] === "Cannot cancel a reservation that is already available.") {
-            setErrMsg("Soory, but we can't can't cancel a reservation that is already available");
-        }
-        setSnackbarOpen(true); 
+            setIsPending(false);
+            setSuccess(false);
+            
+            if (err.response?.data['hydra:description']?.includes("Foreign key violation") 
+                && err.response?.data['hydra:description']?.includes("reservation")) {
+                setErrMsg("We Can't Delete a User with Ongoing Reservations");
+            } else {
+                setErrMsg("There was a problem while deleting the User, Try Again");
+            }
+        
+            setSnackbarOpen(true);
         }
         // Refresh data after rejecting
-        getReservations();
+        getUsers();
         setLoadingRow(null);
       };
 
-    const RESERVATIONS_URL = `/api/users/${user_id}/reservations`;
+    const USERS_URL = `/api/users`;
 
-    const getReservations = async () => {
+    const getUsers = async () => {
         let isMounted = true;
         const controller = new AbortController();
         setIsReservationsPending(true);
         try {
-            const response = await axiosPrivate.get(RESERVATIONS_URL, {
+            const response = await axiosPrivate.get(USERS_URL, {
                     signal: controller.signal,
                     headers: {'accept': 'application/json'}      
                 }
@@ -155,23 +154,27 @@ const Reservations = () => {
             
             if (isMounted) {
                 console.log(response?.data);
-                setReservations(
-                    response.data.map(reservation => ({
-                        id: reservation.id, 
-                        reservationCode: reservation.id,
-                        pitchName: reservation.pitch.name,
-                        totalPrice: reservation.totalPrice + " DT", // Add 'DT' at the end of the price
-                        timeSlots: reservation.timeSlots.map(slot => 
-                            `Start: ${slot.startTime}, End: ${slot.endTime}, Price: ${slot.price} DT, Date: ${slot.date}`).join('\n'), // Use line break instead of '; '
-                        status:reservation.isCancelled ? 'Cancelled' : 'Active', // Show 'Cancelled' if isCancelled is true, else 'Active'
-                        actions: "Actions" 
-                    }))
-                );
+                
+                const memberUsers = response.data
+                    .filter(user => user.roles.includes('ROLE_MEMBER'))
+                    .map(user => ({
+                        id: user.id,
+                        email: user.email,
+                        roles: user.roles,
+                        password: user.password,
+                        username: user.username,
+                        reviewsCount: user.reviews.length, // Count of reviews
+                        reservationsCount: user.reservations.length, // Count of reservations
+                        feedbackCount: user.feedback.length // Count of feedback
+                    }));
+    
+                setUsers(memberUsers); // Assuming that you have a function to set users state
+                console.log(users);
             }
             setIsReservationsPending(false);
-
+    
         } catch (err) {
-            console.log(err)            
+            console.log(err);         
         }
     }
 
@@ -181,7 +184,7 @@ const Reservations = () => {
             let isMounted = true;
             const controller = new AbortController();
             setTimeout(() => {
-                getReservations();
+                getUsers ();
             }, 1000);
             return () => {
                 isMounted = false; 
@@ -194,48 +197,29 @@ const Reservations = () => {
 
         if (!isMobile) {
           columns.push(
-            { field: 'pitchName', headerName: t('UserReservtion.pitch'), width: 140 },
-            { field: 'totalPrice', headerName: t('UserReservtion.price'), width: 70 },
-            { field: 'status', headerName: t('UserReservtion.status'), width: 100 },
-            {
-              field: 'timeSlots',
-              headerName: t('UserReservtion.timeslots'),
-              width: 550,
-              renderCell: (params) => <pre>{params.value}</pre>,
-            }
+            { field: 'id', headerName: "ID", width: 120 },
+            { field: 'username', headerName: "Username", width: 220 },
+            { field: 'email', headerName: "Email", width: 300 },
+            { field: 'reviewsCount', headerName: "Reviews", width: 120 },
+            { field: 'reservationsCount', headerName: "Reservations", width: 120 },
+            { field: 'feedbackCount', headerName: "FeedBacks", width: 120 },   
           );
         }
         
         columns.push(
-          { field: 'reservationCode', headerName: 'Code', width: isMobile ? 90 : 100, disableColumnMenu: true  },
-          {
-            field: 'qr',
-            headerName: 'QR Code',
-            width: isMobile ? '70vw' : 130,
-            renderCell: (params) => (
-              <Tooltip title="QR CODE">
-                <StyledButton  disabled={params.row.status === 'Cancelled'} startIcon={<QrCode2Icon />} variant="contained" onClick={() => handleOpenQR(params.row)}>
-                  <Typography variant="body2">Get QR</Typography>
-                </StyledButton>
-              </Tooltip>
-            ),
-            disableColumnMenu: true 
-          },
           {
             field: 'actions',
             headerName: 'Actions',
             width: isMobile ? '70vw' : 130,
             renderCell: (params) => (
-              <Tooltip title="Cancel Reservation">
+              <Tooltip title="Delete User">
                 <IconButton
-                  color="secondary"
-                  onClick={() => handleReject(params.row.id)}
-                  disabled={params.row.status === 'Cancelled'}
+                  onClick={() => handleDelete(params.row.id)}
                 >
                   {loadingRow === params.row.id ? (
                     <CircularProgress size={24} />
                   ) : (
-                    <CancelIcon sx={{ color: params.row.status === 'Cancelled' ? 'grey' : 'red' }} />
+                    <DeleteIcon   />
                   )}
                 </IconButton>
               </Tooltip>
@@ -304,30 +288,27 @@ const Reservations = () => {
     };
     return ( 
         <>
-            <Navbar />
-            <StyledModal>
-                {!isReservationsPending ? (
-                <Box 
+                <Box flex={8} 
                 sx={{
-                position: "relative",  
-                bgcolor: "background.default",
-                color: "text.primary",
-                padding: 3,
-                borderRadius: 2,
-                border: `1px solid ${theme.palette.green.main}`, // Add border property
-                //'& > *': { marginBottom:'10px' },
-                maxHeight: '80vh',
-                width: isMobile ? '80vw' : '80vw', // use 90vw (90% of the width of the viewport) width for mobile devices, otherwise use 400px width
-                height: isMobile ? 'auto' : 'auto', // use 90vw (90% of the width of the viewport) width for mobile devices, otherwise use 400px width
-                }}
+                    m: 4, 
+                    marginTop: 4,
+                    border: `2px solid ${theme.palette.green.main}`, // Add border property    
+                    bgcolor: "white.light",
+                    padding: 3,
+                    borderRadius: 2,
+                    maxHeight: '80vh',
+                    width: isMobile ? '80vw' : '80vw', // use 90vw (90% of the width of the viewport) width for mobile devices, otherwise use 400px width
+                    height: isMobile ? 'auto' : 'auto', // use 90vw (90% of the width of the viewport) width for mobile devices, otherwise use 400px width
+                    }}
                 >   
                     <Box sx={{ display: "flex",  justifyContent: "space-between" }}>
-                        <Typography variant="h6" textAlign="left" sx={{ color: "green.main", marginBottom:'10px'}}> {t('UserReservtion.reservation')}</Typography>
+                        <Typography variant="h6" textAlign="left" sx={{ color: "green.main", marginBottom:'10px'}}> Members Users</Typography>
                     </Box>
                         <div style={{ height: 500, width: '100%' }}>
+                        {!isReservationsPending ? (
                             <DataGrid
                                 sx={{ bgcolor: 'white.main'}}
-                                rows={reservations}
+                                rows={users}
                                 columns={columns}
                                 initialState={{
                                     pagination: {
@@ -335,23 +316,13 @@ const Reservations = () => {
                                     },
                                 }}
                                 pageSizeOptions={[5, 10]}
+                                
                                 //checkboxSelection
                             />  
+                            ) : (
+                                <CircularProgress sx={{ color:"green.main" }} />
+                            )}
                         </div>
-                        <Dialog open={openQR} onClose={handleCloseQR}>
-                        <DialogTitle>QR Code</DialogTitle>
-                        <DialogContent>
-                            <QRCode id="qrcode" value={currentQRData} size={256} level={"H"} includeMargin={true} />
-                        </DialogContent>
-                        <DialogActions>
-                            <Button onClick={downloadQR}>
-                            {t('UserReservtion.qr3')}
-                            </Button>
-                            <Button onClick={handleCloseQR}>
-                            {t('UserReservtion.close')}
-                            </Button>
-                        </DialogActions>
-                        </Dialog>
                         <Snackbar
                         open={snackbarOpen}
                         autoHideDuration={6000}
@@ -375,20 +346,15 @@ const Reservations = () => {
                         sx={{ width: '100%' }}
                         >
                             {success ? (
-                            t('UserReservtion.reservationSuccess')
+                            succMsg
                             ) : errMsg} 
                         </Alert>
                         </Snackbar>        
                 </Box>
-                ) : (
-                    <CircularProgress sx={{ color:"green.main" }} />
-                )}
-            </StyledModal>
-            <Footer />
           </>
 
 
      );
 }
  
-export default Reservations;
+export default MemberMangement;
