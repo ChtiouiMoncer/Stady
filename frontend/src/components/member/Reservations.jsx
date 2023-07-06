@@ -335,6 +335,7 @@ const Reservations = () => {
                                     },
                                 }}
                                 pageSizeOptions={[5, 10]}
+                                rowHeight={80}
                                 //checkboxSelection
                             />  
                         </div>

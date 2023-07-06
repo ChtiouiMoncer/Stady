@@ -11,8 +11,7 @@ import SignUpPage from './components/auth/SignUpPage';
 import Unauthorized from './components/Unauthorized.js';
 import PersistLogin from './components/PersistLogin';
 import AuthGuard from './components/AuthGuard ';
-import AdminDashboard from './components/admin/AdminDashboard';
-import Users from './components/admin/Users';
+import AdminDashboard from './components/admin/stats/AdminDashboard';
 import Addpitch from './components/owner/Addpitch';
 import OwnerPitches from './components/owner/OwnerPitches';
 import Reservations from './components/member/Reservations';
@@ -106,7 +105,6 @@ function App() {
                         <Route path="/admin/manage/pitches/rejected" element={<RejectedPitches />}></Route>
 
 
-                        <Route path="/admin/manage/users" element={<Users />}></Route>
                         <Route path="/admin/manage/reservations" element={<ManageReservation  />}></Route>
                         <Route path="/admin/manage/users/members" element={<ManageMembers  />}></Route>
                         <Route path="/admin/manage/users/owners" element={<ManageOwners  />}></Route>
