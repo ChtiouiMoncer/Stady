@@ -1,7 +1,6 @@
 import {Box, Button, Checkbox, Chip, Alert, Divider, FormControl, FormControlLabel, CircularProgress, FormGroup, FormHelperText, IconButton, InputLabel, Link, MenuItem, Modal, Select, styled, TextField, Tooltip, Typography, useMediaQuery, Stack, Container } from "@mui/material";
 import CloseIcon from '@mui/icons-material/Close';
-import googleLogo from '../../assets/logoGoogle.png'
-import facebookLogo from '../../assets/logoFacebook.png'
+import googleLogo from '../../../assets/logoGoogle.png'
 import { useTheme } from '@mui/material/styles';
 import React, { useState } from "react";
 import { Controller, useForm } from "react-hook-form";
@@ -10,13 +9,13 @@ import Visibility from '@mui/icons-material/Visibility';
 import VisibilityOff from '@mui/icons-material/VisibilityOff';
 import InputAdornment from '@mui/material/InputAdornment';
 import Grid from "@mui/system/Unstable_Grid/Grid";
-import axios from '../../api/axios'
-import loginbg from '../../assets/herobg.png'
+import axios from '../../../api/axios'
+import loginbg from '../../../assets/herobg.png'
 import {Link as RouterLink, useNavigate} from 'react-router-dom';
-import Navbar from "../Navbar";
 import MuiPhoneNumber from "mui-phone-number";
 import { useTranslation } from "react-i18next";
-import Footer from "../homePage/Footer";
+import Footer from "../../homePage/Footer";
+import Navbar from "../../Navbar";
 
 
 
@@ -112,10 +111,10 @@ const StyledTextField = styled(TextField)({
 
   });
   
-const SignUpPage = (props) => {  
+const AdminSignUpPage = (props) => {  
 const theme = useTheme(); //using the the Material-UI theme object, which is provided by the useTheme hook from Material-UI.
 const isMobile = useMediaQuery(theme.breakpoints.down('sm')); // checking if device is mobile
-const [role, setRole] = React.useState('ROLE_MEMBER'); //set the dafault role as a 'member'
+const [role, setRole] = React.useState('ROLE_ADMIN'); //set the dafault role as a 'member'
 const [showPassword, setShowPassword] = React.useState(false); //manage the state of 'showPassword'
 const [ isPending, setIsPending ] = useState(false); //manage pending time from the server response
 
@@ -227,11 +226,14 @@ const onSubmit =  async (data, e) => {
   );
   /*console.log(response.data);
     console.log(JSON.stringify(response))*/
-  navigate('/login', {replace: true});
+ 
   setErrMsg('');
   setSuccess(true);
   handleReset();
   setIsPending(false);
+  setTimeout(() => {
+    navigate(-1);
+  }, 2000);
 
   } catch (err) {
   if (err.response && err.response.status === 422) {
@@ -298,7 +300,7 @@ const handleRoleChange = (event) => {
 
             <Box sx={{ display: "flex",  justifyContent: "space-between", marginBottom:'10px'}}>
                 <Typography variant="h6" textAlign="left" sx={{ color: "green.main" }}>
-                {t('SignUp.signUp')}
+                Add Admin
                 </Typography>
                 <Tooltip title="Reset" arrow>
                   <IconButton onClick={handleReset} >
@@ -497,71 +499,14 @@ const handleRoleChange = (event) => {
                     error={!!fieldState.error} 
                     {...field} 
                   >
-                    <MenuItem value={'ROLE_MEMBER'}>Member</MenuItem>
-                    <MenuItem value={'ROLE_OWNER'}>Owner</MenuItem>
+                    <MenuItem value={'ROLE_ADMIN'}>Admin</MenuItem>
                   </Select>
-                  <FormHelperText>{t('SignUp.help')}</FormHelperText>
+                  <FormHelperText>Pick Admin Role</FormHelperText>
                 </StyledRoleSelect>
               )}
              /> 
 
-             <Box mb={1}>
-              <FormGroup>
-                <FormControl >
-                  <Controller 
-                    name="terms"
-                    control = {control}
-                    defaultValue={false} // set default value to false
-                    rules={validationRules.terms}
-                    render={ ({ field, fieldState }) => ( 
-                      <FormControlLabel 
-                        sx={{ marginBottom: "-7px" }} 
-                        control={
-                          <Checkbox size="small" //defaultChecked
-                          {...field} 
-                          checked={field.value} //checkbox will be reset to unchecked when the reset()
-                            sx={{
-                            '&.Mui-checked': {
-                            color: "green.main",
-                            },
-                            }} 
-                          /> 
-                        } 
-                        label={
-                          <Typography variant="subtitle2" textAlign="left" sx={{ color: "grey.main" }}>
-                            {t('SignUp.terms')}
-                            <Link target="_blank" component={RouterLink} to="/terms" underline="none">
-                            {t('SignUp.conditions')}
-                            </Link>
-                          </Typography>
-                        }
-                      />
-                   )}
-                  />
-                  {errors.terms && (
-                    <FormHelperText error color="error" variant="caption">
-                      {errors.terms.message}
-                    </FormHelperText>
-                   )} 
-                            
-                    { /* <FormControlLabel
-                      control={
-                        <Checkbox size="small" //defaultChecked
-                          sx={{
-                            '&.Mui-checked': {
-                              color: "green.main",
-                              },
-                            }} 
-                        /> 
-                      } 
-                      label={
-                        <Typography  variant="subtitle2" textAlign="left" sx={{ color: "grey.main"}}>
-                         Send me the latest deal alerts
-                        </Typography>}
-                      /> */ }
-                 </FormControl>
-              </FormGroup>
-             </Box>
+     
              <Button
               disableElevation={true} //Elevation means determines how raised or lifted an element appears to be.
               fullWidth
@@ -574,34 +519,13 @@ const handleRoleChange = (event) => {
               {isPending ? (
                 <CircularProgress color="white" size={24} /> // use MUI's Button component for the progress indicator
               ) : (
-                t('SignUp.create')
+                <Typography>Create Admin Acoount</Typography>
               )}
              </Button>
 
             </form>
-            <Divider sx={{ marginTop:"10px", marginBottom:"10px" }}>
-                <Chip label={
-                    <Typography  variant="subtitle2" textAlign="left" sx={{ color: "grey.main"}}>
-                    {t('SignUp.or')}
-                    </Typography>   
-                } />
-            </Divider> 
-
-            <Box sx={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-                <Button startIcon={ <img src={googleLogo} alt="Google" width="20px" height="20px" />} fullWidth className="social-login" variant="outlined"> {t('SignUp.login')} </Button>
-                {/*<Button startIcon={<img src={facebookLogo} alt="Google" width="20px" height="20px" />}  fullWidth className="social-login" variant="outlined"> Continue with Facebook </Button> */ }
-            </Box>  
-
-             <Box sx={{ display: 'flex', flexDirection: 'row', justifyContent:'center', gap: '5px', marginTop: '15px'}}>      
-              <Typography sx={{ fontSize: "15px", color: "green.main", fontWeight: 600 }} >
-              {t('SignUp.already')}
-              </Typography> 
-              <Link  component={RouterLink} to="/login"  underline="always" variant="subtitle2" sx={{ color: "grey.main"}}  >
-                <Typography sx={{ fontSize: "13px" }} >
-                {t('SignUp.login')}
-                </Typography>
-              </Link>
-            </Box>       
+            
+             
         </Box>
     </StyledModal>
     <Footer />
@@ -611,4 +535,4 @@ const handleRoleChange = (event) => {
   );
 };
 
-export default SignUpPage;
+export default AdminSignUpPage;

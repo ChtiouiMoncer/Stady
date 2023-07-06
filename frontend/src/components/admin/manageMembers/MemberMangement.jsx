@@ -165,7 +165,9 @@ const MemberMangement = () => {
                         username: user.username,
                         reviewsCount: user.reviews.length, // Count of reviews
                         reservationsCount: user.reservations.length, // Count of reservations
-                        feedbackCount: user.feedback.length // Count of feedback
+                        feedbackCount: user.feedback.length, // Count of feedback
+                        phone: user.phoneNumber,
+
                     }));
     
                 setUsers(memberUsers); // Assuming that you have a function to set users state
@@ -198,8 +200,9 @@ const MemberMangement = () => {
         if (!isMobile) {
           columns.push(
             { field: 'id', headerName: "ID", width: 120 },
-            { field: 'username', headerName: "Username", width: 220 },
-            { field: 'email', headerName: "Email", width: 300 },
+            { field: 'username', headerName: "Username", width: 120 },
+            { field: 'email', headerName: "Email", width: 220 },
+            { field: 'phone', headerName: "Phone Number", width: 120 },
             { field: 'reviewsCount', headerName: "Reviews", width: 120 },
             { field: 'reservationsCount', headerName: "Reservations", width: 120 },
             { field: 'feedbackCount', headerName: "FeedBacks", width: 120 },   

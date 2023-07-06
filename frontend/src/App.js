@@ -34,6 +34,9 @@ import MemberMangement from './components/admin/manageMembers/MemberMangement';
 import ManageMembers from './components/admin/manageMembers/ManageMembers';
 import ManageOwners from './components/admin/manageOwners/ManageOwners';
 import ManageSportsType from './components/admin/manageSportsType/ManageSportsType';
+import SuperAdminDashboard from './components/superAdmin/stats/SuperAdminDashboard';
+import ManageAdmins from './components/superAdmin/manageAdmins/ManageAdmins';
+import AdminSignUpPage from './components/superAdmin/manageAdmins/AdminSignUpPage';
 
 
 
@@ -92,6 +95,18 @@ function App() {
  
 
                     { /* Protected Routes */}
+
+                      { /* Admin Protected Routes */}
+                      <Route element= { <RequireAuth  allowedRoles={[ ROLES.SUPER_ADMIN ]}/> }> { /* Only when we have a user we can show the comp's inside the Required Auth*/ }
+
+                        { /* Dashboared Overview */}
+                        <Route path="/superadmin/dashboard" element={<SuperAdminDashboard/>}></Route>
+                        { /* Manage Pitches */}
+                        <Route path="/superadmin/manage/users/admins" element={<ManageAdmins  />}></Route>
+                        <Route path="/superadmin/manage/users/admins/add" element={<AdminSignUpPage  />}></Route>
+
+                      
+                      </Route>
 
                       { /* Admin Protected Routes */}
                       <Route element= { <RequireAuth  allowedRoles={[ ROLES.Admin ]}/> }> { /* Only when we have a user we can show the comp's inside the Required Auth*/ }
