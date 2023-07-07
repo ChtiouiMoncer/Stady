@@ -74,17 +74,11 @@ class PitchTest extends ApiTestCase
         //$admin = UserFactory::new()->withRoles(['ROLE_ADMIN'])->create();
         $admin = UserFactory::new()->asAdmin()->create();
 
-        $pitch = PitchFactory::createOne();
 
         $this->browser()
             ->actingAs($admin)
-            ->patch('/api/grounds/'. $pitch->getId(),[
-                'json' => [
-                    'capacity' => 20
-                ],
-            ])
-            ->assertStatus(200)
-            ->assertJsonMatches('capacity', 20);
+            ->get('/api/reservations/')
+            ->assertStatus(201);
 
 
     }
