@@ -28,11 +28,15 @@ import QRCode from 'qrcode';
 import DownloadIcon from '@mui/icons-material/Download';
 import RateReviewIcon from '@mui/icons-material/RateReview';
 import ViewListIcon from '@mui/icons-material/ViewList';
-import ReviewCard from './ReviewCard';
 import StarBorderIcon from '@mui/icons-material/StarBorder';
 import Footer from '../homePage/Footer';
 import AppFooter from '../homePage/AppFooter';
 import { useTranslation } from 'react-i18next';
+import ReviewCard from '../pitches/ReviewCard';
+import DeleteIcon from '@mui/icons-material/Delete';
+import PriceChangeIcon from '@mui/icons-material/PriceChange';
+import EventAvailableIcon from '@mui/icons-material/EventAvailable';
+import DiscountIcon from '@mui/icons-material/Discount';
 
 const StyledButton = styled(Button)(({ theme }) => ({
     marginTop: '8px',
@@ -105,7 +109,7 @@ const StyledModalQr = styled(Modal) (({ theme }) => ({
     
   }));
 
-const TimeslotSelection = () => {
+const TimeslotsManagement = () => {
     const { t } = useTranslation();
     const theme = useTheme();
     const isMobile = useMediaQuery(theme.breakpoints.down('sm')); 
@@ -116,6 +120,9 @@ const TimeslotSelection = () => {
     const [timeslots, setTimeslots] = useState([]);
     const [ pendingTimeSlots, setPendingTimeSlots ] = useState(false);
     const [averageRating, setAverageRating] = useState(0);
+    const startingDate = dayjs('2023-01-01'); // Create a dayjs object for the starting date
+    const [newPrice, setNewPrice] = useState('');
+
 
     //DATE & TIMESLOTS 
     const [selectedDate, setSelectedDate] =  React.useState(dayjs());    
@@ -125,6 +132,8 @@ const TimeslotSelection = () => {
     const [totalPrice, setTotalPrice] = useState(0);
     const [fees, setFees] = useState(2); // Assume fees is 2DT
 
+      //for the ERRORS AND SUCCESS
+      const [succMsg, setSucssMsg] = useState('');
     
     // Function to handle changes in timeslot selection
     const handleTimeslotSelection = (selectedTimeslotIds) => {
@@ -160,7 +169,7 @@ const TimeslotSelection = () => {
         const formattedDate = selectedDate.format('YYYY-MM-DD');
 
         try {
-            const response = await axios.get(`/api/time_slots?date=${formattedDate}&isOutdated=false&pitch.name=${pitchName}&isAvailable=true`, {
+            const response = await axios.get(`/api/time_slots?date=${formattedDate}&pitch.name=${pitchName}`, {
                 headers: {'accept': 'application/json'}
             });
             // handle the fetched data
@@ -171,6 +180,9 @@ const TimeslotSelection = () => {
                     start_time: timeslot.startTime,
                     end_time: timeslot.endTime,
                     price: timeslot.price,
+                    isAvailable: timeslot.isAvailable ? "Available" : "Unavailable",
+                    isOutdated: timeslot.isOutdated ? "Outdated" : "Active",
+
                 }))
             );
             setPendingTimeSlots(false);
@@ -237,19 +249,172 @@ const TimeslotSelection = () => {
     }, []);
 
 
+    const handleDelete = async (id) => {
+        setLoadingRow(id);
+        const DELETE_TIMESLOT_URL = `/api/time_slots/${id}`;
+
+        try {
+            const response = await axiosPrivate.delete(DELETE_TIMESLOT_URL,
+            {
+                headers: {'Content-Type' : 'application/json'},
+            }
+            );
+            setSnackbarOpen(true);   
+            setErrMsg('');
+            setSucssMsg('TimeSlot Deleted Successfully!')
+            setSuccess(true);
+        } catch (err) {
+            setSnackbarOpen(true); 
+            setIsPending(false);
+            setSuccess(false);     
+             
+            setErrMsg("An error occurred while deleting the timeslot.");
+        
+        }
+        // Refresh data after accepting
+        getTimeSlots();
+        getPitchData();
+        setLoadingRow(null);
+    };
+
+
+    const handleAvailibility = async (id) => {
+        setLoadingRow(id);
+        const PATCH_TIMESLOT_URL = `/api/time_slots/${id}`;
+      
+        try {
+          const response = await axiosPrivate.patch(PATCH_TIMESLOT_URL,
+            JSON.stringify({
+                isAvailable: false,
+            }),
+            {
+              headers: {'Content-Type' : 'application/merge-patch+json'},
+            }
+          );
+          setSnackbarOpen(true);   
+          setErrMsg('');
+          setSucssMsg('TimeSlots Availability Status Changed Successfully!')
+          setSuccess(true);
+        } catch (err) {
+          setSuccess(false);
+          setIsPending(false);
+          setErrMsg('They was a problem while updating the timeSlot, Try Again!')
+        }
+        // Refresh data after rejecting
+        getTimeSlots();
+        getPitchData();
+        setLoadingRow(null);
+    };
+    
+
+    const handlePriceincrease = async (id, price) => {
+        setLoadingRow(id);
+        const PATCH_TIMESLOT_URL = `/api/time_slots/${id}`;
+        const newPrice = price + (price * 0.1);
+
+        try {
+          const response = await axiosPrivate.patch(PATCH_TIMESLOT_URL,
+            JSON.stringify({
+                price: newPrice,
+            }),
+            {
+              headers: {'Content-Type' : 'application/merge-patch+json'},
+            }
+          );
+          setSnackbarOpen(true);   
+          setErrMsg('');
+          setSucssMsg('TimeSlots Price Changed Successfully!')
+          setSuccess(true);
+        } catch (err) {
+          setSuccess(false);
+          setIsPending(false);
+          setErrMsg('Error, try again!')
+        }
+        // Refresh data after rejecting
+        getTimeSlots();
+        getPitchData();
+        setLoadingRow(null);
+    };
+
+    const handlePricedecrease = async (id, price) => {
+        setLoadingRow(id);
+        const PATCH_TIMESLOT_URL = `/api/time_slots/${id}`;
+        const newPrice = price - (price * 0.1);
+
+        try {
+          const response = await axiosPrivate.patch(PATCH_TIMESLOT_URL,
+            JSON.stringify({
+                price: newPrice ,
+            }),
+            {
+              headers: {'Content-Type' : 'application/merge-patch+json'},
+            }
+          );
+          setSnackbarOpen(true);   
+          setErrMsg('');
+          setSucssMsg('TimeSlots Price Discounted Successfully!')
+          setSuccess(true);
+        } catch (err) {
+          setSuccess(false);
+          setIsPending(false);
+          setErrMsg('Error, try again!')
+        }
+        // Refresh data after rejecting
+        getTimeSlots();
+        getPitchData();
+        setLoadingRow(null);
+    };
+
+    const [loadingRow, setLoadingRow] = useState(null);
+
       const columns = [
-        { field: 'id', headerName: t('Reservation.code'), width: isMobile ? 85: 100, disableColumnMenu: true },
-        { field: 'start_time', headerName: isMobile ? t('Reservation.start') : t('Reservation.startTime') ,  width: isMobile ? 95: 150, disableColumnMenu: true,
+        { field: 'id', headerName: t('Reservation.code'), width: isMobile ? 85: 100 },
+        { field: 'start_time', headerName: isMobile ? t('Reservation.start') : t('Reservation.startTime') ,  width: isMobile ? 95: 110, disableColumnMenu: true,
         valueFormatter: (params) => formatTime(params.value),
         },
         
-        { field: 'end_time', headerName: isMobile ? t('Reservation.end') : t('Reservation.endTime'),  width: isMobile ? 85: 150, disableColumnMenu: true ,
+        { field: 'end_time', headerName: isMobile ? t('Reservation.end') : t('Reservation.endTime'),  width: isMobile ? 85: 110, disableColumnMenu: true ,
         valueFormatter: (params) => formatTime(params.value),
         },
 
-        { field: 'price', headerName: t('Reservation.price'),  width: isMobile ? 85: 150, disableColumnMenu: true ,
-        valueFormatter: (params) => `${params.value} DT`,
-        }
+        { field: 'price', headerName: t('Reservation.price'),  width: isMobile ? 85: 110 ,
+        },
+
+        { field: 'isAvailable', headerName: 'Availability',  width: isMobile ? 85: 150, 
+        },
+        { field: 'isOutdated', headerName: 'Status ',  width: isMobile ? 85: 150,
+        },
+        {
+            field: 'actions',
+            headerName: 'Actions',
+            width: 160,
+            renderCell: (params) => (
+              <>
+                <Tooltip title="Delete">
+                    <IconButton color="primary" onClick={() => handleDelete(params.row.id)} disabled={params.row.isAvailable === "Unavailable"} sx={{ color: 'grey.dark'}} >
+                    {loadingRow === params.row.id ? <CircularProgress size={24} /> : <DeleteIcon  />}
+                    </IconButton>
+                </Tooltip> 
+                <Tooltip title="Change TimeSlots Availibility">
+                    <IconButton color="secondary" onClick={() => handleAvailibility(params.row.id)} disabled={params.row.isAvailable === "Unavailable" || params.row.isOutdated === "Outdated"} sx={{ color: 'grey.dark'}}> 
+                    {loadingRow === params.row.id ? <CircularProgress size={24} /> : <EventAvailableIcon  />}
+                    </IconButton>
+                </Tooltip> 
+                <Tooltip title="increase the price by 10% ">
+                    <IconButton color="secondary" onClick={() => handlePriceincrease(params.row.id,params.row.price)} disabled={params.row.isAvailable === "Unavailable" || params.row.isOutdated === "Outdated"}  sx={{color:'grey.dark'}}>
+                    {loadingRow === params.row.id ? <CircularProgress size={24} /> : <PriceChangeIcon  />}
+                    </IconButton>
+                </Tooltip>
+                <Tooltip title="decrease the price by 10%">
+                    <IconButton color="secondary" onClick={() => handlePricedecrease(params.row.id,params.row.price)} disabled={params.row.isAvailable === "Unavailable" || params.row.isOutdated === "Outdated"}  sx={{color:'grey.dark'}}>
+                    {loadingRow === params.row.id ? <CircularProgress size={24} /> : <DiscountIcon  />}
+                    </IconButton>
+                </Tooltip>  
+
+              </>
+              
+            ),
+        },
     ];
 
     const formatTime = (timeString) => {
@@ -279,212 +444,6 @@ const TimeslotSelection = () => {
 
     setSnackbarOpen(false);
     };
-
-    const [openModal, setOpenModal] = useState(false);
-    const [qrValue, setQrValue] = useState('');
-
-    const handleCloseModal = () => {
-        setOpenModal(false);
-      };
-
-    const [paymentUrl, setPaymentUrl] = useState(null);
-    const [paymentId, setPaymentId] = useState(null); 
-
-        const makeReservation = async () => {
-
-        setPaymentUrl(null);
-        setPaymentId(null);    
-        // Prepare the timeSlots data
-        const timeSlotsData = selectedTimeslots.map(timeslot => `/api/time_slots/${timeslot.id}`);
-        // Prepare the reservation data
-        const reservationData = {
-            totalPrice: totalPrice + fees, // Remember to add the fees to the total price
-            pitch: `/api/grounds/${pitch.id}`,
-            timeSlots: timeSlotsData,
-            owner: `/api/users/${auth.userId}`
-        };
-
-        try {
-            // Make the POST request
-            const response = await axiosPrivate.post('/api/reservations', JSON.stringify(reservationData), {
-                headers: {
-                    'Content-Type' : 'application/ld+json',
-                }
-            });
-
-            // Handle the response...
-            console.log(response.data);
-
-            // Clear the reservation state
-            setSelectedTimeslots([]);
-            setTotalPrice(0);
-            setFees(2);
-            localStorage.removeItem('reservationState');
-            localStorage.removeItem('pitchInfo');
-            localStorage.removeItem('date');
-            localStorage.removeItem('timeslots');
-
-            setErrMsg('');
-            setSuccess(true);
-            setSnackbarOpen(true); 
-            setIsPending(false);
-            getTimeSlots();
-
-            // data to be encoded in the QR code
-            const data = {
-                ReservationCode: response.data.id,
-                timeslots: selectedTimeslots, // you need to adapt this to the actual timeslot data
-                totalPrice: totalPrice,
-                username: auth.username, // you need to adapt this to the actual username
-            };
-
-            // Format data as string 
-            const dataStr = `Reservation Code: ${data.ReservationCode}\nBooked By: ${data.username}\nTotal Price: ${data.totalPrice}DT\nTimeslots:\n${data.timeslots.map((slot, index) => `    Slot ${index+1}: ${slot.start_time} to ${slot.end_time}, Code: ${slot.id}`).join('\n')}`;
-            QRCode.toDataURL(dataStr)
-            .then(url => {
-                console.log(url);
-                setQrImage(url);
-            })
-            .catch(err => {
-                console.error(err);
-            });
-
-            const emailParams = {
-                from_name: 'Stady Team', // you can customize this
-                to_name: auth.username, // replace with the recipient's name
-                user_email: auth.email, // replace with the recipient's email
-                message: dataStr, // url is the QR code data URL we generated earlier
-            };
-                
-            emailjs.send('service_5sw52ng', 'template_zva59j4', emailParams, 'kSM8tqZ2IFIcz3Hpd')
-            .then((response) => {
-                console.log('SUCCESS!', response.status, response.text);
-            }, (error) => {
-                console.log('FAILED...', error);
-            });
-        
-            setOpenModal(true);
-
-        } catch (err) {
-            setSuccess(false);
-            setIsPending(false);
-            getTimeSlots();
-            if (err?.response?.data['hydra:description'] === "Cannot reserve a timeslot that is already Reserved.") {
-                setErrMsg("Cannot reserve a Timeslot that is already Reserved");
-            } else if (err?.response?.data['hydra:description'] === "Cannot reserve a timeslot that is outdated.") {
-                setErrMsg("Cannot reserve a timeslot that is Outdated");
-            }
-        }
-    };
-
-    const cancelReservation = async () => {
-            setPaymentUrl(null);
-            setPaymentId(null);  
-            setErrMsg('There was An Error with your Payment Try Again!');
-            setSuccess(false);
-            setSnackbarOpen(true); 
-            setIsPending(false);
-
-    };
-
-    const makePayment = async () => {
-        try {
-            setIsPending(true);
-        
-            const Amount = 0o400;
-            //PAYMENT API
-            const totalAmount = (totalPrice + fees) * 1000;
-            const payment = await axios.post('https://api.konnect.network/api/v2/payments/init-payment',
-            
-            {
-                "receiverWalletId": "64a82c25edd4795ff4be0ceb",
-                "token": "TND",
-                "amount": 0o400,
-                "type": "immediate",
-                "description": "Reservation payment description",
-                "lifespan": 5,
-                "addPaymentFeesToAmount": true,
-                "firstName": auth.username,
-                "email": auth.email,
-                "orderId": "1234657",
-                "successUrl": "https://konnect.network/gateway/payment-success",
-                "failUrl": "https://konnect.network/gateway/payment-failure",
-                "checkoutForm": true,
-                "acceptedPaymentMethods": [
-                "wallet",
-                "bank_card",
-                "e-DINAR"
-                ]            },
-            {
-                headers: {
-                    'x-api-key' : '64a82c25edd4795ff4be0ce8:1jQ83PMMUKbOJ56vtLWuK6kkimvJZ4S',
-                    'Content-Type' : 'application/json',
-                }
-            });
-
-            const payment_url = payment.data.payUrl;
-            const paymentId = payment.data.paymentRef;
-            setPaymentUrl(payment_url);
-            setPaymentId(paymentId);
-            
-            window.open(payment_url, '_blank');
-
-            const intervalId = setInterval(async () => {
-                try {
-                    // Make a GET request to check the payment status
-                    const response = await axios.get(`https://api.konnect.network/api/v2/payments/${paymentId}`,
-                    {
-                            headers: {
-                                'Content-Type' : 'application/json',
-                            }
-                        }
-                    );
-
-                    const payment_status = response.data.payment.status;
-                    const hasFailedTransaction = response.data.payment.transactions.some(transaction => transaction.status === "failed_payment");
-
-                    console.log(payment_status);
-                    // Handle the different statuses
-                    if (payment_status === "completed") {
-                        // If payment is completed, stop the interval and proceed with reservation
-                        clearInterval(intervalId);
-                        makeReservation();
-                    } else if (hasFailedTransaction) {
-                        // If payment is canceled or failed, stop the interval and handle error
-                        clearInterval(intervalId);
-                        cancelReservation();
-                    }
-                    // For "pending" status, do nothing, just wait for the next check
-                } catch (error) {
-                    console.error(`Error checking payment status: ${error}`);
-                    // On error, stop the interval
-                    clearInterval(intervalId);
-                }
-            }, 5000); // Check every 5 seconds (5000 milliseconds)
-        } catch (error) {
-            setIsPending(false);
-            console.error(`Error initiating payment: ${error}`);
-        }
-    };
-
-    const handleReservation = () => {
-        if (auth?.username) {
-            makePayment(); // Make the reservation
-        } else {
-            // Save current state to local storage
-            localStorage.setItem('reservationState', JSON.stringify(selectedTimeslots));
-            localStorage.setItem('pitchInfo', JSON.stringify(pitch));
-            localStorage.setItem('date', selectedDate.format());
-            localStorage.setItem('timeslots', JSON.stringify(timeslots));
-            localStorage.setItem('totalPrice', JSON.stringify(totalPrice));
-
-            // Save current path to local storage
-            localStorage.setItem('previousPath', window.location.pathname);
-            navigate('/login', { replace: true });
-        }
-    };
-
-    const [qrImage, setQrImage] = useState(null);
 
     //REVIEW 
     const [reviews, setReviews] = useState([]);
@@ -584,7 +543,7 @@ const TimeslotSelection = () => {
                 <Grid container alignItems="center">
                 <Grid item xs={12} sm={6}>
                     <Typography variant="h6" sx={{ color: 'white.main', fontWeight: 600, margin: '4px' }}>
-                    {t('Reservation.reservation')}
+                    TimeSlos Management
                     </Typography>
                 </Grid>
                 <Grid item xs={12} sm={6}>
@@ -601,16 +560,6 @@ const TimeslotSelection = () => {
                         t('Reservation.reviews')
                         )}
                     </Button>
-                    {auth.username && (
-                        <Button
-                        sx={{ color: 'white.main' }}
-                        variant="outlined"
-                        onClick={handleReviewOpen}
-                        startIcon={<RateReviewIcon />}
-                        >
-                        {t('Reservation.writeReview')}
-                        </Button>
-                    )}
                     </Box>
                 </Grid>
                 </Grid>
@@ -620,7 +569,7 @@ const TimeslotSelection = () => {
                 <>
                 <Box sx={{ bgcolor: 'green.main', padding: '5px', display: 'flex', justifyContent: 'space-between', textAlign:'center', alignItems:'center' }}>
                      <Typography variant="h6" sx={{ color: 'white.main', fontWeight: 600, margin: '4px' }}>
-                    {t('Reservation.reservation')}
+                    TimeSlots Management
                     </Typography>
                 </Box>
                 <Box sx={{ bgcolor: 'white.main', padding: '5px', display: 'flex', justifyContent: 'space-between', textAlign:'center', alignItems:'center', margin:'10px' }}>
@@ -632,63 +581,12 @@ const TimeslotSelection = () => {
                     >
                         {t('Reservation.reviews')}
                     </Button>
-                    {auth.username && (
-                        <Button
-                        sx={{ color: 'green.main' }}
-                        variant="outlined"
-                        onClick={handleReviewOpen}
-                        startIcon={<RateReviewIcon />}
-                        >
-                        {t('Reservation.writeReview')}
-                        </Button>
-                    )}
                 </Box>
                 <Divider sx={{ marginTop:"5px", marginBottom:"5px" }} /> 
                 </>
             )}
         <StyledBox>
-            <StyledModalQr
-            open={openModal}
-            onClose={handleCloseModal}
-            aria-labelledby="simple-modal-title"
-            aria-describedby="simple-modal-description"
-            >
-                <Box
-                    sx={{
-                    bgcolor: "background.default",
-                    color: "text.primary",
-                    padding: 4,
-                    borderRadius: 2,
-                    //'& > *': { marginBottom:'10px' },
-                    maxHeight: '80vh',
-                    width: isMobile ? 'auto' : 'auto', // use 90vw (90% of the width of the viewport) width for mobile devices, otherwise use 400px width
-                    height: isMobile ? 'auto' : 'auto', // use 90vw (90% of the width of the viewport) width for mobile devices, otherwise use 400px width
-                    display:'flex',
-                    flexDirection:'column',
-                    margin:'10px'    
-                    }}
-                >    
-                    <Typography variant="h6" textAlign="center" sx={{ color: "green.main", marginBottom:'10px'}}>
-                    {t('Reservation.qr')}
-                    </Typography>
-                    <Typography variant="h5" textAlign="center" sx={{ color: "grey.main", marginBottom:'10px'}} >{t('Reservation.qr2')}</Typography>
-
-                    <Box sx={{ display:'flex', justifyContent:'center', alignItems:'center'}}> 
-                    <img src={qrImage} alt="QR Code" />
-                    
-                    </Box>  
-                    <Button
-                        href={qrImage}
-                        download="QR_Code.png"
-                        variant="contained"
-                        color="primary"
-                        disabled={!qrImage}
-                        startIcon={<DownloadIcon/>}
-                    >
-                       {t('Reservation.qr3')}
-                    </Button>
-                </Box>
-            </StyledModalQr>
+           
             
             <Dialog 
             open={reviewOpen} 
@@ -766,6 +664,7 @@ const TimeslotSelection = () => {
             </DialogActions>
             </Dialog>
 
+                        
 
             <Dialog open={openReviewsModal} onClose={handleCloseReviewsModal} maxWidth="sm" fullWidth>
                 <DialogTitle>
@@ -787,46 +686,36 @@ const TimeslotSelection = () => {
             </Dialog>
 
             <Snackbar
-              open={snackbarOpen}
-              autoHideDuration={6000}
-              onClose={handleClose}
-              action={
-                <React.Fragment>
-                  <IconButton
-                    size="small"
-                    aria-label="close"
-                    color="inherit"
-                    onClick={() => setSnackbarOpen(false)}
-                  >
-                    <CloseIcon fontSize="small" />
-                  </IconButton>
-                </React.Fragment>
-              }
+            open={snackbarOpen}
+            autoHideDuration={6000}
+            onClose={() => {
+                setSnackbarOpen(false);
+            }}
             >
-              <Alert
-               onClose={handleClose}
-               severity={success ? "success" : "error"}
-               sx={{ width: '100%' }}
-               >
-                {success ? (
-                 t('Reservation.reservationSuccess')
-                ) : errMsg} 
-               </Alert>
-             </Snackbar>         
+                <Alert
+                    onClose={() => {
+                    setSnackbarOpen(false);
+                    }}
+                    severity={success ? "success" : "error"}
+                >
+                    {success ? (
+                    succMsg
+                    ) : errMsg}
+                </Alert>
+             </Snackbar>
             <Box>
                 
             <Grid container spacing={2}>
 
-                    <Grid item xs={12} sm={12} md={5}>   
-                    <Typography variant="subtitle1" sx={{ color: 'green.main', fontWeight: 600, margin: '10px', textAlign:'center' }}>{t('Reservation.timeslot')}</Typography>  
+                    <Grid item xs={12} sm={12} md={9}>   
+                    <Typography variant="subtitle1" sx={{ color: 'green.main', fontWeight: 600, margin: '10px', textAlign:'center' }}>Pick a date</Typography>  
                         <LocalizationProvider dateAdapter={AdapterDayjs}>
                             <DemoContainer components={['DatePicker']}>
                                 <DatePicker 
                                 sx={{ width: isMobile ? 'auto': '100%', margin:'10px'}}
                                 label={t('Reservation.pickDate')}
                                 value={selectedDate}
-                                minDate={dayjs()} 
-                                maxDate={dayjs().add(1, 'month')} 
+                                minDate={startingDate}                                maxDate={dayjs().add(1, 'month')} 
                                 onChange={(newValue) => setSelectedDate(newValue)}
                                 renderInput={(params) => <TextField {...params}  />}
                                 />
@@ -835,7 +724,7 @@ const TimeslotSelection = () => {
 
                         <Box sx={{ display: "flex",  justifyContent: "space-between", margin:'10px'}}>
                             <Typography variant="subtitle1" textAlign="left" sx={{ color: "green.main" }}>
-                            {t('Reservation.AvailableTimeSlots')}
+                            TimeSlots:
                             </Typography>
                         
                         </Box>
@@ -862,103 +751,7 @@ const TimeslotSelection = () => {
                             )}
                         </div>
                     </Grid>
-                    <Grid item xs={12} sm={12} md={4} sx={{textAlign:'center'}}> 
-                    <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center'}}>
-                        <Typography variant="subtitle1" sx={{ color: 'green.main', fontWeight: 600, margin: '10px', textAlign:'center' }}>{t('Reservation.basket')}</Typography>
-                            <Card
-                            sx={{
-                                display: 'flex',
-                                flexDirection: 'column',
-                                justifyContent: 'space-between',
-                                backgroundColor: '#FFFFFF',
-                                boxShadow: '0px 2px 4px rgba(28, 5, 77, 0.1), 0px 12px 32px rgba(0, 0, 0, 0.05)',
-                                borderRadius: '12px',
-                                flexGrow: 1,
-                                mb: 2,
-                                width: isMobile ? '98%' : '88%',
-                                height: isMobile ? '94%' : 'auto',
-                                margin: '0px',
-                            }}
-                            >
-                                <CardContent> 
-                                    {pitch ? (
-                                        <Box sx={{ display: 'flex', flexDirection: 'row', gap: '5px', alignItems:'center', justifyContent: 'center'}}>
-                                            <StadiumIcon sx={{ color: 'grey.main'}} />
-                                            <Typography variant="subtitle1" color="text.secondary">
-                                                {pitch.name.toUpperCase()}, 
-                                            </Typography>
-                                            <Typography variant="subtitle1" color="green.main" >
-                                                {pitch.state.name} 
-                                            </Typography>
-                                        </Box>
-                                    ) : (
-                                        <Typography variant="h5" color="text.secondary">
-                                            Loading...
-                                        </Typography>
-                                    )}
-
-                                    {selectedTimeslots && selectedTimeslots.length > 0 ? (
-                                    <>
-                                       <Box sx={{display: 'flex', flexDirection: 'column', marginTop: '15px'}}>
-                                            <Divider sx={{ marginTop:"5px", marginBottom:"20px" }} />
-                                            <Typography variant="h5" sx={{ color: 'grey.main', marginBottom: '10px'}}>Timeslots:</Typography>
-
-                                            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center'}}>
-                                                <Typography variant="body1" sx={{ color: 'grey.main'}}>Code</Typography>
-                                                <Typography variant="body1" sx={{ color: 'grey.main'}}>Start </Typography>
-                                                <Typography variant="body1" sx={{ color: 'grey.main'}}>End </Typography>
-                                                <Typography variant="body1" sx={{ color: 'grey.main'}}></Typography>
-                                                <Typography variant="body1" sx={{ color: 'grey.main'}}></Typography>
-                                            </Box>
-
-                                            {selectedTimeslots.map(timeslot => (
-                                                <Box key={timeslot.id} sx={{display: 'flex', justifyContent: 'space-between', alignItems: 'center'}}>
-                                                    <Typography variant="body1">{timeslot.id}</Typography>
-                                                    <Typography variant="body1">{formatTime(timeslot.start_time)}</Typography>
-                                                    <Typography variant="body1">{formatTime(timeslot.end_time)}</Typography>
-                                                    <Button onClick={() => handleTimeslotRemoval(timeslot)}><CancelIcon /></Button>
-                                                </Box>
-                                            ))}
-                                        </Box>
-                                        <Divider sx={{ marginTop:"5px", marginBottom:"20px" }} />
-
-                                        <Box sx={{display: 'flex', flexDirection: 'column', marginTop: '15px'}}>
-                                        <Box sx={{ display: 'flex', justifyContent: 'space-between', marginBottom: '5px' }}>
-                                            <Typography variant="h5" sx={{ color: 'grey.main'}}>{t('Reservation.price1')}</Typography>
-                                            <Typography variant="h5" sx={{ color: 'grey.main'}}>{totalPrice} DT</Typography>
-                                        </Box>
-                                        <Box sx={{ display: 'flex', justifyContent: 'space-between', marginBottom: '5px' }}>
-                                            <Typography variant="h5" sx={{ color: 'grey.main'}}>{t('Reservation.fees')}</Typography>
-                                            <Typography variant="h5" sx={{ color: 'grey.main'}}>{fees} DT</Typography>
-                                        </Box>
-                                        <Box sx={{ display: 'flex', justifyContent: 'space-between', marginBottom: '5px' }}>
-                                            <Typography variant="h5" sx={{ color: 'grey.main'}}>{t('Reservation.total')}</Typography>
-                                            <Typography variant="h5" sx={{ color: 'grey.main'}}>{totalPrice + fees} DT</Typography>
-                                        </Box>
-                                        </Box>
-                                        <Box sx={{display: 'flex', flexDirection: 'row', justifyContent: 'flex-end', marginTop: '15px'}}>
-                                        <StyledButton
-                                            fullWidth
-                                            variant="contained"
-                                            color="primary"
-                                            onClick={handleReservation}
-                                            disabled={isPending}
-                                        >
-                                            {isPending ? (
-                                                <CircularProgress color="white" size={24} />
-                                            ) : (
-                                                t('Reservation.reserve')
-                                            )}
-                                        </StyledButton>
-                                        </Box>
-                                    </>
-                                    ) : (
-                                    <Typography variant="h5" sx={{marginTop: '15px', color: 'grey.main'}}>{t('Reservation.noTimeSlotSelect')}</Typography>
-                                    )}
-                                </CardContent>
-                            </Card>
-                        </Box>                 
-                    </Grid>
+                 
 
                     <Grid item xs={12} sm={12} md={3} sx={{textAlign:'center'}}>     
                         <Typography variant="subtitle1" sx={{ color: 'green.main', fontWeight: 600, margin: '10px' }}>{t('Reservation.pitchInfo')}</Typography>
@@ -1084,4 +877,4 @@ const TimeslotSelection = () => {
     );
 }
  
-export default TimeslotSelection;
+export default TimeslotsManagement;

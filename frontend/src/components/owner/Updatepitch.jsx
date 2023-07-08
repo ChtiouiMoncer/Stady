@@ -27,19 +27,11 @@ import useAuth from "../../Hooks/useAuth";
 import useAxiosPrivate from "../../Hooks/useAxiosPrivate";
 import Snackbar from '@mui/material/Snackbar';
 import CloseIcon from '@mui/icons-material/Close';
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 import Footer from "../homePage/Footer";
 
 
-const containerStyle = {
-  width: '400px',
-  height: '400px'
-};
 
-const center = {
-  lat: 35.8254,
-  lng: 10.6084
-};
 
 const StyledModal = styled(Box) (({ theme }) => ({
     backgroundImage: `url(${loginbg})`,
@@ -154,7 +146,38 @@ const StyledTextField = styled(TextField)({
 // Steps of the form
 const steps = ['Add Informations', 'Add Assets', 'Add Opening Times'];
 
-const Addpitch = (props) => {  
+const Updatepitch = (props) => {  
+
+  const locationn = useLocation();
+  const { pitchName } = useParams();
+  const { state } = locationn;
+  const pitcheId = state && state.pitchId ? state.pitchId : null;
+  const [pitch, setPitch] = useState();
+
+  const getPitchData = async () => {
+    try {
+        const response = await axios.get(`/api/grounds/${pitcheId}`, {
+            headers: {'accept': 'application/json'}
+        });
+
+        // handle the fetched data
+        setPitch(response.data);
+     
+
+    } catch (err) {
+        console.log(err);
+
+    }
+}
+
+useEffect(() => {
+
+    getPitchData();
+
+  }, [pitchName]);
+
+
+
 
   //auth context
   const { auth } = useAuth(); //get the auth object from useAuth
@@ -439,6 +462,16 @@ const handleFileChange = (event) => {
   // TODO: Upload files to server
 };
 
+const containerStyle = {
+  width: '400px',
+  height: '400px'
+};
+
+const center = {
+  lat: pitch?.address.longitude,
+  lng: pitch?.address.latitude,
+};
+
 const handleFileDelete = (indexToDelete) => {
   setFiles(files.filter((file, index) => index !== indexToDelete));
 };
@@ -446,7 +479,7 @@ const handleFileDelete = (indexToDelete) => {
 const axiosPrivate = useAxiosPrivate();
 
 //REGISTER PITCH ENDPOINT
-const REGISTER_PITCH_URL = '/api/grounds'
+const PATCH_PITCH_URL = `/api/grounds/${pitcheId}`;
 
 const amentiesData = {
   hasShower: hasShowerValue,
@@ -473,32 +506,32 @@ const onSubmit = async (data, e) => {
   e.preventDefault();
   setIsPending(true);
   try {
-    const response = await axiosPrivate.post( REGISTER_PITCH_URL,
+    const response = await axiosPrivate.patch( PATCH_PITCH_URL,
       JSON.stringify({
         name: nameValue,
         description: descriptionValue,
         capacity: capacityValue,
         size: sizeValue,
         phoneNumber: phoneValue,
-        sportsType: sportsTypeUrl,
-        floorType: floorTypeUrl,
-        state: stateUrl,
-        address: {
+        //sportsType: sportsTypeUrl,
+        //floorType: floorTypeUrl,
+        //state: stateUrl,
+        /*address: {
           longitude: location.lng,
           latitude: location.lat,
-        },
-        amenties: {
+        },*/
+        /*amenties: {
           hasShower: hasShowerValue,
           hasSecureStorage: hasSecureStorageValue,
           hasChangingRoom: hasChangingRoomValue,
           hasRestaurent: hasRestaurantValue,
           hasParking: hasParkingValue,
-        },
+        },*/
         openingTimes: openingTimes, 
-        owner: ownerUrl
+        //owner: ownerUrl
       }),
       {
-        headers: { 'Content-Type': 'application/ld+json' },
+        headers: { 'Content-Type': 'application/merge-patch+json' },
       }
     );
     const pitchId = response.data.id;
@@ -540,7 +573,7 @@ const onSubmit = async (data, e) => {
     } else {
       setSuccess(false);
       setIsPending(false);
-      setErrMsg('Registration failed, Try Again!');
+      setErrMsg('Pitch Update failed, Try Again!');
     }
  
   }
@@ -564,6 +597,8 @@ const handleFormReset = () => {
         top: '-40px'
       }}  
     >
+      {pitch && pitch.name && (
+
       <Box
             sx={{
             maxHeight: '75vh',  
@@ -580,7 +615,7 @@ const handleFormReset = () => {
       > 
             <Box sx={{ display: "flex",  justifyContent: "space-between", marginBottom:'10px'}}>
                 <Typography variant="h6" textAlign="left" sx={{ color: "green.main" }}>
-                Add a Pitch 
+                Update a Pitch 
                 </Typography>
                 <Tooltip title="Reset" arrow>
                   <IconButton onClick={handleFormReset} >
@@ -607,7 +642,7 @@ const handleFormReset = () => {
               }
             >
               <Alert onClose={handleClose} severity="success" sx={{ width: '100%' }}>
-                Pitch added successfully!
+                Pitch Updated successfully!
                 </Alert>
             </Snackbar>
             <Stack sx={{ width: '100%' }} spacing={2}>
@@ -620,7 +655,7 @@ const handleFormReset = () => {
                       color: 'green.main', // set the color of the icon
                     },
                     }} severity="success">
-                  Pitch added successfully!
+                Pitch Updated successfully!
                 </Alert>
               )}
               {errMsg && (
@@ -677,33 +712,40 @@ const handleFormReset = () => {
                   {activeStep === 0 && ( 
                     <>  
                       {/* First step */}
-                      <Controller
-                        name="name" 
-                        control={control} 
-                        defaultValue="" 
-                        rules={validationRules.name} 
-                        render={({ field, fieldState }) => ( //
-                          <StyledTextField 
-                          fullWidth
-                          id="outlined-username-input"
-                          label= {<Typography  variant="subtitle2" textAlign="left" sx={{ color: "grey.main"}}>
-                          Name
-                          </Typography>}
-                          type="text"
-                          autoComplete="Right Down The Pitch Name!"
-                          error={!!fieldState.error} 
-                          helperText={fieldState.error?.message} 
-                          {...field}   
-                          />
-                        )}
-                      />                        
+
+                        <Controller
+                          name="name" 
+                          control={control} 
+                          defaultValue={pitch.name} 
+                          rules={validationRules.name} 
+                          render={({ field, fieldState }) => (
+                            <TextField 
+                              defaultValue={pitch?.name}
+                              fullWidth
+                              id="outlined-username-input"
+                              label= {
+                                <Typography  variant="subtitle2" textAlign="left" sx={{ color: "grey.main"}}>
+                                  Name
+                                </Typography>
+                              }
+                              type="text"
+                              autoComplete="Right Down The Pitch Name!"
+                              error={!!fieldState.error} 
+                              helperText={fieldState.error?.message} 
+                              {...field}   
+                            />
+                          )}
+                        />
+                   
+                                            
                       <Controller
                       name="description" 
                       control={control} 
-                      defaultValue="" 
+                      defaultValue="A very Good Pitch" 
                       rules={validationRules.description} 
                       render={({ field, fieldState }) => ( 
                         <StyledTextFieldDesc
+                        defaultValue="A very Good Pitch" 
                         multiline
                         rows={4}
                         fullWidth
@@ -724,7 +766,7 @@ const handleFormReset = () => {
                           <Controller 
                           name="phoneNumber"
                           control = {control}
-                          defaultValue=""
+                          defaultValue={pitch.phoneNumber} 
                           rules={validationRules.phone}
                           render={ ({ field, fieldState }) => (
                             <MuiPhoneNumber
@@ -749,7 +791,7 @@ const handleFormReset = () => {
                           <Controller 
                           name="capacity"
                           control = {control}
-                          defaultValue=""
+                          defaultValue={pitch.capacity} 
                           rules={validationRules.capacity}
                           render={ ({ field, fieldState }) => (
                             <StyledTextField
@@ -782,7 +824,7 @@ const handleFormReset = () => {
                           <Controller 
                           name="size"
                           control = {control}
-                          defaultValue=""
+                          defaultValue={pitch.size} 
                           rules={validationRules.size}
                           render={ ({ field, fieldState }) => (
                             <StyledTextField
@@ -827,6 +869,7 @@ const handleFormReset = () => {
                                   label="sportsType"
                                   error={!!fieldState.error} 
                                   {...field} 
+                                  defaultValue={pitch.sportsType?.id} 
                                 >
                                   {
                                     sportsTypes && sportsTypes.map((sportType) => (
@@ -842,7 +885,7 @@ const handleFormReset = () => {
                           /> 
                         </Grid>
                         <Grid  xs={6}>      
-                          <Controller 
+                        <Controller 
                             name="floorType"
                             control = {control}
                             defaultValue=""
@@ -933,6 +976,8 @@ const handleFormReset = () => {
                                   label="states"
                                   error={!!fieldState.error} 
                                   {...field} 
+                                  defaultValue={pitch.state?.id} 
+                                  
                                 >
                                   {
                                     states && states.map((state) => (
@@ -1060,45 +1105,7 @@ const handleFormReset = () => {
                             </Grid>
                           ))}
                         </Grid>
-                          <FormGroup>
-                            <FormControl >
-                              <Controller 
-                                name="terms"
-                                control = {control}
-                                defaultValue={false} // set default value to false
-                                rules={validationRules.terms}
-                                render={ ({ field, fieldState }) => ( 
-                                  <FormControlLabel 
-                                    sx={{ marginBottom: "-7px" }} 
-                                    control={
-                                      <Checkbox size="small" //defaultChecked
-                                      {...field} 
-                                      checked={field.value} //checkbox will be reset to unchecked when the reset()
-                                        sx={{
-                                        '&.Mui-checked': {
-                                        color: "green.main",
-                                        },
-                                        }} 
-                                    /> 
-                                    } 
-                                    label={
-                                      <Typography variant="subtitle2" textAlign="left" sx={{ color: "grey.main" }}>
-                                        I agree to the
-                                        <Link  underline="none" sx={{ color: "green.main" }}>
-                                          {" terms and conditions"}
-                                        </Link>
-                                      </Typography>
-                                    }
-                                  />
-                                )}
-                              />
-                              {errors.terms && (
-                                <FormHelperText error color="error" variant="caption">
-                                  {errors.terms.message}
-                                </FormHelperText>
-                                )} 
-                            </FormControl>
-                          </FormGroup>
+                         
                       </Box>
                      
                     </>
@@ -1144,11 +1151,11 @@ const handleFormReset = () => {
                 </React.Fragment>
             )}
       </Box>
-      
+      )}
     </StyledModal>
     <Footer />
   </>
   );
 };
 
-export default Addpitch;
+export default Updatepitch;

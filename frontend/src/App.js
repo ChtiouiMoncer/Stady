@@ -13,9 +13,7 @@ import PersistLogin from './components/PersistLogin';
 import AuthGuard from './components/AuthGuard ';
 import AdminDashboard from './components/admin/stats/AdminDashboard';
 import Addpitch from './components/owner/Addpitch';
-import OwnerPitches from './components/owner/OwnerPitches';
 import Reservations from './components/member/Reservations';
-import OwnerDashboardStats from './components/owner/OwnerDashboardStats';
 import PendingPitches from './components/admin/managePitches/pendingPitches/PendingPitches';
 import ApprovedPitches from './components/admin/managePitches/approvedPitches/ApprovedPitches';
 import RejectedPitches from './components/admin/managePitches/rejectedPitches/RejectedPitches';
@@ -30,7 +28,6 @@ import AppTerms from './components/homePage/AppTerms';
 import UserProfile from './components/auth/UserProfile';
 import './i18n';
 import ManageReservation from './components/admin/manageReservation/ManageReservation';
-import MemberMangement from './components/admin/manageMembers/MemberMangement';
 import ManageMembers from './components/admin/manageMembers/ManageMembers';
 import ManageOwners from './components/admin/manageOwners/ManageOwners';
 import ManageSportsType from './components/admin/manageSportsType/ManageSportsType';
@@ -38,6 +35,14 @@ import SuperAdminDashboard from './components/superAdmin/stats/SuperAdminDashboa
 import ManageAdmins from './components/superAdmin/manageAdmins/ManageAdmins';
 import AdminSignUpPage from './components/superAdmin/manageAdmins/AdminSignUpPage';
 
+import PendingPitchesOwner from './components/owner/managePitches/pendingPitches/PendingPitches';
+import ApprovedPitchesOwner from './components/owner/managePitches/approvedPitches/ApprovedPitches';
+import RejectedPitchesOwner from './components/owner/managePitches/rejectedPitches/RejectedPitches';
+import ManageReservationOwner from './components/owner/manageReservation/ManageReservation';
+import OwnerDashboard from './components/owner/stats/OwnerDashboard';
+import OwnerAllPitches from './components/owner/OwnerAllPitches';
+import TimeslotsManagement from './components/owner/TimeslotsManagement';
+import Updatepitch from './components/owner/Updatepitch';
 
 
 
@@ -128,11 +133,22 @@ function App() {
                       
                       </Route>
 
+                      { /* Dashboared Overview */}
+                        <Route path="/owner/dashboard" element={<OwnerDashboard/>}></Route>
                        { /* Owner Protected Routes */}
                       <Route element= { <RequireAuth  allowedRoles={[ ROLES.Owner ]}/> }> { /* Only when we have a user we can show the comp's inside the Required Auth*/ }
-                        <Route path="/owner/dashboard" element={<OwnerDashboardStats/>}></Route>
-                        <Route path="/owner/pitches" element={<OwnerPitches />}></Route>.
-                        <Route path="/owner/add/pitch" element={<Addpitch />}></Route>
+                        <Route path="/owner/add/pitch" element={<Addpitch/>}></Route>
+                        <Route path="/owner/pitches/pending" element={<PendingPitchesOwner />}></Route>
+                        <Route path="/owner/pitches/approved" element={<ApprovedPitchesOwner />}></Route>
+                        <Route path="/owner/pitches/rejected" element={<RejectedPitchesOwner />}></Route>
+
+
+                        <Route path="/owner/manage/reservations" element={<ManageReservationOwner />}></Route>
+                        <Route path="/owner/manage/pitches" element={<OwnerAllPitches />}></Route>
+                        <Route path="/owner/manage/timeslots/:pitchName" element={<TimeslotsManagement />} />
+                        <Route path="/owner/update/:pitchName" element={<Updatepitch />} />
+
+
                       </Route>   
 
                       { /* Member Protected Routes */}

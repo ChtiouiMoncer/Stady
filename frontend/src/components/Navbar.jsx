@@ -209,7 +209,7 @@ import { useTranslation } from 'react-i18next';
                         <ListItem disablePadding>
                             <ListItemButton
                             component={RouterLink}
-                            to="/owner/pitches"
+                            to="/owner/manage/pitches"
                             >
                             <ListItemIcon>
                                 <StadiumIcon sx={{ color: "grey.dark" }} />
@@ -475,7 +475,7 @@ import { useTranslation } from 'react-i18next';
                             <Button component={RouterLink} to="/owner/dashboard">
                                 <Typography variant="subtitle2" className="greenSubtitle">Dashboard</Typography>
                             </Button>
-                            <Button component={RouterLink} to="/owner/pitches">
+                            <Button component={RouterLink} to="/owner/manage/pitches">
                                 <Typography variant="subtitle2" className="greySubtitle">{t('myPitches')}</Typography>
                             </Button>
 
