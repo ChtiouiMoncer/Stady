@@ -54,7 +54,7 @@ use function Symfony\Component\String\u;
             securityPostDenormalize: 'is_granted("ROLE_ADMIN") or object.getOwner() == user'
         ),
         new Delete(
-            security: 'is_granted("ROLE_ADMIN")',
+            security: 'is_granted("ROLE_ADMIN") or is_granted("ROLE_PITCH_EDIT") and object.getOwner() == user',
 
         )
     ],
@@ -171,7 +171,7 @@ class Pitch
 
     #[ORM\ManyToOne(inversedBy: 'pitches')]
     #[ORM\JoinColumn(nullable: false)]
-    #[Groups(['ground:read','ground:write'])]
+    #[Groups(['ground:read','ground:write','reservation:read','reservation:item:get'])]
     #[ApiProperty(
         security: 'is_granted("ROLE_OWNER") or is_granted("ROLE_ADMIN") and object == user',
     )]

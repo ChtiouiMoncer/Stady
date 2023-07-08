@@ -32,11 +32,11 @@ use Symfony\Component\Serializer\Normalizer\DateTimeNormalizer;
             security: 'is_granted("ROLE_ADMIN")',
         ),
         new Patch(
-            security: 'is_granted("ROLE_ADMIN")',
+            security: 'is_granted("ROLE_ADMIN") or is_granted("ROLE_OWNER")',
 
         ),
         new Delete(
-            security: 'is_granted("ROLE_ADMIN")',
+            security: 'is_granted("ROLE_ADMIN") or is_granted("ROLE_OWNER")',
         )
     ],
 
