@@ -299,9 +299,9 @@ const TimeslotSelection = () => {
         // Prepare the reservation data
         const reservationData = {
             totalPrice: totalPrice + fees, // Remember to add the fees to the total price
-            pitch: `/api/grounds/${pitch.id}`,
+            pitch: `/api/grounds/${pitch?.id}`,
             timeSlots: timeSlotsData,
-            owner: `/api/users/${auth.userId}`
+            owner: `/api/users/${auth?.userId}`
         };
 
         try {
