@@ -1,4 +1,5 @@
 # Sports Reservation Web App
+![image](https://github.com/ChtiouiMoncer/Stady/assets/46131932/0457022a-3c6b-468f-8a74-a41e63dcb873)
 
 This is a web application for reserving sports facilities. It is built with Symfony, API Platform, React, and Material UI.
 
@@ -50,3 +51,14 @@ Open your web browser and go to http://localhost:3000 to use the web app.
 
 # Contributing
 Contributions are welcome! Please fork this repository and submit a pull request with your changes.
+
+# Screenshots
+![image](https://github.com/ChtiouiMoncer/Stady/assets/46131932/e85ab1e4-a014-46bb-84eb-cb1b230d0bf3)
+![image](https://github.com/ChtiouiMoncer/Stady/assets/46131932/e6a77c39-08a6-4492-b246-9d52eab0a482)
+![image](https://github.com/ChtiouiMoncer/Stady/assets/46131932/11c14797-d119-494d-9f80-6e58f45ac838)
+
+# Other Features : 
+The "Stady" web app is fully responsive and available in multi languages English per default and you can change to french !
+
+
+
