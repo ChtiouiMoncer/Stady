@@ -81,18 +81,26 @@ Contributions are welcome! Please fork this repository and submit a pull request
 
 # Screenshots
 
+Home Page: 
 ![image](https://github.com/ChtiouiMoncer/Stady/assets/46131932/e85ab1e4-a014-46bb-84eb-cb1b230d0bf3)
 
+Reservation Process: 
 ![image](https://github.com/ChtiouiMoncer/Stady/assets/46131932/e6a77c39-08a6-4492-b246-9d52eab0a482)
 
+Reservation QR Code: 
 ![image](https://github.com/ChtiouiMoncer/Stady/assets/46131932/11c14797-d119-494d-9f80-6e58f45ac838)
 
+Admin Dashboard:
 ![Screenshot 2023-08-05 013952](https://github.com/ChtiouiMoncer/Stady/assets/46131932/1eb1d471-7c4f-4ed9-b9f1-279c770e0468)
 
+Login Page: 
 ![Screenshot 2023-08-05 014537](https://github.com/ChtiouiMoncer/Stady/assets/46131932/82b66b2f-9702-412c-824b-572b6ab3c0f0)
 
 Payment Process: 
 ![image](https://github.com/ChtiouiMoncer/Stady/assets/46131932/490c2623-d515-43ec-a61b-5934b2d1838b)
+
+Clients Feedbacks Page:
+![Screenshot 2023-08-05 015134](https://github.com/ChtiouiMoncer/Stady/assets/46131932/b8c94cd2-5c76-484a-b215-ac2c85ef83a9)
 
 
 # Other Features : 
