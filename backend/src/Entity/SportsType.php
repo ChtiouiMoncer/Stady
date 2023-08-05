@@ -68,7 +68,7 @@ class SportsType
     #[Groups(['type:read','type:write'])]
     private Collection $pitch;
 
-    #[ORM\OneToMany(mappedBy: 'sportsType', targetEntity: FloorType::class)]
+    #[ORM\OneToMany(mappedBy: 'sportsType', targetEntity: FloorType::class, cascade: ['persist', 'remove'])]
     #[Groups(['type:read','type:write'])]
     #[Assert\Valid]
     #[Assert\NotBlank]
