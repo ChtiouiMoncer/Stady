@@ -90,7 +90,7 @@ if (pitches.length === 0) {
             <Navbar />
             <StyledModal>
                 <Box sx={{ display: "flex" , flexDirection: "column", alignItems: "center" }}>
-                    <Typography variant="h5" sx={{ color: isMobile ? 'white.main' : 'green.main' , fontWeight: 600, margin: '10px' }}>{t('PitchCard1.NoResults')}</Typography>
+                    <Typography variant="h5" sx={{ color: isMobile ? 'white.main' : 'green.main' , fontWeight: 600, margin: '12px' }}>{t('PitchCard1.NoResults')}</Typography>
                     <Box sx={{ display: 'flex', flexDirection: 'row', justifyContent:'center', gap: '5px', marginTop: '5px'}}>
                         <Button onClick={goBack}  component={RouterLink} to="/"  variant="contained" className="my-button"    >
                             <Typography variant="subtitle2"  >
