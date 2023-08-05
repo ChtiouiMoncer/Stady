@@ -1,4 +1,4 @@
-# About "Stady App"
+# About "Stady"
 ![image](https://github.com/ChtiouiMoncer/Stady/assets/46131932/0457022a-3c6b-468f-8a74-a41e63dcb873)
 
 Stady is a sports grounds reservation app that aims to simplify the process of finding and booking sports facilities. Our mission is to connect sports enthusiasts with the perfect sports grounds for their needs, whether it's for casual games, league matches, or training sessions.
@@ -80,6 +80,7 @@ Open your web browser and go to http://localhost:3000 to use the web app.
 Contributions are welcome! Please fork this repository and submit a pull request with your changes.
 
 # Screenshots
+
 ![image](https://github.com/ChtiouiMoncer/Stady/assets/46131932/e85ab1e4-a014-46bb-84eb-cb1b230d0bf3)
 
 ![image](https://github.com/ChtiouiMoncer/Stady/assets/46131932/e6a77c39-08a6-4492-b246-9d52eab0a482)
@@ -87,6 +88,11 @@ Contributions are welcome! Please fork this repository and submit a pull request
 ![image](https://github.com/ChtiouiMoncer/Stady/assets/46131932/11c14797-d119-494d-9f80-6e58f45ac838)
 
 ![Screenshot 2023-08-05 013952](https://github.com/ChtiouiMoncer/Stady/assets/46131932/1eb1d471-7c4f-4ed9-b9f1-279c770e0468)
+
+![Screenshot 2023-08-05 014537](https://github.com/ChtiouiMoncer/Stady/assets/46131932/82b66b2f-9702-412c-824b-572b6ab3c0f0)
+
+Payment Process: 
+![image](https://github.com/ChtiouiMoncer/Stady/assets/46131932/490c2623-d515-43ec-a61b-5934b2d1838b)
 
 
 # Other Features : 
@@ -98,6 +104,7 @@ The "Stady" web app is fully responsive and available in multi languages English
 
 ![Screenshot 2023-08-05 013700](https://github.com/ChtiouiMoncer/Stady/assets/46131932/8698a8f0-3194-41a2-9fc2-aa77c3163fe7)
 
+![Screenshot 2023-08-05 014627](https://github.com/ChtiouiMoncer/Stady/assets/46131932/b9176761-eb98-4332-bc91-916aeaf2ffc4)
 
 Made With Love ♥ 
 Enjoy!
